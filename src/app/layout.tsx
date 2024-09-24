@@ -29,7 +29,7 @@ export default function RootLayout({
           forcedTheme="dark"
         >
           {children}
-          <Toaster />
+          <Toaster className="z-[5000]" />
           <Analytics />
         </ThemeProvider>
       </body>
