@@ -98,6 +98,24 @@ const reviews = [
     username: "@4ibu",
     body: "mspaint automatically make you cooler 😎 use now!",
     img: "/pfps/vee.png",
+  },
+  {
+    name: "goofiest goober",
+    username: "@smoothcriminal.heehee",
+    body: "One of the best DOORS scripts of all time. Good features, good anticheat, good everything.",
+    img: "/pfps/smoothcriminal.gif",
+  },
+  {
+    name: "☆★𝕯𝖔𝖗𝖎𝖙𝖔★☆",
+    username: "@happydorito92",
+    body: "Mspaint is a great way to paint and now I have good crocs and gaming chairs because of Mspaint",
+    img: "/pfps/happydorito92.png",
+  },
+  {
+    name: "ᨓ 🐇🌸 ៹ sumi ૮₍𖦹ﻌ𖦹₎ა",
+    username: "@sumi8a",
+    body: "now i dont get heart attacks by rush, 10/10",
+    img: "/pfps/sumi8a.png",
   }
 ];
 
