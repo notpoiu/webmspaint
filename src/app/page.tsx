@@ -25,7 +25,7 @@ import Iphone15Pro from "@/components/magicui/iphone-15-pro";
 
 export default function Home() {
   return (
-    <main>
+    <main className="overflow-x-hidden">
       <DotPattern
         width={20}
         height={20}
