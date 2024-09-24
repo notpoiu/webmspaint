@@ -1,6 +1,5 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
-import { MotionValue, motion, useTransform } from "framer-motion";
+import { MotionValue, motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import {
   IconBrightnessDown,
@@ -42,40 +41,13 @@ export const MacbookScroll = ({
   lid?: string | React.ReactNode;
   badge?: React.ReactNode;
 }) => {
-  const ref = useRef<HTMLDivElement>(null);
-
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    if (window && window.innerWidth < 768) {
-      setIsMobile(true);
-    }
-  }, []);
-
-  const scaleX = useTransform(
-    scrollYProgress,
-    [0, 0.3],
-    [1.2, isMobile ? 1 : 1.5]
-  );
-  const scaleY = useTransform(
-    scrollYProgress,
-    [0, 0.3],
-    [0.6, isMobile ? 1 : 1.5]
-  );
-  const translate = useTransform(scrollYProgress, [0, 1], [0, 1500]);
-  const rotate = useTransform(scrollYProgress, [0.1, 0.12, 0.3], [-28, -28, 0]);
-  const textTransform = useTransform(scrollYProgress, [0, 0.3], [0, 100]);
-  const textOpacity = useTransform(scrollYProgress, [0, 0.2], [1, 0]);
-
   return (
     <div
-      ref={ref}
       className="min-h-[125vh] flex flex-col items-center py-0 md:py-80 justify-start flex-shrink-0 [perspective:800px] transform max-md:scale-90 max-sm:scale-70"
     >
-      <motion.h2
+      <h2
         style={{
-          translateY: textTransform,
-          opacity: textOpacity,
+          opacity: 1,
         }}
         className="dark:text-white text-neutral-800 text-3xl font-bold mb-20 text-center"
       >
@@ -84,16 +56,16 @@ export const MacbookScroll = ({
             This Macbook is built with Tailwindcss. <br /> No kidding.
           </span>
         )}
-      </motion.h2>
+      </h2>
 
       <BlurFade delay={0.2 + (5 * 0.05)}>
         {/* Lid */}
         <Lid
           src={src}
-          scaleX={scaleX}
-          scaleY={scaleY}
-          rotate={rotate}
-          translate={translate}
+          scaleX={1.2}
+          scaleY={0.6}
+          rotate={-28}
+          translate={1}
           lid={lid}
         />
         {/* Base area */}
@@ -165,10 +137,10 @@ export const Lid = ({
   src,
   lid,
 }: {
-  scaleX: MotionValue<number>;
-  scaleY: MotionValue<number>;
-  rotate: MotionValue<number>;
-  translate: MotionValue<number>;
+  scaleX: number;
+  scaleY: number;
+  rotate: number;
+  translate: number;
   src?: string;
   lid?: string | React.ReactNode;
 }) => {
