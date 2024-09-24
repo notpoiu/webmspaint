@@ -1,3 +1,5 @@
+"use client";
+
 import CopyButton from "@/components/copy-button";
 import AnimatedShinyText from "@/components/magicui/animated-shiny-text";
 import BlurFade from "@/components/magicui/blur-fade";
@@ -19,6 +21,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion"
 import Image from "next/image";
+import Iphone15Pro from "@/components/magicui/iphone-15-pro";
 
 export default function Home() {
   return (
@@ -83,91 +86,99 @@ export default function Home() {
           showGradient={true}
         />
 
-        <div className="flex flex-col items-center justify-center">
-          <BlurFade delay={0.2 + (1 * 0.05)} className="mb-5" inView>
-            <h1 className="text-3xl font-bold text-center flex flex-col">
-              <span>Used by <span className="font-bold">over{" "}
-                <NumberTicker value={2000} />
-                + people
-              </span></span>
-              <span className="text-muted-foreground text-lg">And even by <span className="font-bold text-white">kardin hong</span></span>
-            </h1>
-          </BlurFade>
-          <BlurFade delay={0.2 + (2 * 0.05)} inView>
-            <div className="relative max-w-[90vw]">
+      </div>
+      <div className="flex flex-col items-center justify-center px-2">
+        <BlurFade delay={0.2 + (1 * 0.05)} className="mb-5" inView>
+          <h1 className="text-3xl font-bold text-center flex flex-col">
+            <span>Used by <span className="font-bold">over{" "}
+              <NumberTicker value={2000} />
+              + people
+            </span></span>
+            <span className="text-muted-foreground text-lg">And even by <span className="font-bold text-white">kardin hong</span></span>
+          </h1>
+        </BlurFade>
+        <BlurFade delay={0.2 + (2 * 0.05)} inView>
+          <div className="max-md:hidden block">
+            <div className="relative w-[90vw] flex justify-center items-center">
               <Safari url="youtube.com" className="" src="/kardinhong.png" />
             </div>
-          </BlurFade>
-
-          <Separator className="mt-[2.5rem] w-[55vw]" />
-
-          <BlurFade delay={0.2 + (1 * 0.05)} inView>
-            <h1 className="text-2xl mt-[2.5rem]">
-              Here&apos;s what people say about <span className="font-bold">mspaint</span>
-            </h1>
-          </BlurFade>
-
-          <BlurFade delay={0.2 + (2 * 0.05)} inView>
-            <ReviewMarquee />
-          </BlurFade>
-
-          <BlurFade delay={0.2 + (3 * 0.05)} inView>
-            <h1 className="text-2xl font-bold  mt-[2.5rem] text-center">
-              FAQ
-            </h1>
-            <p className="text-muted-foreground">The full FAQ is in Discord</p>
-          </BlurFade>
-
-          <BlurFade delay={0.2 + (4 * 0.05)} inView>
-            <Accordion type="single" collapsible className="max-w-[1000px] w-[25vw]">
-              <AccordionItem value="item-1">
-                <AccordionTrigger>Is it free and open source?</AccordionTrigger>
-                <AccordionContent>
-                  <span className="font-bold">Yes</span>, mspaint is free and open source. You can find the source on GitHub.
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="item-2">
-                <AccordionTrigger>Where can I report bugs and suggest features?</AccordionTrigger>
-                <AccordionContent>
-                  You can report bugs and suggest features on the Discord server or in the GitHub repository.
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="item-3">
-                <AccordionTrigger>Does it work on mobile?</AccordionTrigger>
-                <AccordionContent>
-                  Yes. It works on mobile.
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="item-4">
-                <AccordionTrigger>How do i use it?</AccordionTrigger>
-                <AccordionContent>
-                  Download an executor such as <Link href={"https://getsolara.dev"} target="_blank" className="text-blue-300 underline">Solara</Link> and execute the script.
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="item-5">
-                <AccordionTrigger>I can&apos;t close the GUI?</AccordionTrigger>
-                <AccordionContent>
-                  Close out of the GUI by pressing the shift on the right side of your keyboard.
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
-          </BlurFade>
-          
-          <Separator className="mt-[5rem] w-screen" />
-
-          <div className="px-10 py-6 w-screen relative">
-            <div className="bottom-0 left-0 px-2 py-2 absolute flex flex-row items-center gap-2">
-              <Image alt="mspaint" src="/icon.png" width={25} height={25} />
-              <div>
-                <p className="text-xs">mspaint</p>
-                <p className="text-muted-foreground text-xs">Site made by upio</p>
-              </div>
-            </div>
-            <p className="text-muted-foreground text-xs px-2 py-2 text-right bottom-0 right-0 absolute">
-              This software is not affiliated, associated, authorized, endorsed by, or<br />
-              in any way officially connected with Roblox or Microsoft
-              or any of its subsidiaries or its affiliates.</p>
           </div>
+
+          <div className="max-md:block hidden">
+            <div className="relative w-[90vw] flex justify-center items-center">
+              <Iphone15Pro src={"/kardinhong_mobile.png"} />
+            </div>
+          </div>
+        </BlurFade>
+
+        <Separator className="mt-[2.5rem] w-[55vw]" />
+
+        <BlurFade delay={0.2 + (1 * 0.05)} inView>
+          <h1 className="text-2xl mt-[2.5rem] text-center">
+            Here&apos;s what people say about <span className="font-bold">mspaint</span>
+          </h1>
+        </BlurFade>
+
+        <BlurFade delay={0.2 + (2 * 0.05)} inView>
+          <ReviewMarquee />
+        </BlurFade>
+
+        <BlurFade delay={0.2 + (3 * 0.05)} inView>
+          <h1 className="text-2xl font-bold  mt-[2.5rem] text-center">
+            FAQ
+          </h1>
+          <p className="text-muted-foreground">The full FAQ is in Discord</p>
+        </BlurFade>
+
+        <BlurFade delay={0.2 + (4 * 0.05)} inView>
+          <Accordion type="single" collapsible className="max-w-[1000px] w-[50vw] max-md:w-[75vw]">
+            <AccordionItem value="item-1">
+              <AccordionTrigger>Is it free and open source?</AccordionTrigger>
+              <AccordionContent>
+                <span className="font-bold">Yes</span>, mspaint is free and open source. You can find the source on GitHub.
+              </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="item-2">
+              <AccordionTrigger>Where can I report bugs and suggest features?</AccordionTrigger>
+              <AccordionContent>
+                You can report bugs and suggest features on the Discord server or in the GitHub repository.
+              </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="item-3">
+              <AccordionTrigger>Does it work on mobile?</AccordionTrigger>
+              <AccordionContent>
+                Yes. It works on mobile.
+              </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="item-4">
+              <AccordionTrigger>How do i use it?</AccordionTrigger>
+              <AccordionContent>
+                Download an executor such as <Link href={"https://getsolara.dev"} target="_blank" className="text-blue-300 underline">Solara</Link> and execute the script.
+              </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="item-5">
+              <AccordionTrigger>I can&apos;t close the GUI?</AccordionTrigger>
+              <AccordionContent>
+                Close out of the GUI by pressing the shift on the right side of your keyboard.
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        </BlurFade>
+        
+        <Separator className="mt-[5rem] w-screen" />
+
+        <div className="px-10 py-6 w-screen flex flex-row justify-between items-center max-md:justify-center max-md:flex-col">
+          <div className="px-2 py-2 flex flex-row items-center gap-2">
+            <Image alt="mspaint" src="/icon.png" width={25} height={25} />
+            <div>
+              <p className="text-xs">mspaint</p>
+              <p className="text-muted-foreground text-xs">Site made by upio</p>
+            </div>
+          </div>
+          <p className="text-muted-foreground text-xs px-2 py-2 text-right max-md:text-center max-md:mt-5">
+            This software is not affiliated, associated, authorized, endorsed by, or<br />
+            in any way officially connected with Roblox or Microsoft
+            or any of its subsidiaries or its affiliates.</p>
         </div>
       </div>
     </main>

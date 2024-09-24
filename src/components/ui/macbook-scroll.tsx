@@ -70,9 +70,8 @@ export const MacbookScroll = ({
   return (
     <div
       ref={ref}
-      className="min-h-[125vh] flex flex-col items-center py-0 md:py-80 justify-start flex-shrink-0 [perspective:800px] transform md:scale-100  scale-[0.35] sm:scale-50"
+      className="min-h-[125vh] flex flex-col items-center py-0 md:py-80 justify-start flex-shrink-0 [perspective:800px] transform max-md:scale-90 max-sm:scale-70"
     >
-      
       <motion.h2
         style={{
           translateY: textTransform,
@@ -129,26 +128,26 @@ export const MacbookScroll = ({
           Supporting your favorite executors
         </h1>
       </BlurFade>
-      <div className="flex flex-row items-center justify-center mt-5 gap-10">
-        <BlurFade delay={0.2 + (2 * 0.05)} className="flex flex-row items-center justify-center gap-1"  inView>
-          <Image alt="solara" src="/executors/solara.png" width={35} height={35} />
-          <span className="text-lg font-bold">Solara</span>
+      <div className="flex flex-row items-center justify-center mt-5 gap-10 max-md:flex-col">
+        <BlurFade delay={0.2 + (2 * 0.05)} className="flex flex-row items-center justify-center gap-1 max-md:gap-3"  inView>
+          <Image alt="solara" src="/executors/solara.png" width={35} height={35} className="max-md:w-14 max-md:h-14" />
+          <span className="text-lg font-bold max-md:text-3xl">Solara</span>
         </BlurFade>
-        <BlurFade delay={0.2 + (3 * 0.05)} className="flex flex-row items-center justify-center gap-1"  inView>
-          <Image alt="wave" src="/executors/wave.ico" width={30} height={30} />
-          <span className="text-lg font-bold">Wave</span>
+        <BlurFade delay={0.2 + (3 * 0.05)} className="flex flex-row items-center justify-center gap-1 max-md:gap-3"  inView>
+          <Image alt="wave" src="/executors/wave.ico" width={30} height={30} className="max-md:w-14 max-md:h-14" />
+          <span className="text-lg font-bold max-md:text-3xl">Wave</span>
         </BlurFade>
-        <BlurFade delay={0.2 + (4 * 0.05)} className="flex flex-row items-center justify-center gap-1"  inView>
-          <Image alt="synapse z" src="/executors/synz.ico" width={30} height={30} />
-          <span className="text-lg font-bold">Synapse Z</span>
+        <BlurFade delay={0.2 + (4 * 0.05)} className="flex flex-row items-center justify-center gap-1 max-md:gap-3"  inView>
+          <Image alt="synapse z" src="/executors/synz.ico" width={30} height={30} className="max-md:w-14 max-md:h-14" />
+          <span className="text-lg font-bold max-md:text-3xl">Synapse Z</span>
         </BlurFade>
-        <BlurFade delay={0.2 + (5 * 0.05)} className="flex flex-row items-center justify-center gap-1"  inView>
-          <Image alt="macsploit" src="/executors/macsploit.png" width={30} height={30} />
-          <span className="text-lg font-bold">Macsploit</span>
+        <BlurFade delay={0.2 + (5 * 0.05)} className="flex flex-row items-center justify-center gap-1 max-md:gap-3"  inView>
+          <Image alt="macsploit" src="/executors/macsploit.png" width={30} height={30} className="max-md:w-14 max-md:h-14" />
+          <span className="text-lg font-bold max-md:text-3xl">Macsploit</span>
         </BlurFade>
-        <BlurFade delay={0.2 + (6 * 0.05)} className="flex flex-row items-center justify-center gap-1"  inView>
-          <Image alt="codex" src="/executors/codex.png" width={30} height={30} />
-          <span className="text-lg font-bold">Codex</span>
+        <BlurFade delay={0.2 + (6 * 0.05)} className="flex flex-row items-center justify-center gap-1 max-md:gap-3"  inView>
+          <Image alt="codex" src="/executors/codex.png" width={30} height={30} className="max-md:w-20 max-md:h-12" />
+          <span className="text-lg font-bold max-md:text-3xl">Codex</span>
         </BlurFade>
       </div>
       <BlurFade delay={0.2 + (7 * 0.05)}  inView>
