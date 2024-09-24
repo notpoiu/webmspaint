@@ -171,7 +171,7 @@ export default function Home() {
           <div className="px-2 py-2 flex flex-row items-center gap-2">
             <Image alt="mspaint" src="/icon.png" width={25} height={25} />
             <div>
-              <p className="text-xs">mspaint</p>
+              <p className="text-xs text-left">mspaint</p>
               <p className="text-muted-foreground text-xs">Site made by upio</p>
             </div>
           </div>
