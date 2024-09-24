@@ -94,7 +94,7 @@ export default function Home() {
               <NumberTicker value={2000} />
               + people
             </span></span>
-            <span className="text-muted-foreground text-lg">And even by <span className="font-bold text-white">kardin hong</span></span>
+            <span className="text-muted-foreground text-lg">And even by <span className="font-bold text-white">Kardin Hong</span></span>
           </h1>
         </BlurFade>
         <BlurFade delay={0.2 + (2 * 0.05)} inView>
