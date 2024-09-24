@@ -96,7 +96,7 @@ export const MacbookScroll = ({
       </BlurFade>
       
       <BlurFade delay={0.2 + (1 * 0.05)} inView>
-        <h1 className="text-2xl font-bold mt-[5rem]">
+        <h1 className="text-2xl font-bold mt-[5rem] text-center px-5">
           Supporting your favorite executors
         </h1>
       </BlurFade>

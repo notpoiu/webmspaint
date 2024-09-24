@@ -59,12 +59,12 @@ export default function Home() {
               </BlurFade>
 
               <BlurFade delay={0.2 + (2 * 0.05)}>
-                <h1 className="text-6xl font-bold">
+                <h1 className="text-6xl font-bold text-center">
                   mspaint
                 </h1>
               </BlurFade>
               <BlurFade delay={0.2 + (3 * 0.05)}>
-                <p className="text-2xl">
+                <p className="text-2xl text-center">
                   the best <span className="font-bold">free</span> doors script
                 </p>
               </BlurFade>
@@ -87,7 +87,7 @@ export default function Home() {
         />
 
       </div>
-      <div className="flex flex-col items-center justify-center px-2">
+      <div className="flex flex-col items-center justify-center px-2 text-center">
         <BlurFade delay={0.2 + (1 * 0.05)} className="mb-5" inView>
           <h1 className="text-3xl font-bold text-center flex flex-col">
             <span>Used by <span className="font-bold">over{" "}
