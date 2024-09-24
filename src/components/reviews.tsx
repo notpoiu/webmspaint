@@ -116,6 +116,12 @@ const reviews = [
     username: "@sumi8a",
     body: "now i dont get heart attacks by rush, 10/10",
     img: "/pfps/sumi8a.png",
+  },
+  {
+    name: "RegularVynixu",
+    username: "@.vynixu",
+    body: "mspaint is really good, I just want my name on the site 5/5 ⭐",
+    img: "/pfps/vynixu.png",
   }
 ];
 
