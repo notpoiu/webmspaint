@@ -166,12 +166,12 @@ const ReviewCard = ({
 export default function ReviewMarquee() {
   return (
     <div className="relative py-10 flex w-screen flex-col items-center justify-center overflow-hidden bg-background md:shadow-xl text-left">
-      <Marquee className="[--duration:30s]">
+      <Marquee className="[--duration:60s]">
         {firstRow.map((review) => (
           <ReviewCard key={review.username} {...review} />
         ))}
       </Marquee>
-      <Marquee reverse className="[--duration:30s]">
+      <Marquee reverse className="[--duration:60s]">
         {secondRow.map((review) => (
           <ReviewCard key={review.username} {...review} />
         ))}
