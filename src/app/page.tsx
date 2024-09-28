@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/accordion"
 import Image from "next/image";
 import Iphone15Pro from "@/components/magicui/iphone-15-pro";
+//import MSPaintLinoria from "@/components/ui/linorialib/mspaint-linoria";
 
 export default function Home() {
   return (
@@ -128,6 +129,9 @@ export default function Home() {
           showGradient={true}
         />
       </div>
+      
+      {/* LinoriaLib UI <MSPaintLinoria /> */}
+      
       
       <div className="flex flex-col items-center justify-center px-2 text-center">
         <BlurFade delay={0.2 + (1 * 0.05)} className="mb-5" inView>
