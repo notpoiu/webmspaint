@@ -116,10 +116,12 @@ export default function Home() {
                     <span className="text-lg font-bold max-md:text-3xl">Macsploit</span>
                   </BlurFade>
                 </Link>
-                <BlurFade delay={0.2 + (6 * 0.05)} className="flex flex-row items-center justify-center gap-1 max-md:gap-3"  inView>
-                  <Image alt="codex" src="/executors/codex.png" width={30} height={30} className="max-md:w-20 max-md:h-12" />
-                  <span className="text-lg font-bold max-md:text-3xl">Codex</span>
-                </BlurFade>
+                <Link href={"https://seliware.com/"} target="_blank">
+                  <BlurFade delay={0.2 + (6 * 0.05)} className="flex flex-row items-center justify-center gap-1 max-md:gap-3"  inView>
+                    <Image alt="codex" src="/executors/seliware.png" width={30} height={30} className="max-md:w-20 max-md:h-12" />
+                    <span className="text-lg font-bold max-md:text-3xl">Seliware</span>
+                  </BlurFade>
+                </Link>
               </div>
               <BlurFade delay={0.2 + (7 * 0.05)}  inView>
                   <h4 className="text-muted-foreground text-sm mt-5">And many more...</h4>
