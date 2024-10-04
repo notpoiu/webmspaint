@@ -162,6 +162,7 @@ export default function LinoriaUI({
             Side: "Left",
             Groupbox: true,
             CurrentActiveTab: undefined,
+            Elements: {},
             Component: () => { return null; },
             AddToggle: () => { return null; },
           };
@@ -171,6 +172,7 @@ export default function LinoriaUI({
             Side: "Right",
             Groupbox: true,
             CurrentActiveTab: undefined,
+            Elements: {},
             Component: () => { return null; },
             AddToggle: () => { return null; },
           };
@@ -181,6 +183,7 @@ export default function LinoriaUI({
             Groupbox: false,
             CurrentActiveTab: undefined,
             Tabs: {},
+            Elements: {},
             Component: () => { return null; },
             AddToggle: () => { return null; },
             AddTab: () => { return null; },
@@ -192,6 +195,7 @@ export default function LinoriaUI({
             Groupbox: false,
             CurrentActiveTab: undefined,
             Tabs: {},
+            Elements: {},
             Component: () => { return null; },
             AddToggle: () => { return null; },
             AddTab: () => { return null; },
