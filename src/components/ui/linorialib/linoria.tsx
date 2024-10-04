@@ -226,7 +226,7 @@ export default function LinoriaUI({
                 Tooltip: string | undefined,
                 Callback: (value: boolean) => void | undefined,
             }) => {
-                Linoria
+                
     
                 return null;
             },
