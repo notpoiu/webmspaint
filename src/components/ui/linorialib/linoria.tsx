@@ -277,7 +277,6 @@ export default function LinoriaUI({
 
             AddLeftTabbox: (tabboxTitle: string) => {
                 Linoria.Tabs[title].Groupboxes[tabboxTitle] = {
-                    Component: () => { return null; },
                     AddToggle: () => { return null; },
                     Side: "Left",
                     Groupbox: false,
@@ -312,7 +311,6 @@ export default function LinoriaUI({
 
             AddRightTabbox: (tabboxTitle: string) => {
                 Linoria.Tabs[title].Groupboxes[tabboxTitle] = {
-                    Component: () => { return null; },
                     AddToggle: () => { return null; },
                     Side: "Right",
                     Groupbox: false,
