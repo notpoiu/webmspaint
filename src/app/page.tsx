@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/accordion"
 import Image from "next/image";
 import Iphone15Pro from "@/components/magicui/iphone-15-pro";
+import WordRotate from "@/components/ui/word-rotate";
 //import MSPaintLinoria from "@/components/ui/linorialib/mspaint-linoria";
 
 export default function Home() {
@@ -65,9 +66,15 @@ export default function Home() {
                 </h1>
               </BlurFade>
               <BlurFade delay={0.2 + (3 * 0.05)}>
-                <p className="text-2xl text-center">
-                  the best <span className="font-bold">free</span> doors script
-                </p>
+                <div className="text-2xl flex flex-row justify-center items-center  gap-2">
+                  the best <span className="font-bold">free</span>
+                  <WordRotate
+                    words={[
+                      "doors",
+                      "3008",
+                    ]}
+                  />{" "} script
+                </div>
               </BlurFade>
               
               <BlurFade delay={0.2 + (4 * 0.05)}>
