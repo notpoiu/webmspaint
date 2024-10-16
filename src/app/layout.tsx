@@ -27,6 +27,10 @@ export default function RootLayout({
         <ThemeProvider
           attribute="class"
           forcedTheme="dark"
+          defaultTheme="dark"
+          enableSystem={false}
+          disableTransitionOnChange
+          
         >
           {children}
           <Toaster className="z-[5000]" />
