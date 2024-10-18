@@ -4,7 +4,7 @@ A [Next.js](https://nextjs.org/) project that showcases mspaint.
 This site uses [Tailwind CSS](https://tailwindcss.com/) for styling.
 
 ### UI Component Libraries used
-- shadcn/ui - [shadcn.com/ui](https://shadcn.com/ui)
+- shadcn/ui - [shadcn.com/ui](https://ui.shadcn.com/)
 - magicui - [magicui.design](https://magicui.design)
 - Aceternity UI - [ui.aceternity.com](https://ui.aceternity.com)
 
