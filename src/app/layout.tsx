@@ -30,7 +30,6 @@ export default function RootLayout({
           defaultTheme="dark"
           enableSystem={false}
           disableTransitionOnChange
-          
         >
           {children}
           <Toaster className="z-[5000]" />

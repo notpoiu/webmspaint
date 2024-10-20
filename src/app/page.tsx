@@ -217,6 +217,12 @@ export default function Home() {
                 Close out of the GUI by pressing the shift on the right side of your keyboard.
               </AccordionContent>
             </AccordionItem>
+            <AccordionItem value="item-6">
+              <AccordionTrigger>What games are supported?</AccordionTrigger>
+              <AccordionContent>
+                As of right now, DOORS and 3008 are supported.
+              </AccordionContent>
+            </AccordionItem>
           </Accordion>
         </BlurFade>
         
