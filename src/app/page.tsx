@@ -190,36 +190,30 @@ export default function Home() {
         <BlurFade delay={0.2 + (4 * 0.05)} inView>
           <Accordion type="single" collapsible className="max-w-[1000px] w-[50vw] max-md:w-[75vw]">
             <AccordionItem value="item-1">
-              <AccordionTrigger>Is it free and open source?</AccordionTrigger>
-              <AccordionContent>
-                <span className="font-bold">Yes</span>, mspaint is free and open source. You can find the source on GitHub.
-              </AccordionContent>
-            </AccordionItem>
-            <AccordionItem value="item-2">
               <AccordionTrigger>Where can I report bugs and suggest features?</AccordionTrigger>
               <AccordionContent>
                 You can report bugs and suggest features on the Discord server or in the GitHub repository.
               </AccordionContent>
             </AccordionItem>
-            <AccordionItem value="item-3">
+            <AccordionItem value="item-2">
               <AccordionTrigger>Does it work on mobile?</AccordionTrigger>
               <AccordionContent>
                 Yes. It works on mobile.
               </AccordionContent>
             </AccordionItem>
-            <AccordionItem value="item-4">
+            <AccordionItem value="item-3">
               <AccordionTrigger>How do i use it?</AccordionTrigger>
               <AccordionContent>
                 Download an executor such as <Link href={"https://getsolara.dev"} target="_blank" className="text-blue-300 underline">Solara</Link> and execute the script.
               </AccordionContent>
             </AccordionItem>
-            <AccordionItem value="item-5">
+            <AccordionItem value="item-4">
               <AccordionTrigger>I can&apos;t close the GUI?</AccordionTrigger>
               <AccordionContent>
                 Close out of the GUI by pressing the shift on the right side of your keyboard.
               </AccordionContent>
             </AccordionItem>
-            <AccordionItem value="item-6">
+            <AccordionItem value="item-5">
               <AccordionTrigger>What games are supported?</AccordionTrigger>
               <AccordionContent>
                 As of right now, DOORS, 3008, Rooms & Doors and BABFT are supported.
