@@ -21,21 +21,23 @@ export default function Page() {
                 )}
             />
 
-            <div className="flex items-center justify-center w-full h-[calc(100vh-50px)]">
-                <Card className="w-[350px]">
-                    <CardHeader>
-                        <CardTitle>mspaint Key System</CardTitle>
-                    </CardHeader>
-                    <CardFooter className="flex justify-center">
-                        <Link href={"https://ads.luarmor.net/get_key?for=mspaint_key-rXJfopyAkrky"}>
-                            <Button className="mr-2">Linkvertise <Image className="ml-2" src="/icons/linkvertise.png" width={25} height={25} alt="Linkvertise" /></Button>
-                        </Link>
+            <div className="min-h-screen w-full flex items-center justify-center">
+                <div className="flex items-center justify-center">
+                    <Card className="w-[350px]">
+                        <CardHeader>
+                            <CardTitle>mspaint Key System</CardTitle>
+                        </CardHeader>
+                        <CardFooter className="flex justify-center">
+                            <Link href={"https://ads.luarmor.net/get_key?for=mspaint_key-rXJfopyAkrky"}>
+                                <Button className="mr-2">Linkvertise <Image className="ml-2" src="/icons/linkvertise.png" width={25} height={25} alt="Linkvertise" /></Button>
+                            </Link>
 
-                        <Link href={"https://ads.luarmor.net/get_key?for=mspaint_key_lootlabs-nKrOEVsfKDGQ"}>
-                            <Button className="">Lootlabs <Image className="ml-2" src="/icons/lootlabs.png" width={25} height={25} alt="Lootlabs" /></Button>
-                        </Link>
-                    </CardFooter>
-                </Card>
+                            <Link href={"https://ads.luarmor.net/get_key?for=mspaint_key_lootlabs-nKrOEVsfKDGQ"}>
+                                <Button className="">Lootlabs <Image className="ml-2" src="/icons/lootlabs.png" width={25} height={25} alt="Lootlabs" /></Button>
+                            </Link>
+                        </CardFooter>
+                    </Card>
+                </div>
             </div>
         </main>
     );
