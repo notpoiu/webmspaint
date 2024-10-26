@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { MacbookComponent } from "@/components/ui/macbook";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
-import { ArrowRightIcon, GitHubLogoIcon } from "@radix-ui/react-icons";
+import { ArrowRightIcon, DiscordLogoIcon, GitHubLogoIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
 import {
   Accordion,
@@ -44,7 +44,7 @@ export default function Home() {
           title={
             <div className="flex flex-col items-center justify-center">
               <BlurFade delay={0.2 + (1 * 0.05)}>
-                <Link href={"https://github.com/notpoiu/mspaint"} target="_blank">
+                <Link href={"https://discord.gg/mspaint"} target="_blank">
                   <div className="flex mb-2">
                     <div
                       className={cn(
@@ -52,7 +52,7 @@ export default function Home() {
                       )}
                     >
                       <AnimatedShinyText className="inline-flex items-center justify-center px-4 py-1 transition ease-out hover:text-neutral-600 hover:duration-300 hover:dark:text-neutral-400">
-                        <GitHubLogoIcon className="mr-2" /><span>mspaint is open source</span>
+                        <DiscordLogoIcon className="mr-2" /><span>join mspaint discord</span>
                         <ArrowRightIcon className="ml-1 size-3 transition-transform duration-300 ease-in-out group-hover:translate-x-0.5" />
                       </AnimatedShinyText>
                     </div>
@@ -190,6 +190,16 @@ export default function Home() {
         <BlurFade delay={0.2 + (4 * 0.05)} inView>
           <Accordion type="single" collapsible className="max-w-[1000px] w-[50vw] max-md:w-[75vw]">
             <AccordionItem value="item-1">
+              <AccordionTrigger>How do i do the keysystem?</AccordionTrigger>
+              <AccordionContent>
+                We use two providers for the keysystem, linkvertise and lootlabs.<br />
+                <span className="font-bold">Linkvertise: </span> <Link href={"https://ads.luarmor.net/get_key?for=mspaint_key-rXJfopyAkrky"} target="_blank" className="text-blue-300 underline">https://ads.luarmor.net/get_key?for=mspaint_key-rXJfopyAkrky</Link><br />
+                <span className="font-bold">Lootlabs: </span> <Link href={"https://ads.luarmor.net/get_key?for=mspaint_key_lootlabs-nKrOEVsfKDGQ"} target="_blank" className="text-blue-300 underline">https://ads.luarmor.net/get_key?for=mspaint_key_lootlabs-nKrOEVsfKDGQ</Link><br /><br />
+
+                And the tutorial on how to use the keyssystem is here: <Link href={"https://docs.upio.dev/mspaint/key-system"} target="_blank" className="text-blue-300 underline">https://docs.upio.dev/mspaint/key-system</Link>
+              </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="item-2">
               <AccordionTrigger>Where can I report bugs and suggest features?</AccordionTrigger>
               <AccordionContent>
                 You can report bugs and suggest features on the Discord server or in the GitHub repository.
