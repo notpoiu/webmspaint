@@ -67,7 +67,7 @@ export default function Home() {
               </BlurFade>
               <BlurFade delay={0.2 + (3 * 0.05)}>
                 <div className="text-2xl flex flex-row justify-center items-center  gap-2">
-                  the best <span className="font-bold">free</span>
+                  <span className="font-bold">the best</span>{" "}
                   <WordRotate
                     words={[
                       "doors",
