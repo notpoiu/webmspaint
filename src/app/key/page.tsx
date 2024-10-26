@@ -6,7 +6,6 @@ import { Card, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation"
 
 export default function Page() {
     return (
@@ -33,7 +32,7 @@ export default function Page() {
                         </Link>
 
                         <Link href={"https://ads.luarmor.net/get_key?for=mspaint_key_lootlabs-nKrOEVsfKDGQ"}>
-                            <Button className="mr-2">Lootlabs <Image className="ml-2" src="/icons/lootlabs.png" width={25} height={25} alt="Lootlabs" /></Button>
+                            <Button className="">Lootlabs <Image className="ml-2" src="/icons/lootlabs.png" width={25} height={25} alt="Lootlabs" /></Button>
                         </Link>
                     </CardFooter>
                 </Card>
