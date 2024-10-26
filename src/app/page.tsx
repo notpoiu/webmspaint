@@ -143,7 +143,6 @@ export default function Home() {
       
       {/* LinoriaLib UI <MSPaintLinoria /> */}
       
-      
       <div className="flex flex-col items-center justify-center px-2 text-center">
         <BlurFade delay={0.2 + (1 * 0.05)} className="mb-5" inView>
           <h1 className="text-3xl font-bold text-center flex flex-col">
@@ -192,11 +191,7 @@ export default function Home() {
             <AccordionItem value="item-1">
               <AccordionTrigger>How do i do the keysystem?</AccordionTrigger>
               <AccordionContent>
-                We use two providers for the keysystem, linkvertise and lootlabs.<br />
-                <span className="font-bold">Linkvertise: </span> <Link href={"https://ads.luarmor.net/get_key?for=mspaint_key-rXJfopyAkrky"} target="_blank" className="text-blue-300 underline">https://ads.luarmor.net/get_key?for=mspaint_key-rXJfopyAkrky</Link><br />
-                <span className="font-bold">Lootlabs: </span> <Link href={"https://ads.luarmor.net/get_key?for=mspaint_key_lootlabs-nKrOEVsfKDGQ"} target="_blank" className="text-blue-300 underline">https://ads.luarmor.net/get_key?for=mspaint_key_lootlabs-nKrOEVsfKDGQ</Link><br /><br />
-
-                And the tutorial on how to use the keyssystem is here: <Link href={"https://docs.upio.dev/mspaint/key-system"} target="_blank" className="text-blue-300 underline">https://docs.upio.dev/mspaint/key-system</Link>
+                Tutorial on how to use the Key System is here: <Link href={"https://docs.upio.dev/mspaint/key-system"} target="_blank" className="text-blue-300 underline">https://docs.upio.dev/mspaint/key-system</Link>.
               </AccordionContent>
             </AccordionItem>
             <AccordionItem value="item-2">
@@ -205,25 +200,25 @@ export default function Home() {
                 You can report bugs and suggest features on the Discord server or in the GitHub repository.
               </AccordionContent>
             </AccordionItem>
-            <AccordionItem value="item-2">
+            <AccordionItem value="item-3">
               <AccordionTrigger>Does it work on mobile?</AccordionTrigger>
               <AccordionContent>
-                Yes. It works on mobile.
+                Yes. mspaint works on mobile.
               </AccordionContent>
             </AccordionItem>
-            <AccordionItem value="item-3">
+            <AccordionItem value="item-4">
               <AccordionTrigger>How do i use it?</AccordionTrigger>
               <AccordionContent>
                 Download an executor such as <Link href={"https://getsolara.dev"} target="_blank" className="text-blue-300 underline">Solara</Link> and execute the script.
               </AccordionContent>
             </AccordionItem>
-            <AccordionItem value="item-4">
+            <AccordionItem value="item-5">
               <AccordionTrigger>I can&apos;t close the GUI?</AccordionTrigger>
               <AccordionContent>
                 Close out of the GUI by pressing the shift on the right side of your keyboard.
               </AccordionContent>
             </AccordionItem>
-            <AccordionItem value="item-5">
+            <AccordionItem value="item-6">
               <AccordionTrigger>What games are supported?</AccordionTrigger>
               <AccordionContent>
                 As of right now, DOORS, 3008, Rooms & Doors and BABFT are supported.
