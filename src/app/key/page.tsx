@@ -9,7 +9,7 @@ import Link from "next/link";
 
 export default function Page() {
     return (
-        <main className="relative container">
+        <main className="overflow-x-hidden">
             <DotPattern
                 width={20}
                 height={20}
