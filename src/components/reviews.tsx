@@ -46,30 +46,6 @@ const reviews = [
     img: "/pfps/wacky.png",
   },
   {
-    name: "slowwpoke420",
-    username: "@slowwpoke420",
-    body: "Mspaint is just insane the fact that you don't need a key to make it premium is insane it's awesome",
-    img: "/pfps/default_pfp.png",
-  },
-  {
-    name: "RobloxEmployee",
-    username: "@robloxemploye",
-    body: "Mspaint: as good as lolhax for no price",
-    img: "/pfps/rbxlemployee.png",
-  },
-  {
-    name: "JC_Dev",
-    username: "@JC_Dev",
-    body: "Open source script that gives you the features of LOLHAX for free",
-    img: "/pfps/default_pfp.png",
-  },
-  {
-    name: "Checkra1n Master",
-    username: "@checkra1nmaster",
-    body: "this is so amazing it’s better than lolhax for no price!",
-    img: "/pfps/checkrain.png",
-  },
-  {
     name: "Marshel",
     username: "@marshel.",
     body: "zib zib zib zib zib zib zib. Zib zib zib!✅👍",
@@ -78,7 +54,7 @@ const reviews = [
   {
     name: "Bacalhauz",
     username: "@bacalhauz",
-    body: "I can't believe this script is free and open source. Amazing work. You couldn't ask for more than that.",
+    body: "Amazing work. You couldn't ask for more than that.",
     img: "/pfps/bacal.gif",
   },
   {
