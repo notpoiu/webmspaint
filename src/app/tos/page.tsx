@@ -7,6 +7,7 @@ By purchasing and using mspaint products, you agree to the following Terms of Se
 - **No Resale**: You may not resell any mspaint product(s) without express permission.
 - **No Paywalling**: You are prohibited from placing any mspaint product(s) behind a paywall or charging others for access to our products.
 - **No Key Sharing**: Do not share your license keys with others.
+- **No Key System Bypass**: Bypassing or attempting to bypass our key system is strictly prohibited.
 
 ### **Refunds and Chargebacks**
 - **Final Sales**: All purchases are **final**. `mspaint does not offer refunds for any reason.`
@@ -52,6 +53,7 @@ export default function TOS(){
                         <p>- <strong>No Resale</strong>: You may not resell any mspaint product(s) without express permission.</p>
                         <p>- <strong>No Paywalling</strong>: You are prohibited from placing any mspaint product(s) behind a paywall or charging others for access to our products.</p>
                         <p>- <strong>No Key Sharing</strong>: Do not share your license keys with others.</p>
+                        <p>- <strong>No Key System Bypass</strong>: Bypassing or attempting to bypass our key system is strictly prohibited.</p>
                     </div>
                 
                     {/* Refunds and Chargebacks */}
