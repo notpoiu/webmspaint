@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { MacbookComponent } from "@/components/ui/macbook";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
-import { ArrowRightIcon, DiscordLogoIcon, GitHubLogoIcon } from "@radix-ui/react-icons";
+import { ArrowRightIcon, DiscordLogoIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
 import {
   Accordion,
