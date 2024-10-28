@@ -74,6 +74,7 @@ export default function Home() {
                       "3008",
                       "R&D",
                       "BABFT",
+                      "Pressure"
                     ]}
                   />{" "} script
                 </div>
@@ -221,7 +222,7 @@ export default function Home() {
             <AccordionItem value="item-6">
               <AccordionTrigger>What games are supported?</AccordionTrigger>
               <AccordionContent>
-                As of right now, DOORS, 3008, Rooms & Doors and BABFT are supported.
+                As of right now, DOORS, 3008, Rooms & Doors, Pressure and BABFT are supported.
               </AccordionContent>
             </AccordionItem>
           </Accordion>
