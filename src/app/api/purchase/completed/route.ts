@@ -16,7 +16,7 @@ function createSerial() {
 }
 
 export async function GET(request: NextRequest) {
-    if (!request.ip && !isDev) {
+    if (isDev ? false : !request.ip) {
         return NextResponse.json({
             status: 400,
             error: "bad request (ip not found), please contact support (https://discord.gg/Q6gHakV36z)"
