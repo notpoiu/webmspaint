@@ -29,7 +29,7 @@ export default async function Page({
     }
 
     return (
-        <main className="flex justify-center">
+        <main className="flex justify-center items-center">
             <Card className="max-w-[475px]">
                 <CardHeader>
                     <CardTitle>mspaint key purchase successful!</CardTitle>
