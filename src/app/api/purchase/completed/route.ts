@@ -16,6 +16,7 @@ function createSerial() {
 }
 
 export async function GET(request: NextRequest) {
+    console.log(request.ip);
     if (isDev ? false : !request.ip) {
         return NextResponse.json({
             status: 400,
