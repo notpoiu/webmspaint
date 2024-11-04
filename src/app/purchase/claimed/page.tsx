@@ -7,7 +7,7 @@ import { useSearchParams } from "next/navigation";
 import { Suspense, useRef } from "react";
 import CopyButton from "@/components/copy-button";
 
-export function ClaimedPage() {
+function ClaimedPage() {
     const confettiRef = useRef<ConfettiRef>(null);
     const searchParams = useSearchParams();
 
