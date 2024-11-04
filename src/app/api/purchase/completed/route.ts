@@ -17,6 +17,12 @@ function createSerial() {
 }
 
 async function getIp(headersList: Headers, request: NextRequest) {
+    const cloudflareIP = headersList.get("cf-connecting-ip");
+    if (cloudflareIP) return cloudflareIP;
+
+    const mspaintIP = headersList.get("x-mspaint-ip");
+    if (mspaintIP && mspaintIP !== "") return mspaintIP;
+
     const vercelIP = ipAddress(request);
     if (vercelIP) return vercelIP;
 
