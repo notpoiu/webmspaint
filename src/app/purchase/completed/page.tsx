@@ -29,7 +29,7 @@ export default async function Page({
     }
 
     return (
-        <main className="flex justify-center items-center">
+        <main className="flex justify-center items-center flex-col">
             <Card className="max-w-[475px]">
                 <CardHeader>
                     <CardTitle>mspaint key purchase successful!</CardTitle>
@@ -79,6 +79,9 @@ export default async function Page({
                     )}
                 </CardContent>
             </Card>
+            <p className="text-sm mt-2">
+                <span className="text-muted-foreground">Order ID:</span> {rows[0].order_id}
+            </p>
         </main>
     )
 }
