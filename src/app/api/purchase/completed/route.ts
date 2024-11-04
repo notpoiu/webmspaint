@@ -17,9 +17,13 @@ function createSerial() {
 
 export async function GET(request: NextRequest) {
     const request_ip = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || request.ip;
-    console.log("GET /api/purchase/completed");
-    console.log(request_ip);
-    
+    let ipAddress = request.headers.get("x-real-ip") as string;
+
+    const forwardedFor = request.headers.get("x-forwarded-for") as string;
+    if (!ipAddress && forwardedFor) {
+        ipAddress = forwardedFor?.split(",").at(0) ?? "Unknown";
+    }
+    console.log(ipAddress);
     if (isDev ? false : !request_ip) {
         return NextResponse.json({
             status: 400,
