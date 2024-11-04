@@ -34,7 +34,7 @@ async function getIp(headersList: Headers, request: NextRequest) {
 }
 
 export async function GET(request: NextRequest) {
-    const request_ip = getIp(request.headers, request);
+    const request_ip = await getIp(request.headers, request);
     console.log("GET /purchase/completed", request_ip);
     if (isDev ? false : !request_ip) {
         return NextResponse.json({
