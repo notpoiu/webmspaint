@@ -16,15 +16,17 @@ function createSerial() {
 }
 
 export async function GET(request: NextRequest) {
-    console.log(request.ip);
-    if (isDev ? false : !request.ip) {
+    const request_ip = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || request.ip;
+    console.log("GET /api/purchase/completed");
+    console.log(request_ip);
+    
+    if (isDev ? false : !request_ip) {
         return NextResponse.json({
             status: 400,
             error: "bad request (ip not found), please contact support (https://discord.gg/Q6gHakV36z)"
         })
     }
 
-    const request_ip = request.ip || "127.0.0.1";
     const order_id = request.nextUrl.searchParams.get("order_id");
     const order_email = request.nextUrl.searchParams.get("email");
 
