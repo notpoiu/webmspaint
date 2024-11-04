@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { sql } from "@vercel/postgres";
 import { redirect } from "next/navigation";
+import { ipAddress } from "@vercel/edge";
 
 const isDev = process.env.NODE_ENV === "development";
 
@@ -15,15 +16,26 @@ function createSerial() {
     return serial;
 }
 
-export async function GET(request: NextRequest) {
-    const request_ip = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || request.ip;
-    let ipAddress = request.headers.get("x-real-ip") as string;
+async function getIp(headersList: Headers, request: NextRequest) {
+    const vercelIP = ipAddress(request);
+    if (vercelIP) return vercelIP;
 
-    const forwardedFor = request.headers.get("x-forwarded-for") as string;
-    if (!ipAddress && forwardedFor) {
-        ipAddress = forwardedFor?.split(",").at(0) ?? "Unknown";
+    if (request) {
+        if (request.ip) return request.ip;
     }
-    console.log(ipAddress);
+
+    const forwarded = headersList.get("x-forwarded-for");
+    const realIp = headersList.get("x-real-ip");
+
+    if (forwarded) return forwarded.split(",")[0].trim();
+    if (realIp) return realIp.trim();
+    
+    return undefined;
+}
+
+export async function GET(request: NextRequest) {
+    const request_ip = getIp(request.headers, request);
+    console.log("GET /purchase/completed", request_ip);
     if (isDev ? false : !request_ip) {
         return NextResponse.json({
             status: 400,
