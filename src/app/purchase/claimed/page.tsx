@@ -4,10 +4,10 @@ import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "@/comp
 import Confetti, { ConfettiRef } from "@/components/ui/confetti";
 import { CodeBlock, nord } from "react-code-blocks";
 import { useSearchParams } from "next/navigation";
-import { useRef } from "react";
+import { Suspense, useRef } from "react";
 import CopyButton from "@/components/copy-button";
 
-export default function ClaimedPage() {
+export function ClaimedPage() {
     const confettiRef = useRef<ConfettiRef>(null);
     const searchParams = useSearchParams();
 
@@ -41,5 +41,13 @@ export default function ClaimedPage() {
                 </Card>
             </div>
         </>
+    )
+}
+
+export default function WrapperClaimedPage() {
+    return (
+        <Suspense>
+            <ClaimedPage />
+        </Suspense>
     )
 }
