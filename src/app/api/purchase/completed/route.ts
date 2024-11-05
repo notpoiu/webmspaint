@@ -67,6 +67,14 @@ export async function GET(request: NextRequest) {
         },
     })
 
+    const deliverablesResponse = await fetch(`https://sell.app/api/v2/invoices/${order_id}/deliverables`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + process.env.SELLAPP_API_KEY
+        }
+    })
+
     if (!response.ok) {
         return NextResponse.json({
             status: 500,
@@ -75,6 +83,8 @@ export async function GET(request: NextRequest) {
     }
 
     const invoice = await response.json();
+    const deliverables = await deliverablesResponse.json();
+
     const invoiceData = invoice.data;
     if (invoiceData.customer_information.email !== order_email || invoiceData.status.status.status !== "COMPLETED" || (!isDev && invoiceData.customer_information.ip !== request_ip)) {
         return NextResponse.json({
@@ -93,8 +103,13 @@ export async function GET(request: NextRequest) {
         })
     }
 
-    const serial = createSerial();
-    await sql`INSERT INTO mspaint_keys (serial, order_id, claimed) VALUES (${serial}, ${order_id}, false);`
+    const createdSerials = [];
 
-    return redirect("/purchase/completed?serial=" + serial);
+    for (let i = 0; i < deliverables.data[0].quantity; i++) {
+        const serial = createSerial();
+        await sql`INSERT INTO mspaint_keys (serial, order_id, claimed) VALUES (${serial}, ${order_id}, false);`;
+        createdSerials.push(serial);
+    }
+    
+    return redirect("/purchase/completed?serial=" + encodeURIComponent(createdSerials.join(",")));
 }
