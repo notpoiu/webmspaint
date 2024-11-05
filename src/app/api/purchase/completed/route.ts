@@ -50,10 +50,6 @@ export async function POST(request: NextRequest) {
     console.log("Calculated hash:", hash);
     console.log("Payload:", payload);
 
-    request.headers.forEach((value, key) => {
-        console.log(key, value);
-    });
-
     if (hash === signature) {
         const data = await request.json();
         
