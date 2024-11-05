@@ -117,7 +117,7 @@ export async function GET(request: NextRequest) {
         })
     }
 
-    await sql`CREATE TABLE IF NOT EXISTS mspaint_keys ( serial TEXT PRIMARY KEY, order_id TEXT NOT NULL, claimed BOOL );`
+    await sql`CREATE TABLE IF NOT EXISTS mspaint_keys ( serial TEXT PRIMARY KEY, order_id TEXT NOT NULL, claimed BOOL, claimed_discord_id TEXT, lrm_serial TEXT );`
     const { rows } = await sql`SELECT * FROM mspaint_keys WHERE order_id = ${order_id};`
 
     let claimedCount = 0;

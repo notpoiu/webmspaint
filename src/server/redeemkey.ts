@@ -68,8 +68,8 @@ export async function RedeemKey(serial: string, user_id: string) {
             error: keyCreation.message
         }
     }
-
-    await sql`UPDATE mspaint_keys SET claimed = true WHERE serial = ${serial}`;
+    
+    await sql`UPDATE mspaint_keys SET claimed = true, claimed_discord_id = ${user_id}, lrm_serial = ${keyCreation.user_key} WHERE serial = ${serial}`;
     return {
         status: 200,
         success: "key redeemed successfully",
