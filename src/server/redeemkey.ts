@@ -12,7 +12,7 @@ export async function RedeemKey(serial: string, user_id: string) {
 
     const { rows } = await sql`SELECT * FROM mspaint_keys WHERE serial = ${serial}`;
 
-    if (rows.length === 0) {
+    if (rows.length === 0 || rows[0].claimed === true) {
         return {
             status: 404,
             error: "key not found"
