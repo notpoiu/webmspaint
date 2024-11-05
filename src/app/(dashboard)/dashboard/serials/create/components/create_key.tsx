@@ -73,6 +73,10 @@ export default function CreateSerialKey() {
                             toast.promise(GenerateSerial(), {
                                 loading: "Generating serial key...",
                                 success: (serial) => {
+                                    if (typeof serial !== "string") {
+                                        throw new Error("Failed to generate serial key.");
+                                    }
+
                                     setNewKey(serial);
                                     return "Serial key generated!";
                                 },
