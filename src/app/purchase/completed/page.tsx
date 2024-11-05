@@ -34,7 +34,7 @@ export default async function Page({
         const serial = serials[0];
         const { rows } = await sql`SELECT * FROM mspaint_keys WHERE serial = ${serial}`;
     
-        if (rows.length === 0) {
+        if (rows.length === 0 || rows[0].claimed === true) {
             return notFound();
         }
     
