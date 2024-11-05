@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { sql } from "@vercel/postgres";
 import { redirect } from "next/navigation";
-import { ipAddress } from "@vercel/edge";
+import { ipAddress } from "@vercel/functions";
 
 const isDev = process.env.NODE_ENV === "development";
 
@@ -37,6 +37,11 @@ async function getIp(headersList: Headers, request: NextRequest) {
     if (realIp) return realIp.trim();
     
     return undefined;
+}
+
+export async function POST(request: NextRequest) {
+    const data = await request.json();
+    return new Response(`Thank you for purchasing ${data.quantity} mspaint key(s)!\nYou can redeem your serial(s) at https://mspaint.upio.dev/api/purchase/completed?order_id=${data.invoice.id}&email=${data.invoice.customer_information.email}\n\nMake sure to keep this link safe, as it is the only way to redeem your key(s).`);
 }
 
 export async function GET(request: NextRequest) {
@@ -96,11 +101,15 @@ export async function GET(request: NextRequest) {
     await sql`CREATE TABLE IF NOT EXISTS mspaint_keys ( serial TEXT PRIMARY KEY, order_id TEXT NOT NULL, claimed BOOL );`
     const { rows } = await sql`SELECT * FROM mspaint_keys WHERE order_id = ${order_id};`
 
-    if (rows.length > 0) {
-        return NextResponse.json({
-            status: 400,
-            error: "bad request (order_id already claimed), please contact support (https://discord.gg/Q6gHakV36z)"
-        })
+    let claimedCount = 0;
+    for (const row of rows) {
+        if (row.claimed) { claimedCount++; }
+    }
+
+    const isAllClaimed = (claimedCount === deliverables.data[0].quantity);
+
+    if (rows.length > 0 && !isAllClaimed) {
+        return redirect("/purchase/completed?serial=" + encodeURIComponent(rows.map(row => row.serial).join(",")));
     }
 
     const createdSerials = [];
