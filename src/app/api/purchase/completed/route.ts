@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { sql } from "@vercel/postgres";
 import { redirect } from "next/navigation";
 import { ipAddress } from "@vercel/functions";
+import crypto from "crypto";
 
 const isDev = process.env.NODE_ENV === "development";
 
@@ -40,8 +41,25 @@ async function getIp(headersList: Headers, request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-    const data = await request.json();
-    return new Response(`Thank you for purchasing ${data.quantity} mspaint key(s)!\nYou can redeem your serial(s) at https://mspaint.upio.dev/api/purchase/completed?order_id=${data.invoice.id}&email=${data.invoice.customer_information.email}\n\nMake sure to keep this link safe, as it is the only way to redeem your key(s).`);
+    const payload = await request.text();
+    const signature = request.headers.get("signature");
+    const hash = crypto.createHmac('sha256', process.env.SELLAPP_WEBHOOK_SECRET ?? "sigma").update(payload).digest('hex')
+
+    if (hash === signature) {
+        const data = await request.json();
+        
+        const createdSerials = [];
+    
+        for (let i = 0; i < data.quantity; i++) {
+            const serial = createSerial();
+            await sql`INSERT INTO mspaint_keys (serial, order_id, claimed) VALUES (${serial}, ${data.invoice.id}, false);`;
+            createdSerials.push(serial);
+        }
+    
+        return new Response(`Thank you for purchasing ${data.quantity} mspaint key(s)!\nYou can redeem your serial(s) at https://mspaint.upio.dev/purchase/completed?serial=${encodeURIComponent(createdSerials.join(","))}\n\nMake sure to keep this link safe, as it is the only way to redeem your key(s).`);
+    } else {
+        return new Response("invalid signature");
+    }
 }
 
 export async function GET(request: NextRequest) {
@@ -112,13 +130,8 @@ export async function GET(request: NextRequest) {
         return redirect("/purchase/completed?serial=" + encodeURIComponent(rows.map(row => row.serial).join(",")));
     }
 
-    const createdSerials = [];
-
-    for (let i = 0; i < deliverables.data[0].quantity; i++) {
-        const serial = createSerial();
-        await sql`INSERT INTO mspaint_keys (serial, order_id, claimed) VALUES (${serial}, ${order_id}, false);`;
-        createdSerials.push(serial);
-    }
-    
-    return redirect("/purchase/completed?serial=" + encodeURIComponent(createdSerials.join(",")));
+    return NextResponse.json({
+        status: 400,
+        error: "bad request (all keys claimed), please contact support (https://discord.gg/Q6gHakV36z)"
+    })
 }
