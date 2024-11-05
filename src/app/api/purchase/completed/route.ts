@@ -43,22 +43,26 @@ async function getIp(headersList: Headers, request: NextRequest) {
 export async function POST(request: NextRequest) {
     const payload = await request.text();
     const signature = request.headers.get("signature");
-    const hash = crypto.createHmac('sha256', process.env.SELLAPP_WEBHOOK_SECRET ?? "sigma").update(payload).digest('hex')
+    const secret = process.env.SELLAPP_WEBHOOK_SECRET ?? "sigma";
+    const hash = crypto.createHmac('sha256', secret).update(payload).digest('hex');
+
+    console.log("Signature from header:", signature);
+    console.log("Calculated hash:", hash);
+    console.log("Payload:", payload);
 
     if (hash === signature) {
         const data = await request.json();
         
         const createdSerials = [];
-    
         for (let i = 0; i < data.quantity; i++) {
             const serial = createSerial();
             await sql`INSERT INTO mspaint_keys (serial, order_id, claimed) VALUES (${serial}, ${data.invoice.id}, false);`;
             createdSerials.push(serial);
         }
-    
-        return new Response(`Thank you for purchasing ${data.quantity} mspaint key(s)!\nYou can redeem your serial(s) at https://mspaint.upio.dev/purchase/completed?serial=${encodeURIComponent(createdSerials.join(","))}\n\nMake sure to keep this link safe, as it is the only way to redeem your key(s).`);
+
+        return new Response(`Thank you for purchasing ${data.quantity} mspaint key(s)!\nYou can redeem your serial(s) at https://mspaint.com/redeem`);
     } else {
-        return new Response("invalid signature");
+        return new Response("Invalid signature");
     }
 }
 
