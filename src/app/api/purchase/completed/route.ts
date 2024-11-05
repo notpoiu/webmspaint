@@ -46,12 +46,8 @@ export async function POST(request: NextRequest) {
     const secret = process.env.SELLAPP_WEBHOOK_SECRET ?? "sigma";
     const hash = crypto.createHmac('sha256', secret).update(payload).digest('hex');
 
-    console.log("Signature from header:", signature);
-    console.log("Calculated hash:", hash);
-    console.log("Payload:", payload);
-
     if (hash === signature) {
-        const data = await request.json();
+        const data = JSON.parse(payload);
         
         const createdSerials = [];
         for (let i = 0; i < data.quantity; i++) {
