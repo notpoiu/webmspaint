@@ -50,13 +50,14 @@ export async function POST(request: NextRequest) {
         const data = JSON.parse(payload);
         
         const createdSerials = [];
+    
         for (let i = 0; i < data.quantity; i++) {
             const serial = createSerial();
             await sql`INSERT INTO mspaint_keys (serial, order_id, claimed) VALUES (${serial}, ${data.invoice.id}, false);`;
             createdSerials.push(serial);
         }
-
-        return new Response(`Thank you for purchasing ${data.quantity} mspaint key(s)!\nYou can redeem your serial(s) at https://mspaint.com/redeem`);
+        
+        return new Response(`Thank you for purchasing ${data.quantity} mspaint key(s)!\nYou can redeem your serial(s) at https://mspaint.upio.dev/purchase/completed?serial=${encodeURIComponent(createdSerials.join(","))}\n\nMake sure to keep this link safe, as it is the only way to redeem your key(s).`);
     } else {
         return new Response("Invalid signature");
     }
