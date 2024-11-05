@@ -1,6 +1,7 @@
 "use server";
 
 import { sql } from "@vercel/postgres";
+import { isUserAllowedOnDashboard } from "./authutils";
 
 export async function RedeemKey(serial: string, user_id: string) {
     if (user_id === "skibidiSigma") {
@@ -68,11 +69,39 @@ export async function RedeemKey(serial: string, user_id: string) {
             error: keyCreation.message
         }
     }
-    
+
     await sql`UPDATE mspaint_keys SET claimed = true, claimed_discord_id = ${user_id}, lrm_serial = ${keyCreation.user_key} WHERE serial = ${serial}`;
     return {
         status: 200,
         success: "key redeemed successfully",
         user_key: keyCreation.user_key
     };
+}
+
+function _internal_create_serial() {
+    const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    let serial = "";
+
+    for (let i = 0; i < 16; i++) {
+        serial += characters.charAt(Math.floor(Math.random() * characters.length));
+    }
+
+    return serial;
+}
+
+export async function GenerateSerial() {
+    const allowed = await isUserAllowedOnDashboard();
+
+    if (!allowed) {
+        return {
+            status: 403,
+            error: "nah"
+        }
+    }
+
+    const serial = _internal_create_serial();
+    const invoiceID = "REPLACEMENT";
+    await sql`INSERT INTO mspaint_keys (serial, order_id, claimed) VALUES (${serial}, ${invoiceID}, false);`;
+
+    return serial;
 }
