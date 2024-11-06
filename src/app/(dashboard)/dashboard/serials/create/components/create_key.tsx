@@ -59,7 +59,7 @@ export default function CreateSerialKey() {
                     </>
                 ) : (
                     <>
-                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                        <AlertDialogTitle>Serial Creation</AlertDialogTitle>
                         <AlertDialogDescription>
                             You sure you want to create a new serial key lil bro?
                         </AlertDialogDescription>
