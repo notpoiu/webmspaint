@@ -15,6 +15,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { GenerateSerial } from "@/server/redeemkey";
+import { DownloadIcon } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -86,6 +87,22 @@ export default function CreateSerialKey() {
             <AlertDialogFooter>
                 {new_key ? (
                     <>
+                        <Button onClick={() => {
+                            let serial = "";
+
+                            for (let i = 0; i < new_key.length; i++) {
+                                serial += `https://mspaint.upio.dev/purchase/completed?serial=${new_key[i]}\n`;
+                            }
+
+                            const blob = new Blob([serial], { type: "text/plain" });
+                            const url = URL.createObjectURL(blob);
+                            const a = document.createElement("a");
+                            a.href = url;
+                            a.download = "serials.txt";
+                            a.click();
+                            URL.revokeObjectURL(url);
+                            toast.success("Serial key downloaded!");
+                        }} className="mb-2" variant={"secondary"}>Download Serials <DownloadIcon/></Button>
                         <AlertDialogCancel onClick={() => {
                             setIsOpen(false);
                             setNewKey(null);
