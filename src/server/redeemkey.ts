@@ -89,7 +89,7 @@ function _internal_create_serial() {
     return serial;
 }
 
-export async function GenerateSerial() {
+export async function GenerateSerial(invoiceID: string | null, amount: number) {
     const allowed = await isUserAllowedOnDashboard();
 
     if (!allowed) {
@@ -99,9 +99,34 @@ export async function GenerateSerial() {
         }
     }
 
-    const serial = _internal_create_serial();
-    const invoiceID = "REPLACEMENT";
-    await sql`INSERT INTO mspaint_keys (serial, order_id, claimed) VALUES (${serial}, ${invoiceID}, false);`;
+    let actualInvoiceId = invoiceID;
 
-    return serial;
+    if (typeof invoiceID === "string") {
+        if (actualInvoiceId?.trim() === "") { actualInvoiceId = "REPLACEMENT" }
+    } else if (invoiceID === null) {
+        actualInvoiceId = "REPLACEMENT";
+    }
+
+    if (amount < 1) {
+        return {
+            status: 400,
+            error: "amount must be greater than 0"
+        }
+    }
+
+    if (amount > 50) {
+        return {
+            status: 400,
+            error: "amount must be less than 50"
+        }
+    }
+
+    const serials = [];
+    for (let i = 0; i < amount; i++) {
+        const serial = _internal_create_serial();
+        await sql`INSERT INTO mspaint_keys (serial, order_id, claimed) VALUES (${serial}, ${actualInvoiceId}, false);`;
+        serials.push(serial);
+    }
+
+    return serials;
 }
