@@ -57,7 +57,7 @@ export async function RedeemKey(serial: string, user_id: string) {
         headers: LRM_Headers,
         body: JSON.stringify({
             discord_id: user_id,
-            note: "Lifetime key sellapp - " + serial,
+            note: (rows[0].order_id ?? "Lifetime key sellapp") + " - " + serial,
         })
     })
 
