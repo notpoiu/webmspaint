@@ -1,6 +1,5 @@
 import { auth } from "@/auth";
 import { AppSidebar } from "@/components/app-sidebar";
-import GreetingDashText from "@/components/greeting";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -16,6 +15,8 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { redirect } from "next/navigation";
+import { SerialDataTable, SerialDef } from "./table/serialtable";
+import { sql } from "@vercel/postgres";
 
 export default async function Page() {
     const session = await auth();
@@ -23,6 +24,8 @@ export default async function Page() {
     if (!session || !session.user) {
         return redirect("/signin");
     }
+
+    const { rows } = await sql`SELECT * FROM mspaint_keys`;
 
     return (
         <SidebarProvider>
@@ -58,8 +61,7 @@ export default async function Page() {
             </div>
             </header>
             <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-                <GreetingDashText name={session.user.name ?? "unknown"} />
-                <p>Welcome to mspaint web dashboard!</p>
+                <SerialDataTable data={rows as SerialDef[]} />
             </div>
         </SidebarInset>
         </SidebarProvider>

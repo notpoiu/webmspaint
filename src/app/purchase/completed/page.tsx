@@ -39,7 +39,7 @@ export default async function Page({
         }
     
         return (
-            <main className="flex justify-center items-center flex-col">
+            <main className="flex justify-center items-center flex-col h-screen">
                 <Card className="max-w-[475px]">
                     <CardHeader>
                         <CardTitle>mspaint key purchase successful!</CardTitle>

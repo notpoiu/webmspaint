@@ -130,3 +130,43 @@ export async function GenerateSerial(invoiceID: string | null, amount: number) {
 
     return serials;
 }
+
+export async function DeleteSerial(serial: string) {
+    const allowed = await isUserAllowedOnDashboard();
+
+    if (!allowed) {
+        return {
+            status: 403,
+            error: "nah"
+        }
+    }
+
+    const { rows } = await sql`SELECT * FROM mspaint_keys WHERE serial = ${serial}`;
+
+    if (rows.length === 0) {
+        return {
+            status: 404,
+            error: "key not found"
+        }
+    }
+
+    await sql`DELETE FROM mspaint_keys WHERE serial = ${serial}`;
+    return {
+        status: 200,
+        success: "key deleted successfully"
+    }
+}
+
+export async function GetAllSerialData() {
+    const allowed = await isUserAllowedOnDashboard();
+
+    if (!allowed) {
+        return {
+            status: 403,
+            error: "nah"
+        }
+    }
+
+    const { rows } = await sql`SELECT * FROM mspaint_keys`;
+    return rows;
+}
