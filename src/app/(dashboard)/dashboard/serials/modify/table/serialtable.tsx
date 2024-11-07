@@ -100,7 +100,7 @@ export function SerialDataTable({
         accessorKey: "lrm_serial",
         header: "LRM serial",
         cell: ({ row }) => {
-          const lrm_serial = row.getValue("lrm_serial");
+          const lrm_serial = row.original.lrm_serial;
 
           return (
             <span className={cn(lrm_serial ? "" : "text-muted-foreground")}>
@@ -113,7 +113,7 @@ export function SerialDataTable({
         accessorKey: "claimed_discord_id",
         header: "Discord ID",
         cell: ({ row }) => {
-          const discord_id = row.getValue("claimed_discord_id");
+          const discord_id = row.original.claimed_discord_id;
 
           return (
             <span className={cn(discord_id ? "" : "text-muted-foreground")}>
@@ -126,7 +126,7 @@ export function SerialDataTable({
           accessorKey: "claimed",
           header: () => <p className="text-center">Status</p>,
           cell: ({ row }) => {
-            const amount = row.getValue("claimed");
+            const amount = row.original.claimed;
             return (
               <div className="flex justify-center items-center">
                 <Badge variant={amount ? "outline" : "default"} className="justify-center">{amount ? "Claimed" : "Unclaimed"}</Badge>
@@ -235,7 +235,7 @@ export function SerialDataTable({
               toast.promise(DeleteSerial(selectedSerial?.serial ?? ""), {
                 loading: "Deleting...",
                 success: (resp) => {
-                  if (resp.success) {
+                  if (resp.status == 200) {
                     refreshData();
                     return "Serial deleted.";
                   } else {
