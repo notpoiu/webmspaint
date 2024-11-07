@@ -100,7 +100,7 @@ export function SerialDataTable({
         accessorKey: "lrm_serial",
         header: "LRM serial",
         cell: ({ row }) => {
-          const lrm_serial = row.original.lrm_serial;
+          const lrm_serial = row.getValue("lrm_serial");
 
           return (
             <span className={cn(lrm_serial ? "" : "text-muted-foreground")}>
@@ -113,7 +113,7 @@ export function SerialDataTable({
         accessorKey: "claimed_discord_id",
         header: "Discord ID",
         cell: ({ row }) => {
-          const discord_id = row.original.claimed_discord_id;
+          const discord_id = row.getValue("claimed_discord_id");
 
           return (
             <span className={cn(discord_id ? "" : "text-muted-foreground")}>
@@ -126,7 +126,7 @@ export function SerialDataTable({
           accessorKey: "claimed",
           header: () => <p className="text-center">Status</p>,
           cell: ({ row }) => {
-            const amount = row.original.claimed;
+            const amount = row.getValue("claimed");
             return (
               <div className="flex justify-center items-center">
                 <Badge variant={amount ? "outline" : "default"} className="justify-center">{amount ? "Claimed" : "Unclaimed"}</Badge>
@@ -138,8 +138,6 @@ export function SerialDataTable({
         id: "actions",
         enableHiding: false,
         cell: ({ row }) => {
-          setSelectedSerial(row.original);
-
           return (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -150,32 +148,34 @@ export function SerialDataTable({
               </DropdownMenuTrigger>
               <DropdownMenuContent>
                 <DropdownMenuItem onClick={() => {
-                  navigator.clipboard.writeText(selectedSerial?.serial ?? "");
+                  navigator.clipboard.writeText(row.original.serial ?? "");
                   toast.success("Serial copied to clipboard.");
                 }}>Copy Serial</DropdownMenuItem>
                 {selectedSerial?.lrm_serial && (
                   <DropdownMenuItem onClick={() => {
-                    navigator.clipboard.writeText(selectedSerial?.lrm_serial ?? "");
+                    navigator.clipboard.writeText(row.original.lrm_serial ?? "");
                     toast.success("Luarmor Key copied to clipboard.");
                   }}>Copy Luarmor Key</DropdownMenuItem>
                 )}
 
                 {selectedSerial?.claimed_discord_id && (
                   <DropdownMenuItem onClick={() => {
-                    navigator.clipboard.writeText(selectedSerial?.claimed_discord_id ?? "");
+                    navigator.clipboard.writeText(row.original.claimed_discord_id ?? "");
                     toast.success("Discord ID copied to clipboard.");
                   }}>Copy Discord ID</DropdownMenuItem>
                 )}
 
                 <DropdownMenuItem onClick={() => {
-                  navigator.clipboard.writeText(selectedSerial?.order_id ?? "");
+                  navigator.clipboard.writeText(row.original.order_id ?? "");
                   toast.success("Order ID copied to clipboard.");
                 }}>Copy Order ID</DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={() => {
+                  setSelectedSerial(row.original);
                   setSerialEditOpen(true);
                 }}>Edit</DropdownMenuItem>
                 <DropdownMenuItem className="text-red-500" onClick={() => {
+                  setSelectedSerial(row.original);
                   setSerialDeleteOpen(true);
                 }}>Delete</DropdownMenuItem>
               </DropdownMenuContent>
