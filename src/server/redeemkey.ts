@@ -71,6 +71,49 @@ export async function RedeemKey(serial: string, user_id: string) {
     }
 
     await sql`UPDATE mspaint_keys SET claimed = true, claimed_discord_id = ${user_id}, lrm_serial = ${keyCreation.user_key} WHERE serial = ${serial}`;
+    
+    if ((rows[0].order_id as string).toLowerCase().includes("bloxproducts")) {
+        await fetch(`${process.env.BLOXPRODUCTS_WEBHOOK}`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                "content": null,
+                "embeds": [
+                  {
+                    "title": "BLOXPRODUCTS - mspaint key purchased",
+                    "description": "a key was purchased & redeemed via the bloxproducts.",
+                    "color": 5814783,
+                    "fields": [
+                      {
+                        "name": "mspaint serial",
+                        "value": `||${serial}||`,
+                        "inline": true
+                      },
+                      {
+                        "name": "Order ID",
+                        "value": `||${rows[0].order_id}||`,
+                        "inline": true
+                      },
+                      {
+                        "name": "Discord",
+                        "value": `<@${user_id}> (${user_id})`,
+                        "inline": true
+                      },
+                      {
+                        "name": "Luarmor Serial",
+                        "value":`||${keyCreation.user_key}||`,
+                        "inline": true
+                      }
+                    ]
+                  }
+                ],
+                "attachments": []
+            })
+        })
+    }
+    
     return {
         status: 200,
         success: "key redeemed successfully",
