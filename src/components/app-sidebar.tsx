@@ -47,7 +47,7 @@ export function AppSidebar({ session_data }: { session_data: {
 } }) {
   return (
     <Sidebar variant="inset">
-      <SidebarHeader>
+      <SidebarHeader className="bg-black">
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
@@ -67,7 +67,7 @@ export function AppSidebar({ session_data }: { session_data: {
       <SidebarContent className="bg-black">
         <NavMain title="Serial Managment" items={data.navMain} />
       </SidebarContent>
-      <SidebarFooter>
+      <SidebarFooter className="bg-black">
         <NavUser user={session_data} />
       </SidebarFooter>
     </Sidebar>
