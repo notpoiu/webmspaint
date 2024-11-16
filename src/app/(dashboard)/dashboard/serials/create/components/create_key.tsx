@@ -70,7 +70,7 @@ export default function CreateSerialKey() {
                                 type="text"
                                 placeholder="Order ID (optional)"
                                 onChange={(e) => setOrderID(e.target.value)}
-                                className="min-w-[75%]"
+                                className="min-w-[75%] text-[16px]"
                             />
 
                             <Input
@@ -78,7 +78,7 @@ export default function CreateSerialKey() {
                                 placeholder="Amount"
                                 onChange={(e) => setAmount(parseInt(e.target.value))}
                                 value={amount}
-                                className="max-w-[25%]"
+                                className="max-w-[25%] text-[16px]"
                             />
                         </div>
                     </>

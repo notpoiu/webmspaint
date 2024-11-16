@@ -274,7 +274,7 @@ export function SerialDataTable({
 
             setFilterValue(event.target.value);
           }}
-          className="max-w-sm"
+          className="max-w-sm text-[16px]"
         />
         <Select onValueChange={(value) => {
           table.getColumn(filterTarget)?.setFilterValue(undefined);
