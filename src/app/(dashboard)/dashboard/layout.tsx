@@ -11,7 +11,7 @@ export const metadata: Metadata = {
     template: "%s | mspaint dashboard",
   },
   description: description,
-  manifest: "/manifest.json",
+  manifest: "/dashboard/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
