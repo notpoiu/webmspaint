@@ -7,8 +7,8 @@ const description = "mspaint is the best free roblox script hub supporting games
 
 export const metadata: Metadata = {
   title: {
-    default: "mspaint dashboard",
-    template: "%s | mspaint dashboard",
+    default: "dashboard",
+    template: "%s - dashboard",
   },
   description: description,
   manifest: "/dashboard/manifest.json",
