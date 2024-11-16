@@ -46,7 +46,7 @@ export function AppSidebar({ session_data }: { session_data: {
   avatar: string
 } }) {
   return (
-    <Sidebar variant="inset">
+    <Sidebar variant="inset" className="bg-black">
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
