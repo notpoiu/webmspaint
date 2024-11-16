@@ -1,4 +1,6 @@
 import { auth } from "@/auth";
+import { AppSidebar } from "@/components/app-sidebar";
+import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { isUserAllowedOnDashboard } from "@/server/authutils";
 import { Metadata, Viewport } from "next";
 import { notFound, redirect } from "next/navigation";
@@ -56,5 +58,16 @@ export default async function RootLayout({
     return redirect("/signin");
   }
 
-  return children;
+  return <SidebarProvider>
+    <AppSidebar
+        session_data={{
+            name: session.user.name ?? "unknown",
+            email: session.user.email ?? "example@upio.dev",
+            avatar: session.user.image ?? "https://avatar.vercel.sh/42",
+        }}
+    />
+    <SidebarInset>
+      {children}
+    </SidebarInset>
+  </SidebarProvider>
 }
