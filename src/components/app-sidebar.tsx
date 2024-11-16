@@ -46,7 +46,7 @@ export function AppSidebar({ session_data }: { session_data: {
   avatar: string
 } }) {
   return (
-    <Sidebar variant="inset" className="bg-black">
+    <Sidebar variant="inset">
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
@@ -64,7 +64,7 @@ export function AppSidebar({ session_data }: { session_data: {
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
-      <SidebarContent>
+      <SidebarContent className="bg-black">
         <NavMain title="Serial Managment" items={data.navMain} />
       </SidebarContent>
       <SidebarFooter>
