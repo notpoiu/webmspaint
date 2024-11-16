@@ -5,37 +5,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner"
 import { Analytics } from "@vercel/analytics/react"
 
-const gameKeywordGenerator = (game: string) => {
-  return [
-    `roblox ${game}`,
-    `roblox ${game} script`,
-    `roblox ${game} mod`,
-    `roblox ${game} mods`,
-    `roblox ${game} modding`,
-    `${game}`,
-    `${game} script`,
-    `${game} mod`,
-    `${game} mods`,
-    `${game} modding`,
-    `${game.toUpperCase()}`,
-    `${game.toUpperCase()} script`,
-    `${game.toUpperCase()} mod`,
-    `${game.toUpperCase()} mods`,
-    `${game.toUpperCase()} modding`,
-    `${game.toLowerCase()}`,
-    `${game.toLowerCase()} script`,
-    `${game.toLowerCase()} mod`,
-    `${game.toLowerCase()} mods`,
-    `${game.toLowerCase()} modding`,
-  ]
-}
-
-const DOORS_KEYWORDS = gameKeywordGenerator("doors");
-const IKEA_KEYWORDS = gameKeywordGenerator("3008");
-const RND_KEYWORDS = gameKeywordGenerator("Rooms & Doors");
-const PRESSURE_KEYWORDS = gameKeywordGenerator("Pressure");
-const FISCH_KEYWORDS = gameKeywordGenerator("Fisch");
-const BABFT_KEYWORDS = gameKeywordGenerator("BABFT");
+const description = "mspaint is the best free roblox script hub supporting games such as doors, 3008, room & doors, pressure, fisch and build a boat for treasure";
 
 const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
@@ -43,22 +13,22 @@ export const metadata: Metadata = {
     default: "mspaint",
     template: "%s | mspaint",
   },
+  description: description,
   openGraph: {
-    description: "mspaint, the best free roblox doors script",
+    description: description,
 		images: 'https://mspaint.upio.dev/icon.png',
 	},
   keywords: [
     "mspaint",
-    "roblox script",
+    "roblox",
     "script",
-    "roblox doors",
-
-    ...DOORS_KEYWORDS,
-    ...IKEA_KEYWORDS,
-    ...RND_KEYWORDS,
-    ...PRESSURE_KEYWORDS,
-    ...FISCH_KEYWORDS,
-    ...BABFT_KEYWORDS,
+    "doors",
+    "3008",
+    "room & doors",
+    "r&d",
+    "pressure",
+    "fisch",
+    "babft",
   ],
 };
 
