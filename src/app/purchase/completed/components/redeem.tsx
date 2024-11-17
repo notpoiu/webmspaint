@@ -28,7 +28,7 @@ export function RedeemComponent({serial, username, user_id}: {serial: string, us
                     Redeem mspaint lifetime for {username}
                 </Button>
             </AlertDialogTrigger>
-            <AlertDialogContent className="bg-background">
+            <AlertDialogContent className="bg-black">
                 <AlertDialogHeader>
                     <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                     <AlertDialogDescription>
