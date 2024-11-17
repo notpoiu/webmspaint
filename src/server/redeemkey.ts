@@ -30,6 +30,13 @@ export async function RedeemKey(serial: string, user_id: string) {
         headers: LRM_Headers
     })
 
+    if (checkpointKeyResponse.status !== 200) {
+        return {
+            status: 500,
+            error: "internal luarmor api error, returned status code " + checkpointKeyResponse.status + ", please wait a few minutes and try again"
+        }
+    }
+
     const checkpointKey = await checkpointKeyResponse.json();
     let does_user_have_checkpoint_key = false;
     if (checkpointKey.users.length !== 0) {
