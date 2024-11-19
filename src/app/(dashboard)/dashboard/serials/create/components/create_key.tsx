@@ -52,8 +52,8 @@ export default function CreateSerialKey() {
 
                         {new_key.map((key, index) => (
                             <div key={index} className="flex flex-row gap-2">
-                                <Input readOnly value={`https://mspaint.upio.dev/purchase/completed?serial=${encodeURIComponent(key)}`}/>
-                                <CopyButton text={`https://mspaint.upio.dev/purchase/completed?serial=${encodeURIComponent(key)}`} />
+                                <Input readOnly value={`https://www.mspaint.cc/purchase/completed?serial=${encodeURIComponent(key)}`}/>
+                                <CopyButton text={`https://www.mspaint.cc/purchase/completed?serial=${encodeURIComponent(key)}`} />
                             </div>
                         ))}
                     </>
@@ -91,7 +91,7 @@ export default function CreateSerialKey() {
                             let serial = "";
 
                             for (let i = 0; i < new_key.length; i++) {
-                                serial += `https://mspaint.upio.dev/purchase/completed?serial=${new_key[i]}\n`;
+                                serial += `https://www.mspaint.cc/purchase/completed?serial=${new_key[i]}\n`;
                             }
 
                             const blob = new Blob([serial], { type: "text/plain" });

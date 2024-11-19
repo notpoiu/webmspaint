@@ -13,6 +13,6 @@ export default function robots(): MetadataRoute.Robots {
         '/purchase'
       ],
     },
-    sitemap: 'https://mspaint.upio.dev/sitemap.xml',
+    sitemap: 'https://www.mspaint.cc/sitemap.xml',
   }
 }

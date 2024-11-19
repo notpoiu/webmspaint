@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     description: description,
-		images: 'https://mspaint.upio.dev/icon.png',
+		images: 'https://www.mspaint.cc/icon.png',
 	},
   keywords: [
     "mspaint",

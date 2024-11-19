@@ -108,8 +108,8 @@ export default async function Page({
                         <div className="flex flex-col mt-2 gap-2">
                             {serials.map((serial) => (
                                 <div className="flex flex-row items-center gap-2" key={serial}>
-                                    <Input readOnly value={process.env.NODE_ENV === "development" ? `http://localhost:3000/purchase/completed?serial=${serial}` : `https://mspaint.upio.dev/purchase/completed?serial=${serial}`}/>
-                                    <CopyButton text={process.env.NODE_ENV === "development" ? `http://localhost:3000/purchase/completed?serial=${serial}` : `https://mspaint.upio.dev/purchase/completed?serial=${serial}`} />
+                                    <Input readOnly value={process.env.NODE_ENV === "development" ? `http://localhost:3000/purchase/completed?serial=${serial}` : `https://www.mspaint.cc/purchase/completed?serial=${serial}`}/>
+                                    <CopyButton text={process.env.NODE_ENV === "development" ? `http://localhost:3000/purchase/completed?serial=${serial}` : `https://www.mspaint.cc/purchase/completed?serial=${serial}`} />
                                 </div>
                             ))}
                         </div>

@@ -18,7 +18,7 @@ export default function Page() {
                 <CardContent>
                     <div className="flex flex-row gap-2">
                         <Input placeholder="Enter key here..." value={key ?? ""} onChange={(event) => setKey(event.target.value)} className="text-[16px]" />
-                        <Link href={`https://mspaint.upio.dev/purchase/completed?serial=${encodeURIComponent(key ?? "abc")}`}>
+                        <Link href={`https://www.mspaint.cc/purchase/completed?serial=${encodeURIComponent(key ?? "abc")}`}>
                             <Button>Redeem Key</Button>
                         </Link>
                     </div>                    

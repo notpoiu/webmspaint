@@ -209,14 +209,14 @@ export function SerialDataTable({
       <AlertDialog open={serialEditOpen} onOpenChange={setSerialEditOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Coming soon.</AlertDialogTitle>
+            <AlertDialogTitle>Edit Serial ({selectedSerial?.serial})</AlertDialogTitle>
             <AlertDialogDescription>
-              This is enough coding react for today :content:
+              
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Dont care</AlertDialogCancel>
-            <AlertDialogAction>Ok lazy ass</AlertDialogAction>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction>Edit</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

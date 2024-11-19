@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
             createdSerials.push(serial);
         }
         
-        return new Response(`Thank you for purchasing ${data.quantity} mspaint key(s)!\nYou can redeem your serial(s) at https://mspaint.upio.dev/purchase/completed?serial=${encodeURIComponent(createdSerials.join(","))}\n\nMake sure to keep this link safe, as it is the only way to redeem your key(s).`);
+        return new Response(`Thank you for purchasing ${data.quantity} mspaint key(s)!\nYou can redeem your serial(s) at https://www.mspaint.cc/purchase/completed?serial=${encodeURIComponent(createdSerials.join(","))}\n\nMake sure to keep this link safe, as it is the only way to redeem your key(s).`);
     } else {
         return new Response("Invalid signature");
     }
