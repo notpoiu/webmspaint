@@ -7,6 +7,7 @@ import { notFound } from "next/navigation";
 import { RedeemComponent } from "./components/redeem";
 import CopyButton from "@/components/copy-button";
 import { Input } from "@/components/ui/input";
+import Link from "next/link";
 
 export default async function Page({
     searchParams
@@ -44,7 +45,7 @@ export default async function Page({
                     <CardHeader>
                         <CardTitle>mspaint key purchase successful!</CardTitle>
                         <CardDescription>
-                            Thank you for your support! Only share this link if you are gifting the key to someone else.
+                            Thank you for your support! Only share this link if you are gifting the key to someone else <Link href={"/privacy"} target="_blank" className="text-blue-400 underline">(Privacy Policy)</Link>
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
