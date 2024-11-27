@@ -61,7 +61,7 @@ If you have questions or concerns about this Privacy Policy, please contact us a
 
 export default function Privacy(){
     return (
-        <main className="flex flex-col items-center justify-center px-32 ml-5 mr-5">
+        <main className="flex flex-col items-center justify-center md:px-32 px-5 ml-5 mr-5">
             <div className="py-16">
                 <h1 className="text-3xl font-bold flex flex-col">
                     <strong>Privacy Policy</strong>
