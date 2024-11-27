@@ -1,5 +1,3 @@
-"use client";
-
 import CopyButton from "@/components/copy-button";
 import AnimatedShinyText from "@/components/magicui/animated-shiny-text";
 import BlurFade from "@/components/magicui/blur-fade";
@@ -23,9 +21,14 @@ import {
 import Image from "next/image";
 import Iphone15Pro from "@/components/magicui/iphone-15-pro";
 import WordRotate from "@/components/ui/word-rotate";
+import WordFadeIn from "@/components/ui/word-fade-in";
+import { Globe } from "@/components/ui/globe";
 //import MSPaintLinoria from "@/components/ui/linorialib/mspaint-linoria";
 
-export default function Home() {
+export default async function Home() {
+  const response = await fetch("https://raw.githubusercontent.com/mspaint-cc/translations/refs/heads/main/Languages.json");
+  const languageData = await response.json();
+
   return (
     <main className="overflow-x-hidden">
       <DotPattern
@@ -52,7 +55,7 @@ export default function Home() {
                       )}
                     >
                       <AnimatedShinyText className="inline-flex items-center justify-center px-4 py-1 transition ease-out hover:text-neutral-600 hover:duration-300 hover:dark:text-neutral-400">
-                        <DiscordLogoIcon className="mr-2" /><span>join mspaint discord</span>
+                        <DiscordLogoIcon className="mr-2" /><span>Join mspaint discord</span>
                         <ArrowRightIcon className="ml-1 size-3 transition-transform duration-300 ease-in-out group-hover:translate-x-0.5" />
                       </AnimatedShinyText>
                     </div>
@@ -67,10 +70,11 @@ export default function Home() {
               </BlurFade>
               <BlurFade delay={0.2 + (3 * 0.05)}>
                 <div className="text-2xl flex flex-row justify-center items-center  gap-2">
-                  <span className="font-bold">the best</span>{" "}
+                  <span className="font-bold">The best</span>{" "}
                   <WordRotate
+                    duration={1250}
                     words={[
-                      "doors",
+                      "DOORS",
                       "3008",
                       "R&D",
                       "Pressure",
@@ -144,12 +148,22 @@ export default function Home() {
       </div>
       
       {/* LinoriaLib UI <MSPaintLinoria /> */}
-      
+      <div className="flex flex-col items-center mb-[35vh] text-center overflow-hidden max-h-[30rem] relative">
+        <WordFadeIn className="text-3xl md:text-3xl" words={`mspaint is translated in ${Object.keys(languageData).length} languages`} inView />
+        <BlurFade delay={0.2 + (1 * 0.05)} inView>
+          <WordFadeIn className="text-xl md:text-xl font-normal" words={`that's less reading, and more playing.`} inView initialDelay={0.15 * 6} delay={0.25} />
+        </BlurFade>
+        <BlurFade delay={0.2 + (2 * 0.05)} inView>
+          <Globe />
+        </BlurFade>
+        <div className="absolute bottom-0 z-40 inset-x-0 h-60 bg-gradient-to-t from-[#0a0a0a] via-black to-transparent w-full pointer-events-none" />
+      </div>
+
       <div className="flex flex-col items-center justify-center px-2 text-center">
         <BlurFade delay={0.2 + (1 * 0.05)} className="mb-5" inView>
           <h1 className="text-3xl font-bold text-center flex flex-col">
             <span>Used by <span className="font-bold">over{" "}
-              <NumberTicker value={7200} />
+              <NumberTicker value={8000} />
               + people
             </span></span>
             <span className="text-muted-foreground text-lg">And even by <span className="font-bold text-white">Kardin Hong</span></span>
