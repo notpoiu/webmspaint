@@ -23,10 +23,11 @@ import Iphone15Pro from "@/components/magicui/iphone-15-pro";
 import WordRotate from "@/components/ui/word-rotate";
 import WordFadeIn from "@/components/ui/word-fade-in";
 import { Globe } from "@/components/ui/globe";
-//import MSPaintLinoria from "@/components/ui/linorialib/mspaint-linoria";
 
 export default async function Home() {
-  const response = await fetch("https://raw.githubusercontent.com/mspaint-cc/translations/refs/heads/main/Languages.json");
+  const response = await fetch("https://raw.githubusercontent.com/mspaint-cc/translations/refs/heads/main/Languages.json", {
+    next: { revalidate: 20 }
+  });
   const languageData = await response.json();
 
   return (
@@ -147,9 +148,8 @@ export default async function Home() {
         />
       </div>
       
-      {/* LinoriaLib UI <MSPaintLinoria /> */}
       <div className="flex flex-col items-center mb-[35vh] text-center overflow-hidden max-h-[30rem] relative">
-        <WordFadeIn className="text-3xl md:text-3xl" words={`mspaint is translated in ${Object.keys(languageData).length} languages`} inView />
+        <WordFadeIn className="text-3xl md:text-3xl" words={`mspaint is translated in ${Object.keys(languageData).length - 1} languages`} inView />
         <BlurFade delay={0.2 + (1 * 0.05)} inView>
           <WordFadeIn className="text-xl md:text-xl font-normal" words={`that's less reading, and more playing.`} inView initialDelay={0.15 * 6} delay={0.25} />
         </BlurFade>

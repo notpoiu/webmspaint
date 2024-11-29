@@ -1,7 +1,9 @@
+"use client";
+
 import LinoriaUI from "./linoria";
 
 export const Library = LinoriaUI({
-  Title: "mspaint v2",
+  Title: "mspaint v3 | DOORS",
   TabPadding: 2,
 })
 
@@ -34,5 +36,5 @@ testingGroupbox2.AddToggle("TestingToggle2", {
 })
 
 export default function MSPaintLinoria() {
-  return <Library.Component className="max-w-[500px] min-h-[500px] mb-[25vh] ml-auto mr-auto" componentHeight={500} />
+  return <Library.Component className="max-w-[500px] min-h-[500px] mb-[25vh] mt-[15vh] ml-auto mr-auto" componentHeight={500} />
 }
