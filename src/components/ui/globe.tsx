@@ -3,7 +3,7 @@
 import { useRef, useEffect } from "react";
 import createGlobe from "cobe";
 
-export const Globe = ({ className }: { className?: string }) => {
+export const Globe = ({ className, speed = 1 }: { className?: string, speed?: number }) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
    
     useEffect(() => {
@@ -33,14 +33,14 @@ export const Globe = ({ className }: { className?: string }) => {
           // Called on every animation frame.
           // `state` will be an empty object, return updated params.
           state.phi = phi;
-          phi += 0.01;
+          phi += (0.01 * speed);
         },
       });
    
       return () => {
         globe.destroy();
       };
-    }, []);
+    }, [speed]);
    
     return (
       <canvas

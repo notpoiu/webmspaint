@@ -154,7 +154,7 @@ export default async function Home() {
           <WordFadeIn className="text-xl md:text-xl font-normal" words={`that's less reading, and more playing.`} inView initialDelay={0.15 * 6} delay={0.25} />
         </BlurFade>
         <BlurFade delay={0.2 + (2 * 0.05)} inView>
-          <Globe />
+          <Globe speed={0.45} />
         </BlurFade>
         <div className="absolute bottom-0 z-40 inset-x-0 h-60 bg-gradient-to-t from-[#0a0a0a] via-black to-transparent w-full pointer-events-none" />
       </div>
