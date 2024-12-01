@@ -163,7 +163,7 @@ export default async function Home() {
         <BlurFade delay={0.2 + (1 * 0.05)} className="mb-5" inView>
           <h1 className="text-3xl font-bold text-center flex flex-col">
             <span>Used by <span className="font-bold">over{" "}
-              <NumberTicker value={8000} />
+              <NumberTicker value={9000} />
               + people
             </span></span>
             <span className="text-muted-foreground text-lg">And even by <span className="font-bold text-white">Kardin Hong</span></span>
