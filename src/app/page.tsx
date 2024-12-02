@@ -23,6 +23,7 @@ import Iphone15Pro from "@/components/magicui/iphone-15-pro";
 import WordRotate from "@/components/ui/word-rotate";
 import WordFadeIn from "@/components/ui/word-fade-in";
 import { Globe } from "@/components/ui/globe";
+import { ShoppingBagIcon } from "lucide-react";
 
 export default async function Home() {
   const response = await fetch("https://raw.githubusercontent.com/mspaint-cc/translations/refs/heads/main/Languages.json", {
@@ -48,7 +49,7 @@ export default async function Home() {
           title={
             <div className="flex flex-col items-center justify-center">
               <BlurFade delay={0.2 + (1 * 0.05)}>
-                <Link href={"https://discord.gg/mspaint"} target="_blank">
+                <Link href={"https://shop.mspaint.cc/"} target="_blank">
                   <div className="flex mb-2">
                     <div
                       className={cn(
@@ -56,7 +57,7 @@ export default async function Home() {
                       )}
                     >
                       <AnimatedShinyText className="inline-flex items-center justify-center px-4 py-1 transition ease-out hover:text-neutral-600 hover:duration-300 hover:dark:text-neutral-400">
-                        <DiscordLogoIcon className="mr-2" /><span>Join mspaint discord</span>
+                        <ShoppingBagIcon className="mr-2" /><span>Buy mspaint lifetime</span>
                         <ArrowRightIcon className="ml-1 size-3 transition-transform duration-300 ease-in-out group-hover:translate-x-0.5" />
                       </AnimatedShinyText>
                     </div>
