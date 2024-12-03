@@ -9,12 +9,16 @@ export async function GET(request: NextRequest, slug: { params: { discord_id: st
             Authorization: `Bot ${process.env.DISCORD_BOT_TOKEN}`
         },
         next: {
-            revalidate: 60
+            revalidate: 60 * 60 * 24 * 7 // 1 week, we dont need to update this often.
         }
     })
 
     const data = await response.json();
-    return NextResponse.json(data, {
+    return NextResponse.json({
+        id: data.id,
+        global_name: data.global_name,
+        username: data.username,
+    }, {
         status: response.status,
         headers: {
             "Content-Type": "application/json; charset=utf-8"
