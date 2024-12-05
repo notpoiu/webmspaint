@@ -24,6 +24,7 @@ import WordRotate from "@/components/ui/word-rotate";
 import WordFadeIn from "@/components/ui/word-fade-in";
 import { Globe } from "@/components/ui/globe";
 import { ShoppingBagIcon } from "lucide-react";
+import { Highlight } from "@/components/ui/hero-highlight";
 
 export default async function Home() {
   const response = await fetch("https://raw.githubusercontent.com/mspaint-cc/translations/refs/heads/main/Languages.json", {
@@ -150,7 +151,7 @@ export default async function Home() {
         />
       </div>
       
-      <div className="flex flex-col items-center mb-[35vh] text-center overflow-hidden max-h-[30rem] relative">
+      <div className="flex flex-col items-center mb-[25vh] text-center overflow-hidden max-h-[30rem] relative">
         <WordFadeIn className="text-3xl md:text-3xl" words={`mspaint is translated in ${Object.keys(languageData).length - 1} languages`} inView />
         <BlurFade delay={0.2 + (1 * 0.05)} inView>
           <WordFadeIn className="text-xl md:text-xl font-normal" words={`that's less reading, and more playing.`} inView initialDelay={0.15 * 6} delay={0.25} />
@@ -171,7 +172,7 @@ export default async function Home() {
             <span className="text-muted-foreground text-lg">And even by <span className="font-bold text-white">Kardin Hong</span></span>
           </h1>
         </BlurFade>
-        <BlurFade delay={0.2 + (2 * 0.05)} inView>
+        <BlurFade delay={0.2 + (1.5 * 0.05)} inView>
           <div className="max-md:hidden block">
             <div className="relative w-[90vw] flex justify-center items-center">
               <Safari url="youtube.com" className="" src="/kardinhong.png" />
@@ -187,63 +188,55 @@ export default async function Home() {
 
         <Separator className="mt-[2.5rem] w-[55vw]" />
 
-        <BlurFade delay={0.2 + (1 * 0.05)} inView>
-          <h1 className="text-2xl mt-[2.5rem] text-center">
-            Here&apos;s what people say about <span className="font-bold">mspaint</span>
-          </h1>
-        </BlurFade>
+        <h1 className="text-2xl mt-[2.5rem] text-center">
+          Here&apos;s what people say about <Highlight className="font-bold" inView animationSpeed={1.5}>mspaint</Highlight>
+        </h1>
 
-        <BlurFade delay={0.2 + (2 * 0.05)} inView>
-          <ReviewMarquee />
-        </BlurFade>
+        <ReviewMarquee />
+        
+        <h1 className="text-2xl font-bold  mt-[2.5rem] text-center">
+          FAQ
+        </h1>
+        <p className="text-muted-foreground">The full FAQ is in Discord</p>
 
-        <BlurFade delay={0.2 + (3 * 0.05)} inView>
-          <h1 className="text-2xl font-bold  mt-[2.5rem] text-center">
-            FAQ
-          </h1>
-          <p className="text-muted-foreground">The full FAQ is in Discord</p>
-        </BlurFade>
-
-        <BlurFade delay={0.2 + (4 * 0.05)} inView>
-          <Accordion type="single" collapsible className="max-w-[1000px] w-[50vw] max-md:w-[75vw]">
-            <AccordionItem value="item-1">
-              <AccordionTrigger>How do i do the keysystem?</AccordionTrigger>
-              <AccordionContent>
-                Tutorial on how to use the Key System is here: <Link href={"https://docs.upio.dev/mspaint/key-system"} target="_blank" className="text-blue-300 underline">https://docs.upio.dev/mspaint/key-system</Link>.
-              </AccordionContent>
-            </AccordionItem>
-            <AccordionItem value="item-2">
-              <AccordionTrigger>Where can I report bugs and suggest features?</AccordionTrigger>
-              <AccordionContent>
-                You can report bugs and suggest features on the Discord server or in the GitHub repository.
-              </AccordionContent>
-            </AccordionItem>
-            <AccordionItem value="item-3">
-              <AccordionTrigger>Does it work on mobile?</AccordionTrigger>
-              <AccordionContent>
-                Yes. mspaint works on mobile.
-              </AccordionContent>
-            </AccordionItem>
-            <AccordionItem value="item-4">
-              <AccordionTrigger>How do i use it?</AccordionTrigger>
-              <AccordionContent>
-                Download an executor such as <Link href={"https://getsolara.dev"} target="_blank" className="text-blue-300 underline">Solara</Link> and execute the script.
-              </AccordionContent>
-            </AccordionItem>
-            <AccordionItem value="item-5">
-              <AccordionTrigger>I can&apos;t close the GUI?</AccordionTrigger>
-              <AccordionContent>
-                Close out of the GUI by pressing the shift on the right side of your keyboard.
-              </AccordionContent>
-            </AccordionItem>
-            <AccordionItem value="item-6">
-              <AccordionTrigger>What games are supported?</AccordionTrigger>
-              <AccordionContent>
-                As of right now, DOORS, 3008, Rooms & Doors, Pressure, Fisch, BABFT and Grace are supported.
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
-        </BlurFade>
+        <Accordion type="single" collapsible className="max-w-[1000px] w-[50vw] max-md:w-[75vw]">
+          <AccordionItem value="item-1">
+            <AccordionTrigger>How do i do the keysystem?</AccordionTrigger>
+            <AccordionContent>
+              Tutorial on how to use the Key System is here: <Link href={"https://docs.upio.dev/mspaint/key-system"} target="_blank" className="text-blue-300 underline">https://docs.upio.dev/mspaint/key-system</Link>.
+            </AccordionContent>
+          </AccordionItem>
+          <AccordionItem value="item-2">
+            <AccordionTrigger>Where can I report bugs and suggest features?</AccordionTrigger>
+            <AccordionContent>
+              You can report bugs and suggest features on the Discord server or in the GitHub repository.
+            </AccordionContent>
+          </AccordionItem>
+          <AccordionItem value="item-3">
+            <AccordionTrigger>Does it work on mobile?</AccordionTrigger>
+            <AccordionContent>
+              Yes. mspaint works on mobile.
+            </AccordionContent>
+          </AccordionItem>
+          <AccordionItem value="item-4">
+            <AccordionTrigger>How do i use it?</AccordionTrigger>
+            <AccordionContent>
+              Download an executor such as <Link href={"https://getsolara.dev"} target="_blank" className="text-blue-300 underline">Solara</Link> and execute the script.
+            </AccordionContent>
+          </AccordionItem>
+          <AccordionItem value="item-5">
+            <AccordionTrigger>I can&apos;t close the GUI?</AccordionTrigger>
+            <AccordionContent>
+              Close out of the GUI by pressing the shift on the right side of your keyboard.
+            </AccordionContent>
+          </AccordionItem>
+          <AccordionItem value="item-6">
+            <AccordionTrigger>What games are supported?</AccordionTrigger>
+            <AccordionContent>
+              As of right now, DOORS, 3008, Rooms & Doors, Pressure, Fisch, BABFT and Grace are supported.
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
         
         <Separator className="mt-[5rem] w-screen" />
 
