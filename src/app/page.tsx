@@ -102,7 +102,7 @@ export default async function Home() {
               </BlurFade>
             </div>
           }
-          src={`/mspaint.png`}
+          src={`https://utfs.io/f/q5sBExIITNsAwzYsgE6Jd1Yu7jHXAosWPV5MnxqUgtz2BNCK`}
           outro={
             <>
               <BlurFade delay={0.2 + (1 * 0.05)} inView>
@@ -175,13 +175,13 @@ export default async function Home() {
         <BlurFade delay={0.2 + (1.5 * 0.05)} inView>
           <div className="max-md:hidden block">
             <div className="relative w-[90vw] flex justify-center items-center">
-              <Safari url="youtube.com" className="" src="/kardinhong.png" />
+              <Safari url="youtube.com" className="" src="https://utfs.io/f/q5sBExIITNsAy07ylyEodEnluv6LfbZ04sCwrmkiRPq19FWQ" />
             </div>
           </div>
 
           <div className="max-md:block hidden">
             <div className="relative w-[90vw] flex justify-center items-center">
-              <Iphone15Pro src={"/kardinhong_mobile.png"} />
+              <Iphone15Pro src={"https://utfs.io/f/q5sBExIITNsAPkWgUY54JfWXEC7kbxjzUtwqByLTpnOSZdmY"} />
             </div>
           </div>
         </BlurFade>
