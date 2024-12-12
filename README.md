@@ -1,7 +1,6 @@
-# mspaint-web
+# www.mspaint.cc
 
-A [Next.js](https://nextjs.org/) project that showcases mspaint.
-This site uses [Tailwind CSS](https://tailwindcss.com/) for styling.
+A [Next.js](https://nextjs.org/) site that showcases the mspaint roblox script. This site also has a dashboard that allows authorized users to generate mspaint serials that turn into luarmor keys.
 
 ### UI Component Libraries used
 - shadcn/ui - [shadcn.com/ui](https://ui.shadcn.com/)
