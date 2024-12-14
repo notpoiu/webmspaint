@@ -472,7 +472,17 @@ export default function LinoriaUI({
                                                             if (value.Groupbox == true) {
                                                                 return (
                                                                     <LinoriaGroupBox key={index} data={themeData} first={index == 0} name={key}>
-                                                                        <p>hi</p>
+                                                                        {Object.entries(Linoria.Tabs[internalCurrentActiveTab ?? "Main"].Groupboxes[key].Elements).map(([elemKey, value], index) => {
+                                                                            if (value.Type == "Toggle") {
+                                                                                return (
+                                                                                    <LinoriaToggle key={index} data={themeData} onClick={() => {
+                                                                                        if (value.Callback != undefined && typeof value.Callback == 'function') {
+                                                                                            value.Callback(!value.Default)
+                                                                                        }
+                                                                                    }} name={value.Text} active={value.Default} index={index} />
+                                                                                )
+                                                                            }
+                                                                        })}
                                                                     </LinoriaGroupBox>
                                                                 )
                                                             }

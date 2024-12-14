@@ -84,6 +84,7 @@ export default async function Home() {
                       "Fisch",
                       "BABFT",
                       "Grace",
+                      "MM2"
                     ]}
                   />{" "} script
                 </div>
@@ -233,7 +234,7 @@ export default async function Home() {
           <AccordionItem value="item-6">
             <AccordionTrigger>What games are supported?</AccordionTrigger>
             <AccordionContent>
-              As of right now, DOORS, 3008, Rooms & Doors, Pressure, Fisch, BABFT and Grace are supported.
+              As of right now, DOORS, 3008, Rooms & Doors, Pressure, Fisch, BABFT, Grace and Murder Mystery 2 are supported.
             </AccordionContent>
           </AccordionItem>
         </Accordion>
