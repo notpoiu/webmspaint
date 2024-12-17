@@ -5,7 +5,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner"
 import { Analytics } from "@vercel/analytics/react"
 
-const description = "mspaint is the best freemium roblox script hub supporting games such as doors, 3008, room & doors, pressure, fisch, build a boat for treasure and grace";
+const description = "mspaint is the best freemium roblox script hub supporting games such as doors, 3008, room & doors, pressure, fisch, build a boat for treasure, grace and murder mystery 2";
 
 const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
@@ -22,6 +22,10 @@ export const metadata: Metadata = {
     "mspaint",
     "roblox",
     "script",
+	"best script",
+	"working script",
+	"2024",
+	"2025",
     "doors",
     "3008",
     "room & doors",
@@ -29,7 +33,9 @@ export const metadata: Metadata = {
     "pressure",
     "fisch",
     "babft",
-    "grace"
+    "grace",
+	"murder mystery 2",
+	"mm2"
   ],
 };
 
