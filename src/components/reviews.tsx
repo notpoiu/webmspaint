@@ -37,6 +37,7 @@ const ReviewCard = ({
         "border-gray-950/[.1] bg-gray-950/[.01] hover:bg-gray-950/[.05]",
         // dark styles
         "dark:border-gray-50/[.1] dark:bg-gray-50/[.10] dark:hover:bg-gray-50/[.15]",
+        "max-h-[170px] transition-all duration-300",
       )}
     >
       <div className="flex flex-row items-center gap-2">
@@ -49,7 +50,7 @@ const ReviewCard = ({
           <p className="flex absolute right-5 text-sm">{stars.toString()}/5</p>
         </div>
       </div>
-      <blockquote className="mt-2 text-sm">{body}</blockquote>
+      <blockquote className="mt-2 text-sm text-ellipsis">{body}</blockquote>
     </figure>
   );
 };
