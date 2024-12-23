@@ -78,25 +78,20 @@ export default function ReviewMarquee() {
 
       for (const user_folder of slicedReviews) {
         if (user_folder.type !== "dir") { continue; }
-        const review: Review = {
-          name: "",
-          username: "",
-          body: "",
-          img: "",
-          stars: 5,
-        };
         
         const path = "https://raw.githubusercontent.com/mspaint-cc/assets/main/" + user_folder.path + "/";
         const req = await fetch(path + "data.json");
         const data = await req.json();
 
-        review.name = data.name;
-        review.username = data.username;
-        review.body = data.content;
-        review.img = path + "pfp.png";
-        review.stars = data.stars;
-
-        newReviews.push(review);
+        if (data.banned == true) { continue; }
+        
+        newReviews.push({
+          name: data.name,
+          username: data.username,
+          body: data.content,
+          img: path + "pfp.png",
+          stars: data.stars
+        } as Review);
       }
 
       setReviews(newReviews);
