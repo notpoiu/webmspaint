@@ -66,7 +66,11 @@ export default function ReviewMarquee() {
     if (alreadyFetched) return;
     setAlreadyFetched(true);
 
-    fetch("https://api.github.com/repos/mspaint-cc/assets/contents/reviews").then(async (res) => {
+    fetch("https://api.github.com/repos/mspaint-cc/assets/contents/reviews", {
+      cache: "force-cache",
+      next: { revalidate: 300 },
+      method: "GET"
+    }).then(async (res) => {
       const data = await res.json();
       
       const randomReviews = data.filter((review: unknown) => {
@@ -81,11 +85,15 @@ export default function ReviewMarquee() {
         if (user_folder.type !== "dir") { continue; }
         
         const path = "https://raw.githubusercontent.com/mspaint-cc/assets/main/" + user_folder.path + "/";
-        const req = await fetch(path + "data.json");
+        const req = await fetch(path + "data.json", {
+          cache: "force-cache",
+          next: { revalidate: 30 },
+          method: "GET"
+        });
         const data = await req.json();
 
         if (data.banned == true) { continue; }
-        
+
         newReviews.push({
           name: data.name,
           username: data.username,
