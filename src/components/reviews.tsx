@@ -63,7 +63,6 @@ export default function ReviewMarquee() {
 
 async function SuspenseMarquee() {
   const response = await fetch("https://api.github.com/repos/mspaint-cc/assets/contents/reviews", {
-    cache: "force-cache",
     next: { revalidate: 300 },
     method: "GET"
   })
