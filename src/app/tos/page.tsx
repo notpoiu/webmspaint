@@ -69,7 +69,14 @@ export default function TOS(){
                         <p>- <strong>No Tampering or Cracking</strong>: You may not deobfuscate, reverse-engineer, tamper with, or crack mspaint products. Any attempt to modify or bypass product protections is strictly prohibited.</p>
                     </div>
 
-                    <p className="text-center text-bold mt-5">Violation of any of these terms will result in a permanent ban from all current and future mspaint products.</p>
+                    {/* Reserving the right to modify the Terms of Service & discontinuing the Services */}
+                    <h2 className="text-2xl font-bold flex flex-col mt-6"><strong>Our Rights</strong></h2>
+                    <div className="flex flex-col *:ml-5">
+                        <p>- <strong>Modification of Terms of Service</strong>: We reserve the right to modify these Terms of Service at any time without prior notice. We will notify users of any changes to the Terms of Service.</p>
+                        <p>- <strong>Discontinuation of Services</strong>: We reserve the right to discontinue the Services at any time without prior notice. If we discontinue the service, you are not entitled to any refunds or credits.</p>
+                    </div>
+
+                    <p className="text-center text-bold mt-5">Violation of any of these terms will either result in a permanent ban from all current and future mspaint products or may result in legal action.</p>
                 </BlurFade>
             </div>
         </main>
