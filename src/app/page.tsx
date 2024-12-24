@@ -25,6 +25,7 @@ import WordFadeIn from "@/components/ui/word-fade-in";
 import { Globe } from "@/components/ui/globe";
 import { ShoppingBagIcon } from "lucide-react";
 import { Highlight } from "@/components/ui/hero-highlight";
+import { Suspense } from "react";
 
 export default async function Home() {
   const response = await fetch("https://raw.githubusercontent.com/mspaint-cc/translations/refs/heads/main/Languages.json", {
@@ -193,7 +194,9 @@ export default async function Home() {
           Here&apos;s what people say about <Highlight className="font-bold" inView animationSpeed={1.5}>mspaint</Highlight>
         </h1>
 
-        <ReviewMarquee />
+        <Suspense fallback={<div>Loading...</div>}>
+          <ReviewMarquee />
+        </Suspense>
         
         <h1 className="text-2xl font-bold  mt-[2.5rem] text-center">
           FAQ

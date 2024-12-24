@@ -1,5 +1,5 @@
 "use client";
-import { Suspense, useEffect, useState } from "react";
+import { Suspense } from "react";
 import { cn } from "@/lib/utils";
 import Marquee from "@/components/magicui/marquee";
 
@@ -56,61 +56,51 @@ const ReviewCard = ({
 };
 
 export default function ReviewMarquee() {
-  const [reviews, setReviews] = useState<Review[]>([]);
-  const [alreadyFetched, setAlreadyFetched] = useState(false);
+  return (
+    <SuspenseMarquee />
+  )
+}
 
-  const [firstRow, setFirstRow] = useState<Review[]>([]);
-  const [secondRow, setSecondRow] = useState<Review[]>([]);
+async function SuspenseMarquee() {
+  const response = await fetch("https://api.github.com/repos/mspaint-cc/assets/contents/reviews", {
+    cache: "force-cache",
+    next: { revalidate: 300 },
+    method: "GET"
+  })
 
-  useEffect(() => {
-    if (alreadyFetched) return;
-    setAlreadyFetched(true);
+  const reviewsData = await response.json();
+  const randomReviews = reviewsData.filter((review: unknown) => {
+    const githubItem = review as GithubContent;
+    if (githubItem.type === "file") return false;
+    return Math.random() < 0.5;
+  });
 
-    fetch("https://api.github.com/repos/mspaint-cc/assets/contents/reviews", {
-      cache: "force-cache",
-      next: { revalidate: 300 },
-      method: "GET"
-    }).then(async (res) => {
-      const data = await res.json();
-      
-      const randomReviews = data.filter((review: unknown) => {
-        const githubItem = review as GithubContent;
-        if (githubItem.type === "file") return false;
-        return Math.random() < 0.5;
-      });
-      const slicedReviews = randomReviews.slice(0, 17);
-      const newReviews: Review[] = [];
+  const slicedReviews = randomReviews.slice(0, 17);
 
-      for (const user_folder of slicedReviews) {
-        if (user_folder.type !== "dir") { continue; }
-        
-        const path = "https://raw.githubusercontent.com/mspaint-cc/assets/main/" + user_folder.path + "/";
-        const req = await fetch(path + "data.json", {
-          cache: "force-cache",
-          next: { revalidate: 30 },
-          method: "GET"
-        });
-        const data = await req.json();
+  const reviews: Review[] = [];
+  let firstRow: Review[] = [];
+  let secondRow: Review[] = [];
 
-        if (data.banned == true) { continue; }
+  for (const user_folder of slicedReviews) {
+    if (user_folder.type !== "dir") { continue; }
+    
+    const path = "https://raw.githubusercontent.com/mspaint-cc/assets/main/" + user_folder.path + "/";
+    const req = await fetch(path + "data.json");
+    const data = await req.json();
 
-        newReviews.push({
-          name: data.name,
-          username: data.username,
-          body: data.content,
-          img: path + "pfp.png",
-          stars: data.stars
-        } as Review);
-      }
-
-      setReviews(newReviews);
-    }).catch(() => { setAlreadyFetched(false) })
-  }, []);
+    if (data.banned == true) { continue; }
+    
+    reviews.push({
+      name: data.name,
+      username: data.username,
+      body: data.content,
+      img: path + "pfp.png",
+      stars: data.stars
+    } as Review)
+  }
   
-  useEffect(() => {
-    setFirstRow(reviews.slice(0, reviews.length / 2));
-    setSecondRow(reviews.slice(reviews.length / 2));
-  }, [reviews])
+  firstRow = reviews.slice(0, reviews.length / 2);
+  secondRow = reviews.slice(reviews.length / 2);
 
   return (
     <div className="relative py-10 flex w-screen flex-col items-center justify-center overflow-hidden bg-background md:shadow-xl text-left">
