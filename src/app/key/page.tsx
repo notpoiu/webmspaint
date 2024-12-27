@@ -34,6 +34,10 @@ export default function Page() {
                                     <Button className="mr-2">Linkvertise <Image className="ml-2" src="/icons/linkvertise.png" width={25} height={25} alt="Linkvertise" /></Button>
                                 </Link>
 
+                                <Link href={"https://ads.luarmor.net/get_key?for=mspaint_workink_key-kbDcHryVSREv"}>
+                                    <Button className="mr-2">work.ink <Image className="ml-2" src="/icons/workink.png" width={25} height={25} alt="work.ink" /></Button>
+                                </Link>
+
                                 <Link href={""}>
                                     <Button className="text-muted-foreground cursor-not-allowed" variant={"ghost"}>Lootlabs <Image className="ml-2" src="/icons/lootlabs.png" width={25} height={25} alt="Lootlabs" /></Button>
                                 </Link>
