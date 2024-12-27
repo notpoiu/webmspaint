@@ -38,9 +38,9 @@ export default function Page() {
                                     <Button className="mr-2">work.ink <Image className="ml-2" src="/icons/workink.png" width={25} height={25} alt="work.ink" /></Button>
                                 </Link>
 
-                                <Link href={""}>
+                                {/*<Link href={""}>
                                     <Button className="text-muted-foreground cursor-not-allowed" variant={"ghost"}>Lootlabs <Image className="ml-2" src="/icons/lootlabs.png" width={25} height={25} alt="Lootlabs" /></Button>
-                                </Link>
+                                </Link>*/}
                             </CardFooter>
                         </Card>
                     </BlurFade>
