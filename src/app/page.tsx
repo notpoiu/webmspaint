@@ -156,7 +156,7 @@ export default async function Home() {
       <div className="flex flex-col items-center mb-[25vh] text-center overflow-hidden max-h-[30rem] relative">
         <WordFadeIn className="text-3xl md:text-3xl" words={`mspaint is translated in ${Object.keys(languageData).length - 1} languages`} inView />
         <BlurFade delay={0.2 + (1 * 0.05)} inView>
-          <WordFadeIn className="text-xl md:text-xl font-normal" words={`that's less reading, and more playing.`} inView initialDelay={0.15 * 6} delay={0.25} />
+          <WordFadeIn className="text-xl md:text-xl font-normal" words={`accesability done right.`} inView initialDelay={0.15 * 6} delay={0.25} />
         </BlurFade>
         <BlurFade delay={0.2 + (2 * 0.05)} inView>
           <Globe speed={0.45} />
