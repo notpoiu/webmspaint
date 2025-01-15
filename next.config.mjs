@@ -16,6 +16,11 @@ const nextConfig = {
           protocol: 'https',
           hostname: 'utfs.io',
           pathname: '/f/q5sBExIITNsAPkWgUY54JfWXEC7kbxjzUtwqByLTpnOSZdmY',
+        },
+        {
+          protocol: 'https',
+          hostname: 'ob4fgkbb3w.ufs.sh',
+          pathname: '/f/q5sBExIITNsABaQo4HAKU9TJFX7q3z8ExZVAWyQeLOfamDgu',
         }
       ],
     }
