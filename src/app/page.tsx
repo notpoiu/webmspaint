@@ -104,7 +104,7 @@ export default async function Home() {
               </BlurFade>
             </div>
           }
-          src={`https://utfs.io/f/q5sBExIITNsAwzYsgE6Jd1Yu7jHXAosWPV5MnxqUgtz2BNCK`}
+          src={`https://ob4fgkbb3w.ufs.sh/f/q5sBExIITNsABaQo4HAKU9TJFX7q3z8ExZVAWyQeLOfamDgu`}
           outro={
             <>
               <BlurFade delay={0.2 + (1 * 0.05)} inView>
