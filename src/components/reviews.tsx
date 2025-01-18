@@ -1,5 +1,6 @@
 "use client";
-import { Suspense } from "react";
+
+import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import Marquee from "@/components/magicui/marquee";
 
@@ -56,67 +57,71 @@ const ReviewCard = ({
 };
 
 export default function ReviewMarquee() {
-  return (
-    <SuspenseMarquee />
-  )
-}
+  const [firstRow, setFirstRow] = useState<Review[]>([]);
+  const [secondRow, setSecondRow] = useState<Review[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-async function SuspenseMarquee() {
-  const response = await fetch("https://api.github.com/repos/mspaint-cc/assets/contents/reviews", {
-    next: { revalidate: 300 },
-    method: "GET"
-  })
+  useEffect(() => {
+    async function fetchData() {
+      const response = await fetch("https://api.github.com/repos/mspaint-cc/assets/contents/reviews", {
+        next: { revalidate: 300 },
+        method: "GET"
+      })
+      
+      const reviewsData = await response.json();
+      const randomReviews = reviewsData.filter((review: unknown) => {
+        const githubItem = review as GithubContent;
+        if (githubItem.type === "file") return false;
+        return Math.random() < 0.5;
+      });
+      
+      const slicedReviews = randomReviews.slice(0, 17);
+      const reviews: Review[] = [];
 
-  const reviewsData = await response.json();
-  const randomReviews = reviewsData.filter((review: unknown) => {
-    const githubItem = review as GithubContent;
-    if (githubItem.type === "file") return false;
-    return Math.random() < 0.5;
-  });
+      for (const user_folder of slicedReviews) {
+        if (user_folder.type !== "dir") { continue; }
+        
+        const path = "https://raw.githubusercontent.com/mspaint-cc/assets/main/" + user_folder.path + "/";
+        const req = await fetch(path + "data.json");
+        const data = await req.json();
+      
+        if (data.banned == true) { continue; }
+        
+        reviews.push({
+          name: data.name,
+          username: data.username,
+          body: data.content,
+          img: path + "pfp.png",
+          stars: data.stars
+        } as Review)
+      }
+      
+      setFirstRow(reviews.slice(0, reviews.length / 2));
+      setSecondRow(reviews.slice(reviews.length / 2));
+      setIsLoading(false);
+    }
 
-  const slicedReviews = randomReviews.slice(0, 17);
+    fetchData();
+  }, []);
 
-  const reviews: Review[] = [];
-  let firstRow: Review[] = [];
-  let secondRow: Review[] = [];
-
-  for (const user_folder of slicedReviews) {
-    if (user_folder.type !== "dir") { continue; }
-    
-    const path = "https://raw.githubusercontent.com/mspaint-cc/assets/main/" + user_folder.path + "/";
-    const req = await fetch(path + "data.json");
-    const data = await req.json();
-
-    if (data.banned == true) { continue; }
-    
-    reviews.push({
-      name: data.name,
-      username: data.username,
-      body: data.content,
-      img: path + "pfp.png",
-      stars: data.stars
-    } as Review)
-  }
-  
-  firstRow = reviews.slice(0, reviews.length / 2);
-  secondRow = reviews.slice(reviews.length / 2);
-
-  return (
+  return isLoading ? (
+    <div className="flex w-screen flex-col items-center justify-center">
+      <p>Loading...</p>
+    </div>
+  ) : (
     <div className="relative py-10 flex w-screen flex-col items-center justify-center overflow-hidden bg-background md:shadow-xl text-left">
-      <Suspense fallback={<div>Loading...</div>}>
-        <Marquee className="[--duration:60s]">
-          {firstRow.map((review) => (
-            <ReviewCard key={review.username} {...review} />
-          ))}
-        </Marquee>
-        <Marquee reverse className="[--duration:60s]">
-          {secondRow.map((review) => (
-            <ReviewCard key={review.username} {...review} />
-          ))}
-        </Marquee>
-        <div className="pointer-events-none absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r from-white dark:from-background"></div>
-        <div className="pointer-events-none absolute inset-y-0 right-0 w-1/3 bg-gradient-to-l from-white dark:from-background"></div>
-      </Suspense>
+      <Marquee className="[--duration:60s]">
+        {firstRow.map((review) => (
+          <ReviewCard key={review.username} {...review} />
+        ))}
+      </Marquee>
+      <Marquee reverse className="[--duration:60s]">
+        {secondRow.map((review) => (
+          <ReviewCard key={review.username} {...review} />
+        ))}
+      </Marquee>
+      <div className="pointer-events-none absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r from-white dark:from-background"></div>
+      <div className="pointer-events-none absolute inset-y-0 right-0 w-1/3 bg-gradient-to-l from-white dark:from-background"></div>
     </div>
   );
 }
