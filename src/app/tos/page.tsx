@@ -23,9 +23,13 @@ import BlurFade from "@/components/magicui/blur-fade";
 import DotPattern from "@/components/magicui/dot-pattern";
 import { cn } from "@/lib/utils";
 
-export default function TOS(){
+export default function TOS({ 
+    searchParams 
+}: {
+    searchParams?: { [key: string]: string | string[] | undefined } 
+}) {
     return (
-        <main className="overflow-x-hidden">
+        <main className={"overflow-x-hidden h-[100vh]" + (searchParams?.no_bg == "true" ? " bg-black" : "")}>
             <DotPattern
                 width={20}
                 height={20}
@@ -33,7 +37,7 @@ export default function TOS(){
                 cy={1}
                 cr={1}
                 className={cn(
-                    "[mask-image:linear-gradient(to_bottom_right,white,transparent,transparent)] -z-50",
+                    "[mask-image:linear-gradient(to_bottom_right,white,transparent,transparent)] -z-50" + (searchParams?.no_bg == "true" ? " hidden" : ""),
                 )}
             />
     
