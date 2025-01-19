@@ -131,48 +131,60 @@ export default async function Home() {
           }
           src={`https://ob4fgkbb3w.ufs.sh/f/q5sBExIITNsABaQo4HAKU9TJFX7q3z8ExZVAWyQeLOfamDgu`}
           outro={
-            <>
+            <div className="flex flex-col items-center justify-center max-md:mb-[10rem]">
               <BlurFade delay={0.2 + (1 * 0.05)} inView>
                 <h1 className="text-2xl font-bold mt-[5rem] text-center px-5">
                   Supporting your favorite executors
                 </h1>
               </BlurFade>
-              <div className="flex flex-row items-center justify-center mt-5 gap-10 max-md:flex-col">
-                <Link href={"https://getsolara.dev/"} target="_blank">
-                  <BlurFade delay={0.2 + (2 * 0.05)} className="flex flex-row items-center justify-center gap-1 max-md:gap-3"  inView>
-                    <Image alt="solara" src="/executors/solara.png" width={35} height={35} className="max-md:w-14 max-md:h-14" />
-                    <span className="text-lg font-bold max-md:text-3xl">Solara</span>
+              <div className="flex flex-row items-center justify-center mt-5 gap-8 max-md:flex-col">
+                <Link href={"https://discord.gg/awpgg"} target="_blank">
+                  <BlurFade delay={0.2 + (3 * 0.05)} className="flex flex-row items-center justify-center gap-1 max-md:gap-3" inView>
+                    <Image alt="AWP" src="/executors/awp.png" width={80} height={30} className="max-md:w-17 max-md:h-14" />
+                    <span className="text-lg font-bold max-md:text-3xl">AWP.GG</span>
                   </BlurFade>
                 </Link>
-                <Link href={"https://getwave.gg/"} target="_blank">
-                  <BlurFade delay={0.2 + (3 * 0.05)} className="flex flex-row items-center justify-center gap-1 max-md:gap-3"  inView>
-                    <Image alt="wave" src="/executors/wave.ico" width={30} height={30} className="max-md:w-14 max-md:h-14" />
-                    <span className="text-lg font-bold max-md:text-3xl">Wave</span>
+
+                <Link href={"https://nihon.lol/"} target="_blank">
+                  <BlurFade delay={0.2 + (4 * 0.05)} className="flex flex-row items-center justify-center gap-1 max-md:gap-3" inView>
+                    <Image alt="Nihon" src="/executors/nihon.png" width={30} height={30} className="max-md:w-14 max-md:h-14" />
+                    <span className="text-lg font-bold max-md:text-3xl">Nihon</span>
                   </BlurFade>
                 </Link>
+
                 <Link href={"https://synapsez.net/"} target="_blank">
-                  <BlurFade delay={0.2 + (4 * 0.05)} className="flex flex-row items-center justify-center gap-1 max-md:gap-3"  inView>
-                    <Image alt="synapse z" src="/executors/synz.ico" width={30} height={30} className="max-md:w-14 max-md:h-14" />
+                  <BlurFade delay={0.2 + (4 * 0.05)} className="flex flex-row items-center justify-center gap-1 max-md:gap-3" inView>
+                    <Image alt="Synapse Z" src="/executors/synz.ico" width={30} height={30} className="max-md:w-14 max-md:h-14" />
                     <span className="text-lg font-bold max-md:text-3xl">Synapse Z</span>
                   </BlurFade>
                 </Link>
-                <Link href={"https://www.abyssdigital.xyz/"} target="_blank">
-                  <BlurFade delay={0.2 + (5 * 0.05)} className="flex flex-row items-center justify-center gap-1 max-md:gap-3"  inView>
-                    <Image alt="macsploit" src="/executors/macsploit.png" width={30} height={30} className="max-md:w-14 max-md:h-14" />
-                    <span className="text-lg font-bold max-md:text-3xl">Macsploit</span>
-                  </BlurFade>
-                </Link>
+
                 <Link href={"https://seliware.com/"} target="_blank">
-                  <BlurFade delay={0.2 + (6 * 0.05)} className="flex flex-row items-center justify-center gap-1 max-md:gap-3"  inView>
+                  <BlurFade delay={0.2 + (6 * 0.05)} className="flex flex-row items-center justify-center gap-1 max-md:gap-3" inView>
                     <Image alt="codex" src="/executors/seliware.png" width={30} height={30} className="max-md:w-20 max-md:h-12" />
                     <span className="text-lg font-bold max-md:text-3xl">Seliware</span>
                   </BlurFade>
                 </Link>
+
+                <Link href={"https://getsolara.dev/"} target="_blank">
+                  <BlurFade delay={0.2 + (2 * 0.05)} className="flex flex-row items-center justify-center gap-1 max-md:gap-3" inView>
+                    <Image alt="Solara" src="/executors/solara.png" width={35} height={35} className="max-md:w-14 max-md:h-14" />
+                    <span className="text-lg font-bold max-md:text-3xl">Solara</span>
+                  </BlurFade>
+                </Link>
+
+                <Link href={"https://deltaexploits.gg/"} target="_blank">
+                  <BlurFade delay={0.2 + (5 * 0.05)} className="flex flex-row items-center justify-center gap-1 max-md:gap-3" inView>
+                    <Image alt="Delta" src="/executors/delta.ico" width={30} height={30} className="max-md:w-14 max-md:h-14" />
+                    <span className="text-lg font-bold max-md:text-3xl">Delta</span>
+                  </BlurFade>
+                </Link>
               </div>
+
               <BlurFade delay={0.2 + (7 * 0.05)}  inView>
                   <h4 className="text-muted-foreground text-sm mt-5">And many more...</h4>
               </BlurFade>
-            </>
+            </div>
           }
           showGradient={true}
         />
