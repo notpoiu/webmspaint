@@ -12,6 +12,7 @@ interface WordFadeInProps {
   delay?: number;
   variants?: Variants;
   inView?: boolean;
+  inViewMargin?: number;
   initialDelay?: number;
 }
 
@@ -19,6 +20,7 @@ export default function WordFadeIn({
   words,
   delay = 0.15,
   initialDelay = 0,
+  inViewMargin = -150,
   variants = {
     hidden: { opacity: 0 },
     visible: (i: number) => ({
@@ -31,7 +33,7 @@ export default function WordFadeIn({
   inView = false,
 }: WordFadeInProps) {
   const ref = useRef(null);
-  const inViewResult = useInView(ref, { once: true, margin: "-150px" });
+  const inViewResult = useInView(ref, { once: true, margin: `${-inViewMargin}px 0px ${-inViewMargin}px 0px` });
   const isInView = !inView || inViewResult;
   
   const _words = words.split(" ");

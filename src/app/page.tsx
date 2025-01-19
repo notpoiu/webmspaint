@@ -36,7 +36,10 @@ const gamesList = [
   "Fisch",
   "BABFT",
   "Grace",
-  "Murder Mystery 2"
+  "Murder Mystery 2",
+  "Shrimp Game",
+  "Word Bomb",
+  "Notoriety"
 ];
 
 export default async function Home() {
@@ -227,6 +230,24 @@ export default async function Home() {
           <GameCard 
             title={"Murder Mystery 2"} id={142823291}
             image={`/games/MM2.png`}
+            status={true} issues={false}
+          />
+
+          <GameCard 
+            title={"Shrimp Game"} id={7606564092}
+            image={`/games/ShrimpGames.png`}
+            status={true} issues={false}
+          />
+
+          <GameCard 
+            title={"Word Bomb"} id={2653064683}
+            image={`/games/WordBomb.png`}
+            status={true} issues={false}
+          />
+
+          <GameCard 
+            title={"Notoriety"} id={21532277}
+            image={`/games/Notoriety.png`}
             status={true} issues={false}
           />
         </BlurFade>
