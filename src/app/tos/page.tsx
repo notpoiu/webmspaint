@@ -49,7 +49,7 @@ export default function TOS({
                 </BlurFade>
 
                 <BlurFade delay={0.4 + (1 * 0.05)} className="mb-5 mt-2" inView>
-                    <p className="text-center">By purchasing and using mspaint products, you agree to the following Terms of Service. Violating any of these terms will result in <strong>permanent blacklisting</strong> from all mspaint products.</p>
+                    <p className="text-center">By purchasing and/or using mspaint products, you agree to the following Terms of Service. Violating any of these terms will result in <strong>permanent blacklist</strong> from all mspaint products.</p>
 
                     {/* Usage and Distribution */}
                     <h2 className="text-2xl font-bold flex flex-col mt-6"><strong>Usage and Distribution</strong></h2>
