@@ -56,8 +56,14 @@ export async function POST(request: NextRequest) {
             await sql`INSERT INTO mspaint_keys (serial, order_id, claimed) VALUES (${serial}, ${data.invoice.id}, false);`;
             createdSerials.push(serial);
         }
+
+        return new Response(
+            `Thank you for purchasing ${data.quantity} mspaint key(s)!\n` +
+            `You can redeem your serial(s) at: https://www.mspaint.cc/purchase/completed?serial=${encodeURIComponent(createdSerials.join(","))}\n\n` +
+            `Make sure to keep this link safe, as it is the only way to redeem your key(s).`
+        );
         
-        const serialsFormatted = createdSerials
+        /*const serialsFormatted = createdSerials
             .map(serial => `https://www.mspaint.cc/purchase/completed?serial=${encodeURIComponent(serial)}`)
             .join(" | ");
 
@@ -65,7 +71,7 @@ export async function POST(request: NextRequest) {
             `Thank you for purchasing ${data.quantity} mspaint key(s)!\n` +
             `You can redeem your serial(s) at: ${serialsFormatted}\n\n` +
             `Make sure to keep this link safe, as it is the only way to redeem your key(s).`
-        );
+        );*/
     } else {
         return new Response("Invalid signature");
     }
