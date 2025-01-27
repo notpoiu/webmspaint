@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import Marquee from "@/components/magicui/marquee";
-import { set } from "zod";
 
 interface GithubContent {
   type: string;
