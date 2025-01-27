@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import Marquee from "@/components/magicui/marquee";
+import { set } from "zod";
 
 interface GithubContent {
   type: string;
@@ -59,6 +60,7 @@ const ReviewCard = ({
 export default function ReviewMarquee() {
   const [firstRow, setFirstRow] = useState<Review[]>([]);
   const [secondRow, setSecondRow] = useState<Review[]>([]);
+  const [average, setAverage] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -77,6 +79,7 @@ export default function ReviewMarquee() {
       
       const slicedReviews = randomReviews.slice(0, 17);
       const reviews: Review[] = [];
+      let totalStars = 0;
 
       for (const user_folder of slicedReviews) {
         if (user_folder.type !== "dir") { continue; }
@@ -94,10 +97,13 @@ export default function ReviewMarquee() {
           img: path + "pfp.png",
           stars: data.stars
         } as Review)
+
+        totalStars += data.stars;
       }
       
       setFirstRow(reviews.slice(0, reviews.length / 2));
       setSecondRow(reviews.slice(reviews.length / 2));
+      setAverage(totalStars / reviews.length);
       setIsLoading(false);
     }
 
@@ -109,19 +115,23 @@ export default function ReviewMarquee() {
       <p>Loading...</p>
     </div>
   ) : (
-    <div className="relative py-10 flex w-screen flex-col items-center justify-center overflow-hidden bg-background md:shadow-xl text-left">
-      <Marquee className="[--duration:60s]">
-        {firstRow.map((review) => (
-          <ReviewCard key={review.username} {...review} />
-        ))}
-      </Marquee>
-      <Marquee reverse className="[--duration:60s]">
-        {secondRow.map((review) => (
-          <ReviewCard key={review.username} {...review} />
-        ))}
-      </Marquee>
-      <div className="pointer-events-none absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r from-white dark:from-background"></div>
-      <div className="pointer-events-none absolute inset-y-0 right-0 w-1/3 bg-gradient-to-l from-white dark:from-background"></div>
-    </div>
+    <>
+      <p className="text-muted-foreground text-sm">Average mspaint rating: {average.toFixed(2)} ⭐</p>
+
+      <div className="relative py-10 flex w-screen flex-col items-center justify-center overflow-hidden bg-background md:shadow-xl text-left">
+        <Marquee className="[--duration:60s]">
+          {firstRow.map((review) => (
+            <ReviewCard key={review.username} {...review} />
+          ))}
+        </Marquee>
+        <Marquee reverse className="[--duration:60s]">
+          {secondRow.map((review) => (
+            <ReviewCard key={review.username} {...review} />
+          ))}
+        </Marquee>
+        <div className="pointer-events-none absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r from-white dark:from-background"></div>
+        <div className="pointer-events-none absolute inset-y-0 right-0 w-1/3 bg-gradient-to-l from-white dark:from-background"></div>
+      </div>
+    </>
   );
 }
