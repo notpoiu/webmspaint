@@ -351,7 +351,15 @@ export default async function Home() {
               As of right now, {gamesList.slice(0, -1).join(", ") + " and " + gamesList.slice(-1)} are supported.
             </AccordionContent>
           </AccordionItem>
+          
+          <AccordionItem value="item-6">
+            <AccordionTrigger>How do I review the script?</AccordionTrigger>
+            <AccordionContent>
+              You can review the script by using the /review comamnd in the discord server.
+            </AccordionContent>
+          </AccordionItem>
         </Accordion>
+
         
         <Separator className="mt-[5rem] w-screen" />
 
