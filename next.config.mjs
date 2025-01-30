@@ -36,6 +36,6 @@ const withPWA = withPWAInit({
 });
 
 export default MillionLint.next({
-  enabled: true,
+  enabled: process.env.NODE_ENV === 'development',
   rsc: true
 })(withPWA(nextConfig));
