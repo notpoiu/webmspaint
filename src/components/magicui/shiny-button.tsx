@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useMemo } from "react";
 import {
   motion,
   type AnimationProps,
@@ -55,7 +55,7 @@ export const ShinyButton = React.forwardRef<
             "linear-gradient(-75deg,hsl(var(--primary)) calc(var(--x) + 20%),transparent calc(var(--x) + 30%),hsl(var(--primary)) calc(var(--x) + 100%))",
         }}
       >
-        {children}
+        {useMemo(() => children, [children])}
       </span>
       <span
         style={{

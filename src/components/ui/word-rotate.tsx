@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, HTMLMotionProps, motion } from "framer-motion";
 
 import { cn } from "@/lib/utils";
@@ -34,17 +34,21 @@ export default function WordRotate({
     return () => clearInterval(interval);
   }, [words, duration]);
 
+  const memoizedAnimatePresence = useMemo(() => (
+    <AnimatePresence mode="wait">
+      <motion.h1
+        key={words[index]}
+        className={cn(className)}
+        {...framerProps}
+      >
+        {words[index]}
+      </motion.h1>
+    </AnimatePresence>
+  ), [words, index, className, framerProps]);
+
   return (
     <div className="overflow-hidden py-2">
-      <AnimatePresence mode="wait">
-        <motion.h1
-          key={words[index]}
-          className={cn(className)}
-          {...framerProps}
-        >
-          {words[index]}
-        </motion.h1>
-      </AnimatePresence>
+      {memoizedAnimatePresence}
     </div>
   );
 }

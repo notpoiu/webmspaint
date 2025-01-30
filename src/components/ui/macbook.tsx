@@ -1,4 +1,5 @@
 "use client";
+import React, { memo, useMemo } from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import {
@@ -112,7 +113,7 @@ export const MacbookComponent = ({
   );
 };
 
-export const Lid = ({
+export const Lid = memo(({
   scaleX,
   scaleY,
   rotate,
@@ -127,6 +128,26 @@ export const Lid = ({
   src?: string;
   lid?: string | React.ReactNode;
 }) => {
+  const memoizedImage = useMemo(() => (
+    <Image
+      src={src as string}
+      alt="mspaint"
+      fill
+      className="object-fit absolute rounded-lg inset-0 h-full w-full"
+    />
+  ), [src]);
+
+  const memoizedMotionChildren = useMemo(() => (
+    <>
+      <div className="absolute inset-0 bg-[#272729] rounded-lg" />
+      {memoizedImage}
+    </>
+  ), [memoizedImage]);
+
+  const memoizedMotionDivChild = useMemo(() => (
+    memoizedMotionChildren
+  ), [memoizedMotionChildren]);
+
   return (
     <div className="relative [perspective:800px]">
       <div
@@ -157,30 +178,90 @@ export const Lid = ({
         }}
         className="h-96 w-[32rem] absolute inset-0 bg-[#010101] rounded-2xl p-2"
       >
-        <div className="absolute inset-0 bg-[#272729] rounded-lg" />
-        <Image
-          src={src as string}
-          alt="mspaint"
-          fill
-          className="object-fit absolute rounded-lg inset-0 h-full w-full"
-        />
+        {memoizedMotionDivChild}
       </motion.div>
     </div>
   );
-};
+});
+Lid.displayName = "LidMac";
 
-export const Trackpad = () => {
+export const Trackpad = memo(() => {
   return (
     <div
-      className="w-[40%] mx-auto h-32  rounded-xl my-1"
+      className="w-[40%] mx-auto h-32 rounded-xl my-1"
       style={{
         boxShadow: "0px 0px 1px 1px #00000020 inset",
       }}
     ></div>
   );
-};
+});
+Trackpad.displayName = "TrackpadMac";
 
-export const Keypad = () => {
+export const Keypad = memo(() => {
+  const memoizedIconBrightnessUp = useMemo(() => (
+    <IconBrightnessUp className="h-[6px] w-[6px]" />
+  ), []);
+
+  const memoizedIconBrightnessDown = useMemo(() => (
+    <IconBrightnessDown className="h-[6px] w-[6px]" />
+  ), []);
+
+  const memoizedIconWorld = useMemo(() => (
+    <IconWorld className="h-[6px] w-[6px]" />
+  ), []);
+
+  const memoizedIconCaretRightFilled = useMemo(() => (
+    <IconCaretRightFilled className="h-[6px] w-[6px]" />
+  ), []);
+
+  const memoizedIconTable = useMemo(() => (
+    <IconTable className="h-[6px] w-[6px]" />
+  ), []);
+
+  const memoizedIconVolume = useMemo(() => (
+    <IconVolume className="h-[6px] w-[6px]" />
+  ), [])
+
+  const memoizedIconVolume2 = useMemo(() => (
+    <IconVolume2 className="h-[6px] w-[6px]" />
+  ), []);
+
+  const memoizedIconVolume3 = useMemo(() => (
+    <IconVolume3 className="h-[6px] w-[6px]" />
+  ), []);
+
+  const memoizedIconCommand = useMemo(() => (
+    <IconCommand className="h-[6px] w-[6px]" />
+  ), []);
+
+  const memoizedIconCaretUpFilled = useMemo(() => (
+    <IconCaretUpFilled className="h-[6px] w-[6px]" />
+  ), []);
+
+  const memoizedIconSearch = useMemo(() => (
+    <IconSearch className="h-[6px] w-[6px]" />
+  ), []);
+
+  const memoizedIconMicrophone = useMemo(() => (
+    <IconMicrophone className="h-[6px] w-[6px]" />
+  ), []);
+
+  const memoizedIconMoon = useMemo(() => (
+    <IconMoon className="h-[6px] w-[6px]" />
+  ), []);
+
+  const memoizedIconPlayerTrackNext = useMemo(() => (
+    <IconPlayerTrackNext className="h-[6px] w-[6px]" />
+  ), []);
+
+  const memoizedIconPlayerTrackPrev = useMemo(() => (
+    <IconPlayerTrackPrev className="h-[6px] w-[6px]" />
+  ), []);
+
+  const memoizedIconPlayerSkipForward = useMemo(() => (
+    <IconPlayerSkipForward className="h-[6px] w-[6px]" />
+  ), []);
+
   return (
     <div className="h-full rounded-md bg-[#050505] mx-1 p-1">
       {/* First Row */}
@@ -192,52 +273,52 @@ export const Keypad = () => {
           esc
         </KBtn>
         <KBtn>
-          <IconBrightnessDown className="h-[6px] w-[6px]" />
+          {memoizedIconBrightnessDown}
           <span className="inline-block mt-1">F1</span>
         </KBtn>
 
         <KBtn>
-          <IconBrightnessUp className="h-[6px] w-[6px]" />
+          {memoizedIconBrightnessUp}
           <span className="inline-block mt-1">F2</span>
         </KBtn>
         <KBtn>
-          <IconTable className="h-[6px] w-[6px]" />
+          {memoizedIconTable}
           <span className="inline-block mt-1">F3</span>
         </KBtn>
         <KBtn>
-          <IconSearch className="h-[6px] w-[6px]" />
+          {memoizedIconSearch}
           <span className="inline-block mt-1">F4</span>
         </KBtn>
         <KBtn>
-          <IconMicrophone className="h-[6px] w-[6px]" />
+          {memoizedIconMicrophone}
           <span className="inline-block mt-1">F5</span>
         </KBtn>
         <KBtn>
-          <IconMoon className="h-[6px] w-[6px]" />
+          {memoizedIconMoon}
           <span className="inline-block mt-1">F6</span>
         </KBtn>
         <KBtn>
-          <IconPlayerTrackPrev className="h-[6px] w-[6px]" />
+          {memoizedIconPlayerTrackPrev}
           <span className="inline-block mt-1">F7</span>
         </KBtn>
         <KBtn>
-          <IconPlayerSkipForward className="h-[6px] w-[6px]" />
+          {memoizedIconPlayerSkipForward}
           <span className="inline-block mt-1">F8</span>
         </KBtn>
         <KBtn>
-          <IconPlayerTrackNext className="h-[6px] w-[6px]" />
-          <span className="inline-block mt-1">F8</span>
+          {memoizedIconPlayerTrackNext}
+          <span className="inline-block mt-1">F9</span>
         </KBtn>
         <KBtn>
-          <IconVolume3 className="h-[6px] w-[6px]" />
+          {memoizedIconVolume3}
           <span className="inline-block mt-1">F10</span>
         </KBtn>
         <KBtn>
-          <IconVolume2 className="h-[6px] w-[6px]" />
+          {memoizedIconVolume2}
           <span className="inline-block mt-1">F11</span>
         </KBtn>
         <KBtn>
-          <IconVolume className="h-[6px] w-[6px]" />
+          {memoizedIconVolume}
           <span className="inline-block mt-1">F12</span>
         </KBtn>
         <KBtn>
@@ -471,7 +552,7 @@ export const Keypad = () => {
             <span className="block">fn</span>
           </div>
           <div className="flex justify-start w-full pl-1">
-            <IconWorld className="h-[6px] w-[6px]" />
+            {memoizedIconWorld}
           </div>
         </KBtn>
         <KBtn className="" childrenClassName="h-full justify-between py-[4px]">
@@ -495,7 +576,7 @@ export const Keypad = () => {
           childrenClassName="h-full justify-between py-[4px]"
         >
           <div className="flex justify-end w-full pr-1">
-            <IconCommand className="h-[6px] w-[6px]" />
+            {memoizedIconCommand}
           </div>
           <div className="flex justify-start w-full pl-1">
             <span className="block">command</span>
@@ -507,7 +588,7 @@ export const Keypad = () => {
           childrenClassName="h-full justify-between py-[4px]"
         >
           <div className="flex justify-start w-full pl-1">
-            <IconCommand className="h-[6px] w-[6px]" />
+            {memoizedIconCommand}
           </div>
           <div className="flex justify-start w-full pl-1">
             <span className="block">command</span>
@@ -523,7 +604,7 @@ export const Keypad = () => {
         </KBtn>
         <div className="w-[4.9rem] mt-[2px] h-6 p-[0.5px] rounded-[4px] flex flex-col justify-end items-center">
           <KBtn className="w-6 h-3">
-            <IconCaretUpFilled className="h-[6px] w-[6px]" />
+            {memoizedIconCaretUpFilled}
           </KBtn>
           <div className="flex">
             <KBtn className="w-6 h-3">
@@ -533,15 +614,17 @@ export const Keypad = () => {
               <IconCaretDownFilled className="h-[6px] w-[6px]" />
             </KBtn>
             <KBtn className="w-6 h-3">
-              <IconCaretRightFilled className="h-[6px] w-[6px]" />
+              {memoizedIconCaretRightFilled}
             </KBtn>
           </div>
         </div>
       </Row>
     </div>
   );
-};
-export const KBtn = ({
+});
+Keypad.displayName = "KeypadMac";
+
+export const KBtn = memo(({
   className,
   children,
   childrenClassName,
@@ -581,17 +664,19 @@ export const KBtn = ({
       </div>
     </div>
   );
-};
+});
+KBtn.displayName = "KBtnMac";
 
-export const Row = ({ children }: { children: React.ReactNode }) => {
+export const Row = memo(({ children }: { children: React.ReactNode }) => {
   return (
     <div className="flex gap-[2px] mb-[2px] w-full flex-shrink-0">
       {children}
     </div>
   );
-};
+});
+Row.displayName = "RowMac";
 
-export const SpeakerGrid = () => {
+export const SpeakerGrid = memo(() => {
   return (
     <div
       className="flex px-[0.5px] gap-[2px] mt-2 h-40"
@@ -602,9 +687,10 @@ export const SpeakerGrid = () => {
       }}
     ></div>
   );
-};
+});
+SpeakerGrid.displayName = "SpeakerMac";
 
-export const OptionKey = ({ className }: { className: string }) => {
+export const OptionKey = memo(({ className }: { className: string }) => {
   return (
     <svg
       fill="none"
@@ -636,4 +722,5 @@ export const OptionKey = ({ className }: { className: string }) => {
       />
     </svg>
   );
-};
+});
+OptionKey.displayName = "OptionKeyMac";

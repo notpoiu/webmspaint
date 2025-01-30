@@ -1,3 +1,4 @@
+import MillionLint from '@million/lint';
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     images: {
@@ -26,12 +27,15 @@ const nextConfig = {
     }
 };
 
-import withPWAInit from "@ducanh2912/next-pwa";
+import withPWAInit from '@ducanh2912/next-pwa';
 
 const withPWA = withPWAInit({
-  dest: "public",
-  disable: process.env.NODE_ENV === "development",
-  scope: "/app/dashboard",
+  dest: 'public',
+  disable: process.env.NODE_ENV === 'development',
+  scope: '/app/dashboard',
 });
 
-export default withPWA(nextConfig);
+export default MillionLint.next({
+  enabled: true,
+  rsc: true
+})(withPWA(nextConfig));

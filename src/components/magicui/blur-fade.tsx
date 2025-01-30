@@ -8,6 +8,7 @@ import {
   UseInViewOptions,
   Variants,
 } from "framer-motion";
+import { useMemo, memo } from "react";
 
 type MarginType = UseInViewOptions["margin"];
 
@@ -26,7 +27,7 @@ interface BlurFadeProps {
   blur?: string;
 }
 
-export default function BlurFade({
+const BlurFade = memo(function BlurFade({
   children,
   className,
   variant,
@@ -40,28 +41,42 @@ export default function BlurFade({
   const ref = useRef(null);
   const inViewResult = useInView(ref, { once: true, margin: inViewMargin });
   const isInView = !inView || inViewResult;
-  const defaultVariants: Variants = {
-    hidden: { y: yOffset, opacity: 0, filter: `blur(${blur})` },
-    visible: { y: -yOffset, opacity: 1, filter: `blur(0px)` },
-  };
-  const combinedVariants = variant || defaultVariants;
-  return (
-    <AnimatePresence>
-      <motion.div
-        ref={ref}
-        initial="hidden"
-        animate={isInView ? "visible" : "hidden"}
-        exit="hidden"
-        variants={combinedVariants}
-        transition={{
-          delay: 0.04 + delay,
-          duration,
-          ease: "easeOut",
-        }}
-        className={className}
-      >
-        {children}
-      </motion.div>
-    </AnimatePresence>
+
+  const defaultVariants: Variants = useMemo(
+    () => ({
+      hidden: { y: yOffset, opacity: 0, filter: `blur(${blur})` },
+      visible: { y: -yOffset, opacity: 1, filter: `blur(0px)` },
+    }),
+    [yOffset, blur]
   );
-}
+
+  const combinedVariants = useMemo(
+    () => variant || defaultVariants,
+    [variant, defaultVariants]
+  );
+
+  const transitionConfig = useMemo(
+    () => ({
+      delay: 0.04 + delay,
+      duration,
+      ease: "easeOut",
+    }),
+    [delay, duration]
+  );
+
+  return (
+    <motion.div
+      ref={ref}
+      initial="hidden"
+      animate={isInView ? "visible" : "hidden"}
+      exit="hidden"
+      variants={combinedVariants}
+      transition={transitionConfig}
+      className={className}
+    >
+      {useMemo(() => children, [children])}
+    </motion.div>
+  );
+});
+
+export default BlurFade;

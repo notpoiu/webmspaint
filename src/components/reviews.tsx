@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { cn } from "@/lib/utils";
 import Marquee from "@/components/magicui/marquee";
 
@@ -67,7 +67,7 @@ export default function ReviewMarquee() {
       const response = await fetch("https://api.github.com/repos/mspaint-cc/assets/contents/reviews", {
         next: { revalidate: 300 },
         method: "GET"
-      })
+      });
       
       const reviewsData = await response.json();
       const randomReviews = reviewsData.filter((review: unknown) => {
@@ -87,7 +87,7 @@ export default function ReviewMarquee() {
         const req = await fetch(path + "data.json");
         const data = await req.json();
       
-        if (data.banned == true) { continue; }
+        if (data.banned === true) { continue; }
         
         reviews.push({
           name: data.name,
@@ -95,7 +95,7 @@ export default function ReviewMarquee() {
           body: data.content,
           img: path + "pfp.png",
           stars: data.stars
-        } as Review)
+        } as Review);
 
         totalStars += data.stars;
       }
@@ -109,6 +109,22 @@ export default function ReviewMarquee() {
     fetchData();
   }, []);
 
+  const memoizedFirstMarquee = useMemo(() => (
+    <Marquee className="[--duration:60s]">
+      {firstRow.map((review) => (
+        <ReviewCard key={review.username} {...review} />
+      ))}
+    </Marquee>
+  ), [firstRow]);
+
+  const memoizedSecondMarquee = useMemo(() => (
+    <Marquee reverse className="[--duration:60s]">
+      {secondRow.map((review) => (
+        <ReviewCard key={review.username} {...review} />
+      ))}
+    </Marquee>
+  ), [secondRow]);
+
   return isLoading ? (
     <div className="flex w-screen flex-col items-center justify-center">
       <p>Loading...</p>
@@ -118,16 +134,8 @@ export default function ReviewMarquee() {
       <p className="text-muted-foreground text-sm">Average mspaint rating: {average.toFixed(2)} ⭐</p>
 
       <div className="relative py-10 flex w-screen flex-col items-center justify-center overflow-hidden bg-background md:shadow-xl text-left">
-        <Marquee className="[--duration:60s]">
-          {firstRow.map((review) => (
-            <ReviewCard key={review.username} {...review} />
-          ))}
-        </Marquee>
-        <Marquee reverse className="[--duration:60s]">
-          {secondRow.map((review) => (
-            <ReviewCard key={review.username} {...review} />
-          ))}
-        </Marquee>
+        {memoizedFirstMarquee}
+        {memoizedSecondMarquee}
         <div className="pointer-events-none absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r from-white dark:from-background"></div>
         <div className="pointer-events-none absolute inset-y-0 right-0 w-1/3 bg-gradient-to-l from-white dark:from-background"></div>
       </div>

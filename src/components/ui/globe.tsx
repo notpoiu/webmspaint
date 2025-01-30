@@ -1,9 +1,9 @@
 "use client";
 
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, memo } from "react";
 import createGlobe from "cobe";
 
-export const Globe = ({ className, speed = 1 }: { className?: string, speed?: number }) => {
+const Globe = memo(({ className, speed = 1 }: { className?: string, speed?: number }) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
    
     useEffect(() => {
@@ -49,4 +49,6 @@ export const Globe = ({ className, speed = 1 }: { className?: string, speed?: nu
         className={className}
       />
     );
-  };
+});
+Globe.displayName = "Globe";
+export default Globe;
