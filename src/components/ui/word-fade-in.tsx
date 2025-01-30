@@ -17,6 +17,9 @@ interface WordFadeInProps {
   initialDelay?: number;
 }
 
+type MarginValue = `${number}${"px" | "%"}`;
+type MarginType = MarginValue | `${MarginValue} ${MarginValue}` | `${MarginValue} ${MarginValue} ${MarginValue}` | `${MarginValue} ${MarginValue} ${MarginValue} ${MarginValue}`;
+
 export default function WordFadeIn({
   words,
   delay = 0.15,
@@ -33,7 +36,7 @@ export default function WordFadeIn({
     [inViewMargin]
   );
   
-  const inViewResult = useInView(ref, { once: true, margin: memoizedMargin });
+  const inViewResult = useInView(ref, { once: true, margin: memoizedMargin as MarginType });
   const isInView = useMemo(() => !inView || inViewResult, [inView, inViewResult]);
   const _words = useMemo(() => words.split(" "), [words]);
   
