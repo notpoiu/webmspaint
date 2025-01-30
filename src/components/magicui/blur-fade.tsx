@@ -2,7 +2,6 @@
 
 import { useRef } from "react";
 import {
-  AnimatePresence,
   motion,
   useInView,
   UseInViewOptions,
