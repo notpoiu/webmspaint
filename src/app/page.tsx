@@ -26,7 +26,6 @@ import { Suspense } from "react";
 import { Input } from "@/components/ui/input";
 import CopyButton from "@/components/copy-button";
 import { ShinyButton } from "@/components/magicui/shiny-button";
-import Globe from "@/components/ui/globe";
 
 const gamesList = [
   "DOORS",
