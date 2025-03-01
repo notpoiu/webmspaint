@@ -1,4 +1,3 @@
-import AnimatedShinyText from "@/components/magicui/animated-shiny-text";
 import BlurFade from "@/components/magicui/blur-fade";
 import DotPattern from "@/components/magicui/dot-pattern";
 import NumberTicker from "@/components/magicui/number-ticker";
@@ -7,8 +6,8 @@ import ReviewMarquee from "@/components/reviews";
 import { MacbookComponent } from "@/components/ui/macbook";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
-import { ArrowRightIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import {
   Accordion,
   AccordionContent,
@@ -20,12 +19,12 @@ import Iphone15Pro from "@/components/magicui/iphone-15-pro";
 import WordRotate from "@/components/ui/word-rotate";
 import WordFadeIn from "@/components/ui/word-fade-in";
 import GameCard from "@/components/game-card";
-import { ShoppingBagIcon } from "lucide-react";
 import { Highlight } from "@/components/ui/hero-highlight";
 import { Suspense } from "react";
 import { Input } from "@/components/ui/input";
 import CopyButton from "@/components/copy-button";
 import { ShinyButton } from "@/components/magicui/shiny-button";
+import Executor from "@/components/executor";
 
 const gamesList = [
   "DOORS",
@@ -40,6 +39,11 @@ const gamesList = [
   "Word Bomb",
   "Notoriety"
 ];
+
+const DynamicShopButton = dynamic(() => import("@/components/buy-mspaint"), {
+  loading: () => <></>,
+  ssr: false,
+})
 
 export default async function Home() {
   let languageData, guildData;
@@ -90,10 +94,7 @@ export default async function Home() {
                         "group rounded-full border border-black/5 bg-neutral-100 text-base text-white transition-all ease-in hover:cursor-pointer hover:bg-neutral-200 dark:border-white/5 dark:bg-neutral-900 dark:hover:bg-neutral-800",
                       )}
                     >
-                      <AnimatedShinyText className="inline-flex items-center justify-center px-4 py-1 transition ease-out hover:text-neutral-600 hover:duration-300 hover:dark:text-neutral-400">
-                        <ShoppingBagIcon className="mr-2" /><span>Buy mspaint lifetime</span>
-                        <ArrowRightIcon className="ml-1 size-3 transition-transform duration-300 ease-in-out group-hover:translate-x-0.5" />
-                      </AnimatedShinyText>
+                      <DynamicShopButton />
                     </div>
                   </div>
                 </Link>
@@ -119,7 +120,7 @@ export default async function Home() {
                   <Input className="overflow-hidden text-ellipsis min-w-[300px]" readOnly value={'loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/002c19202c9946e6047b0c6e0ad51f84.lua"))()'}/>
                   <CopyButton text={'loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/002c19202c9946e6047b0c6e0ad51f84.lua"))()'} />
                   
-                  <Link href={"https://discord.gg/mspaint"} target="_blank">
+                  <Link aria-label="Discord Server" href={"https://discord.gg/mspaint"} target="_blank">
                     <ShinyButton className="px-2">
                       <svg className="w-5 h-5" id="svg" viewBox="0 0 48 37" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M40.6606 3.08587C37.5127 1.62534 34.1825 0.587574 30.7579 0C30.3314 0.764729 29.833 1.79329 29.4893 2.61157C25.7971 2.06103 22.1387 2.06103 18.5144 2.61157C18.1709 1.79348 17.6612 0.764729 17.2307 0C13.8029 0.587845 10.4698 1.62826 7.32043 3.0935C1.05343 12.4846 -0.645507 21.6422 0.203868 30.6702C4.36056 33.7483 8.38881 35.6182 12.3492 36.8418C13.3334 35.4996 14.2035 34.0786 14.9504 32.5935C13.5284 32.0567 12.1576 31.3951 10.8542 30.6167C11.1972 30.3646 11.5322 30.1018 11.8585 29.8289C19.7564 33.4921 28.3379 33.4921 36.1416 29.8289C36.4694 30.1 36.8042 30.3627 37.1457 30.6167C35.8402 31.3971 34.4669 32.06 33.0421 32.5974C33.7932 34.0885 34.6617 35.5109 35.6432 36.8455C39.6074 35.6221 43.6394 33.7522 47.7961 30.6702C48.7928 20.2046 46.0936 11.1309 40.6606 3.08569V3.08587ZM16.0264 25.1182C13.6555 25.1182 11.7111 22.9233 11.7111 20.2505C11.7111 17.5778 13.6141 15.3792 16.0264 15.3792C18.439 15.3792 20.3832 17.5739 20.3417 20.2505C20.3455 22.9233 18.439 25.1182 16.0264 25.1182ZM31.9735 25.1182C29.6026 25.1182 27.6584 22.9233 27.6584 20.2505C27.6584 17.5778 29.5611 15.3792 31.9735 15.3792C34.3861 15.3792 36.3302 17.5739 36.2888 20.2505C36.2888 22.9233 34.3861 25.1182 31.9735 25.1182Z" fill="#5865F2"></path></svg>
                     </ShinyButton>
@@ -136,51 +137,17 @@ export default async function Home() {
                   Supporting your favorite executors
                 </h1>
               </BlurFade>
+
               <div className="flex flex-row items-center justify-center mt-5 gap-8 max-md:flex-col">
-                <Link href={"https://discord.gg/awpgg"} target="_blank">
-                  <BlurFade delay={0.2 + (3 * 0.05)} className="flex flex-row items-center justify-center gap-1 max-md:gap-3" inView>
-                    <Image alt="AWP" src="/executors/awp.png" width={80} height={30} className="max-md:w-17 max-md:h-14" />
-                    <span className="text-lg font-bold max-md:text-3xl">AWP.GG</span>
-                  </BlurFade>
-                </Link>
-
-                <Link href={"https://nihon.lol/"} target="_blank">
-                  <BlurFade delay={0.2 + (4 * 0.05)} className="flex flex-row items-center justify-center gap-1 max-md:gap-3" inView>
-                    <Image alt="Nihon" src="/executors/nihon.png" width={30} height={30} className="max-md:w-14 max-md:h-14" />
-                    <span className="text-lg font-bold max-md:text-3xl">Nihon</span>
-                  </BlurFade>
-                </Link>
-
-                <Link href={"https://synapsez.net/"} target="_blank">
-                  <BlurFade delay={0.2 + (4 * 0.05)} className="flex flex-row items-center justify-center gap-1 max-md:gap-3" inView>
-                    <Image alt="Synapse Z" src="/executors/synz.ico" width={30} height={30} className="max-md:w-14 max-md:h-14" />
-                    <span className="text-lg font-bold max-md:text-3xl">Synapse Z</span>
-                  </BlurFade>
-                </Link>
-
-                <Link href={"https://seliware.com/"} target="_blank">
-                  <BlurFade delay={0.2 + (6 * 0.05)} className="flex flex-row items-center justify-center gap-1 max-md:gap-3" inView>
-                    <Image alt="codex" src="/executors/seliware.png" width={30} height={30} className="max-md:w-20 max-md:h-12" />
-                    <span className="text-lg font-bold max-md:text-3xl">Seliware</span>
-                  </BlurFade>
-                </Link>
-
-                <Link href={"https://getsolara.dev/"} target="_blank">
-                  <BlurFade delay={0.2 + (2 * 0.05)} className="flex flex-row items-center justify-center gap-1 max-md:gap-3" inView>
-                    <Image alt="Solara" src="/executors/solara.png" width={35} height={35} className="max-md:w-14 max-md:h-14" />
-                    <span className="text-lg font-bold max-md:text-3xl">Solara</span>
-                  </BlurFade>
-                </Link>
-
-                <Link href={"https://deltaexploits.gg/"} target="_blank">
-                  <BlurFade delay={0.2 + (5 * 0.05)} className="flex flex-row items-center justify-center gap-1 max-md:gap-3" inView>
-                    <Image alt="Delta" src="/executors/delta.ico" width={30} height={30} className="max-md:w-14 max-md:h-14" />
-                    <span className="text-lg font-bold max-md:text-3xl">Delta</span>
-                  </BlurFade>
-                </Link>
+                <Executor name={"AWP.GG"}     image={"/executors/awp.png"}      url={"https://discord.gg/awpgg"} isWidth={true} />
+                <Executor name={"Zenith"}     image={"/executors/zenith.png"}   url={"https://zenith.win"}        />
+                <Executor name={"Synapse Z"}  image={"/executors/synz.ico"}     url={"https://synapsez.net"}      />
+                <Executor name={"Seliware"}   image={"/executors/seliware.png"} url={"https://seliware.com"}      />
+                <Executor name={"Solara"}     image={"/executors/solara.png"}   url={"https://getsolara.dev"}     />
+                <Executor name={"Delta"}      image={"/executors/delta.ico"}    url={"https://deltaexploits.gg"}  />
               </div>
 
-              <BlurFade delay={0.2 + (7 * 0.05)}  inView>
+              <BlurFade delay={0.2 + (7 * 0.05)} inView>
                   <h4 className="text-muted-foreground text-sm mt-5">And many more...</h4>
               </BlurFade>
             </div>
