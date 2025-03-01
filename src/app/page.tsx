@@ -189,7 +189,7 @@ export default async function Home() {
         />
       </div>
 
-      <div id="games" className="flex flex-col items-center mt-[-15vh] mb-[20vh] text-center overflow-hidden relative">
+      <div id="games" className="flex flex-col items-center mt-[-15vh] mb-[10vh] text-center overflow-hidden relative">
         <WordFadeIn className="text-3xl md:text-3xl" words={`mspaint officially supports ${Object.keys(gamesList).length} games`} inView />
         <BlurFade className="mb-[15px]" delay={0.2 + (1 * 0.05)} inView>
           <WordFadeIn className="text-xl md:text-xl font-normal" words={`quality & quantity`} inView initialDelay={0.15 * 6} delay={0.35} />
@@ -264,13 +264,16 @@ export default async function Home() {
         </BlurFade>
       </div>
 
-      <div className="flex flex-col items-center mb-[15vh] text-center py-28">
+      <div className="flex flex-col items-center text-center py-28">
         <WordFadeIn className="text-3xl md:text-3xl" words={`mspaint is translated in ${Object.keys(languageData).length - 1} languages`} inView />
         <BlurFade delay={0.2 + (1 * 0.05)} inView>
           <WordFadeIn className="text-xl md:text-xl font-normal" words={`accessibility done right`} inView initialDelay={0.15 * 6} delay={0.25} />
         </BlurFade>
 
-        <div className="absolute bottom-0 z-40 inset-x-0 h-60 bg-gradient-to-t from-[#0a0a0a] via-black to-transparent w-full pointer-events-none" />
+        {/*<div className="w-full bottom-0 z-40 inset-x-0 h-40 bg-gradient-to-t from-[#0a0a0a] via-black to-transparent w-full pointer-events-none" />
+        */}
+
+        <Separator className="mt-[2.5rem] w-[55vw]" />
       </div>
 
       <div className="flex flex-col items-center justify-center px-2 text-center">
