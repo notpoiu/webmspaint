@@ -37,3 +37,6 @@ next-env.d.ts
 
 # Million Lint
 .million
+
+# erm
+public/menu

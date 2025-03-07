@@ -25,6 +25,7 @@ import { Input } from "@/components/ui/input";
 import CopyButton from "@/components/copy-button";
 import { ShinyButton } from "@/components/magicui/shiny-button";
 import Executor from "@/components/executor";
+import { Features } from "@/components/features";
 
 const gamesList = [
   "DOORS",
@@ -230,6 +231,8 @@ export default async function Home() {
           />
         </BlurFade>
       </div>
+
+      <Features />
 
       <div className="flex flex-col items-center text-center py-28">
         <WordFadeIn className="text-3xl md:text-3xl" words={`mspaint is translated in ${Object.keys(languageData).length - 1} languages`} inView />
