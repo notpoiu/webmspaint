@@ -21,6 +21,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
+
 import { LatestBuild, MenuMapping } from "../../features.config";
 
 export function GameSelection({ onValueChange }: { onValueChange: (value: string) => void }) {
@@ -44,7 +45,7 @@ export function GameSelection({ onValueChange }: { onValueChange: (value: string
                     variant="outline"
                     role="combobox"
                     aria-expanded={open}
-                    className="w-[300px] justify-between mt-5 mb-5"
+                    className="w-[300px] justify-between mt-5 mb-5 max-md:mt-2 max-md:mb-2 max-sm:mb-1 max-sm:mt-1"
                 >
                     {displayText()}
                     <ChevronsUpDown className="opacity-50" />
@@ -94,12 +95,14 @@ export function Features() {
             <WordFadeIn className="text-3xl md:text-3xl mb-5" words={`mspaint features:`} inView />
 
             <BlurFade inViewMargin="0px" inView>
-                <Obsidian
-                    title={"mspaint"}
-                    icon={"/icon.png"}
-                    footer={`Game: ${footerGame} | Build: ${LatestBuild}`}
-                    tabs={tabs}
-                />
+                <div className="max-w-[720px] max-h-[600px] scale-[0.8] max-sm:scale-[0.5] md:scale-90 lg:scale-100">
+                    <Obsidian
+                        title={"mspaint"}
+                        icon={"/icon.png"}
+                        footer={`Game: ${footerGame} | Build: ${LatestBuild}`}
+                        tabs={tabs}
+                    />
+                </div>
 
                 <GameSelection onValueChange={(game) => {
                     const category = game.split(" - ")[0] as keyof typeof MenuMapping;
