@@ -97,7 +97,7 @@ export function Features() {
             <BlurFade inViewMargin="0px" inView>
                 <div className="max-w-[720px] max-h-[600px] scale-[0.8] max-sm:scale-[0.5] md:scale-90 lg:scale-100">
                     <Obsidian
-                        title={"mspaint"}
+                        title={"mspaint v4"}
                         icon={"/icon.png"}
                         footer={`Game: ${footerGame} | Build: ${LatestBuild}`}
                         tabs={tabs}
