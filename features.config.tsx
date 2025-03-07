@@ -3,44 +3,6 @@ import { ObsidianGroupboxSection } from "@/components/obsidian/obsidian";
 
 export const LatestBuild = "0.2.0.3";
 
-const IncludedTabs = [
-    {
-        title: "UI Settings",
-        icon: SettingsIcon,
-        tabContent: (
-            <div className="max-w-full h-full flex flex-row justify-center">
-                <ObsidianGroupboxSection>
-                    <img src="/menu/left_uisettings.png" alt="left" />
-                </ObsidianGroupboxSection>
-                <ObsidianGroupboxSection>
-                    <img src="/menu/right_uisettings.png" alt="right" />
-                </ObsidianGroupboxSection>
-            </div>
-        )
-    },
-    {
-        title: "Credits",
-        icon: MessageSquareShareIcon,
-        tabContent: (
-            <div className="max-w-full h-full flex flex-row justify-center">
-                <ObsidianGroupboxSection>
-                    <img src="/menu/left_credits.png" alt="left" />
-                </ObsidianGroupboxSection>
-                <ObsidianGroupboxSection>
-                    <img src="/menu/right_credits.png" alt="right" />
-                </ObsidianGroupboxSection>
-            </div>
-        )
-    },
-    {
-        title: "Addons",
-        icon: BoxesIcon,
-        tabContent: (
-            <img src="/menu/addons_warning.png" alt="warning box" />
-        )
-    }
-]
-
 const ObsidianTabContainer = ({ left, right, header }: { left?: string, right?: string, header?: string }) => {
     return (
         <div className="max-w-full h-full flex flex-col justify-center">
@@ -56,6 +18,36 @@ const ObsidianTabContainer = ({ left, right, header }: { left?: string, right?: 
         </div>
     )
 }
+
+const IncludedTabs = [
+    {
+        title: "UI Settings",
+        icon: SettingsIcon,
+        tabContent: 
+            <ObsidianTabContainer
+                left="/menu/left_uisettings.png"
+                right="/menu/right_uisettings.png"
+            />
+    },
+    {
+        title: "Credits",
+        icon: MessageSquareShareIcon,
+        tabContent: 
+            <ObsidianTabContainer
+                left="/menu/left_credits.png"
+                right="/menu/right_credits.png"
+            />
+    },
+    {
+        title: "Addons",
+        icon: BoxesIcon,
+        tabContent: 
+            <ObsidianTabContainer
+                header="/menu/addons_warning.png"
+            />
+    }
+]
+
 
 
 export const MenuMapping = {
