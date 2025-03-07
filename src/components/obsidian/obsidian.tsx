@@ -39,7 +39,7 @@ export function Obsidian({
     tabs,
 }: ObsidianProps) {
     return (
-        <div className={cn("w-[720px] h-[600px] rounded-[3px] bg-[rgb(15, 15, 15)] border-[rbg(40,40,40)] border font-mono relative", mono.className)}>
+        <div className={cn("w-[720px] h-[600px] rounded-[3px] bg-[rgb(15, 15, 15)] border-[rbg(40,40,40)] border relative font-normal", mono.className)}>
             {/* Top Bar */}
             <div className="w-full h-[48px] flex flex-row px-0 bg-[rbga(13,13,13,255)]">
                 {/* Title */}
