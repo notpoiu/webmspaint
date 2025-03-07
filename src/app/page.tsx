@@ -324,7 +324,7 @@ export default async function Home() {
           <AccordionItem value="item-6">
             <AccordionTrigger>How do I review the script?</AccordionTrigger>
             <AccordionContent>
-              You can review the script by using the /review comamnd in the discord server.
+              You can review the script by using the /review command in the discord server.
             </AccordionContent>
           </AccordionItem>
         </Accordion>
