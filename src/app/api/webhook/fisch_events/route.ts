@@ -72,7 +72,7 @@ export async function POST(req: NextRequest) {
             embeds: [
                 {
                     title: "Event Tracker | <:mspaint:1299074827583230085> mspaint",
-                    description: `**[Event]**: ${data.event}\n**[Time]**: <t:${Math.floor(Date.now() / 1000)}:R>\n**[Current Cycle]**\n<:reply:1335730071889117255>${data.cycle}\n\n**[Server]**\n<:reply:1335730071889117255>${serverUptime(data.uptime)}\n<:reply:1335730071889117255>[Join Server](https://externalrobloxjoiner.glitch.me/join?placeId=${placeid}&jobId=${data.jobid})`,
+                    description: `**[Event]**: ${data.event}\n**[Time]**: <t:${Math.floor(Date.now() / 1000)}:R>\n**[Current Cycle]**\n<:reply:1335730071889117255>${data.cycle}\n\n**[Server]**\n<:connect:1335730096694362163>${serverUptime(data.uptime)}\n<:reply:1335730071889117255>[Join Server](https://externalrobloxjoiner.glitch.me/join?placeId=${placeid}&jobId=${data.jobid})`,
                 }
             ]
         })
