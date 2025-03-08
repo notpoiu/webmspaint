@@ -46,12 +46,12 @@ const schema = z.object({
 })
 
 function serverUptime(uptime: number) {
-    const seconds = uptime;
-    const days = seconds / 86400;
-    const hours = seconds / 3600 % 24;
-    const minutes = seconds / 60 % 60;
-
-    return `${days.toFixed(0)}:${hours.toFixed(0)}:${minutes.toFixed(0)}`;
+    const seconds = Math.floor(uptime);
+    const days = Math.floor(seconds / 86400);
+    const hours = Math.floor((seconds % 86400) / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    
+    return `${days}:${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
 }
 
 export async function POST(req: NextRequest) {
