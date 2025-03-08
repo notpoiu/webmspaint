@@ -17,7 +17,6 @@ const roleids = {
     "Great Hammerhead Shark": "1347958071175151616",
     "The Kraken Pool": "1347958142927110234",
     "Ancient Kraken Pool": "1347958142927110234",
-    "Isonade": "1347958191589429299",
     "Golden Tide": "1347958220215287938"
 }
 
@@ -36,7 +35,6 @@ const schema = z.object({
         "Great White Shark",
         "The Kraken Pool",
         "Ancient Kraken Pool",
-        "Isonade",
         "Golden Tide"
     ]),
     cycle: z.enum([
