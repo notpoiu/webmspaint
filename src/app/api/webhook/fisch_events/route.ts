@@ -54,7 +54,45 @@ function serverUptime(uptime: number) {
     return `${days}:${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
 }
 
+function getHWID(headers: Headers) {
+    let fingerprint = "not found";
+  
+    if (headers !== undefined && headers instanceof Headers) {
+      headers.forEach((value: string, name: string) => {
+          const val_name = name.toLocaleLowerCase();
+  
+          const is_fingerprint = val_name.includes("fingerprint") || val_name.includes("hwid");
+          const value_exists = value != undefined && value != null && value != "";
+  
+          if (is_fingerprint && value_exists) {
+              fingerprint = value;
+          }
+      });
+    }
+
+    if (headers !== undefined && headers instanceof Headers && fingerprint === "not found") {
+        headers.forEach((value: string, name: string) => {
+            const val_name = name.toLocaleLowerCase();
+
+            const is_identifier = val_name.includes("identifier");
+            const value_exists = value != undefined && value != null && value != "";
+
+            if (is_identifier && value_exists) {
+                fingerprint = value;
+            }
+        });
+    }
+    
+    return fingerprint;
+}
+
 export async function POST(req: NextRequest) {
+    const fingerprint = getHWID(req.headers);
+
+    if (fingerprint === "not found") {
+        return NextResponse.json({ status: "error", error: "Failed" });
+    }
+
     const rawData = await req.json();
     const { success, error, data } = schema.safeParse(rawData);
 
