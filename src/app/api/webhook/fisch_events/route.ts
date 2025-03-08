@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
+import { kv } from '@vercel/kv';
 import z from "zod";
 
 const placeid = "16732694052";
+const RATE_LIMIT = 5; // 5 requests per minute
+const WINDOW_TIME = 60; // 60 seconds (1 minute)
 
 const roleids = {
     "Whales Pool": "1343405201570136175",
@@ -54,6 +57,40 @@ function serverUptime(uptime: number) {
     return `${days}:${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
 }
 
+async function checkRateLimit(ip: string): Promise<boolean> {
+    const key = `ratelimit:${ip}`;
+    
+    // Get current count
+    const count = await kv.get<number>(key) || 0;
+    
+    if (count === 0) {
+      await kv.set(key, 1, { ex: WINDOW_TIME });
+      return true;
+    } else if (count < RATE_LIMIT) {
+      await kv.incr(key);
+      return true;
+    } else {
+      return false;
+    }
+}
+
+async function getIp(headersList: Headers, request?: NextRequest) {
+    const cloudflareIP = headersList.get("cf-connecting-ip");
+    if (cloudflareIP) return cloudflareIP;
+
+    if (request) {
+      if (request.ip) return request.ip;
+    }
+
+    const forwarded = headersList.get("x-forwarded-for");
+    const realIp = headersList.get("x-real-ip");
+
+    if (forwarded) return forwarded.split(",")[0].trim();
+    if (realIp) return realIp.trim();
+    
+    return undefined;
+}
+
 function getHWID(headers: Headers) {
     let fingerprint = "not found";
   
@@ -92,6 +129,20 @@ export async function POST(req: NextRequest) {
     if (fingerprint === "not found") {
         return NextResponse.json({ status: "error", error: "Failed" });
     }
+
+    const ip = await getIp(req.headers, req);
+
+    if (!ip) {
+        return NextResponse.json({ status: "error", error: "Could not determine client IP" });
+    }
+
+    const allowed = await checkRateLimit(ip);
+    if (!allowed)
+        return NextResponse.json({
+            status: "error",
+            error: "Rate limit exceeded. Try again in later."
+        });
+    
 
     const rawData = await req.json();
     const { success, error, data } = schema.safeParse(rawData);
