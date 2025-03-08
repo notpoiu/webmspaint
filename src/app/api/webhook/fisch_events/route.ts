@@ -3,7 +3,7 @@ import { kv } from '@vercel/kv';
 import z from "zod";
 
 const placeid = "16732694052";
-const RATE_LIMIT = 5; // 5 requests per minute
+const RATE_LIMIT = 2; // 5 requests per minute
 const WINDOW_TIME = 60; // 60 seconds (1 minute)
 
 const roleids = {
@@ -60,19 +60,15 @@ function serverUptime(uptime: number) {
 async function checkRateLimit(ip: string): Promise<boolean> {
     const key = `ratelimit:${ip}`;
     
-    // Get current count and TTL
     const count = await kv.get<number>(key) || 0;
     const ttl = await kv.ttl(key);
-
-    console.log("ok checking rate limit");
-    console.log(count, ttl, key);
     
     if (count === 0) {
       await kv.set(key, 1, { ex: WINDOW_TIME });
       return true;
     } else if (count < RATE_LIMIT) {
       await kv.incr(key);
-      // Reset expiry time if it wasn't set or is about to expire
+    
       if (ttl < 0 || ttl < WINDOW_TIME / 2) {
         await kv.expire(key, WINDOW_TIME);
       }
