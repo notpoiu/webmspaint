@@ -9,11 +9,12 @@ import CopyButton from "@/components/copy-button";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
 
-export default async function Page({
-    searchParams
-}: {
-    searchParams?: { [key: string]: string | undefined };
-}) {
+export default async function Page(
+    props: {
+        searchParams?: Promise<{ [key: string]: string | undefined }>;
+    }
+) {
+    const searchParams = await props.searchParams;
     if (!searchParams) {
         return notFound();
     }
@@ -26,7 +27,7 @@ export default async function Page({
     }
 
     const serials = serialParam.split(",");
-    
+
     if (serials.length === 0) {
         return notFound();
     }

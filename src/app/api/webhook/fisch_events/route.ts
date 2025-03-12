@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { ipAddress } from "@vercel/functions";
 import { kv } from '@vercel/kv';
 import z from "zod";
 
@@ -60,7 +61,7 @@ function serverUptime(uptime: number) {
 async function checkRateLimit(ip: string): Promise<boolean> {
     const key = `ratelimit:${ip}`;
     
-    const count = await kv.get<number>(key) || 0;
+    const count = (await kv.get<number>(key)) || 0;
     const ttl = await kv.ttl(key);
     
     if (count === 0) {
@@ -83,7 +84,7 @@ async function getIp(headersList: Headers, request?: NextRequest) {
     if (cloudflareIP) return cloudflareIP;
 
     if (request) {
-      if (request.ip) return request.ip;
+      if (ipAddress(request)) return ipAddress(request);
     }
 
     const forwarded = headersList.get("x-forwarded-for");

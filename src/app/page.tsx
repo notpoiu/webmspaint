@@ -7,7 +7,6 @@ import { MacbookComponent } from "@/components/ui/macbook";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-import dynamic from "next/dynamic";
 import {
   Accordion,
   AccordionContent,
@@ -26,6 +25,7 @@ import CopyButton from "@/components/copy-button";
 import { ShinyButton } from "@/components/magicui/shiny-button";
 import Executor from "@/components/executor";
 import { Features } from "@/components/features";
+import { DynamicShopButton } from "@/components/client_dynamic_shopt_button";
 
 const gamesList = [
   "DOORS",
@@ -40,11 +40,6 @@ const gamesList = [
   "Word Bomb",
   "Notoriety"
 ];
-
-const DynamicShopButton = dynamic(() => import("@/components/buy-mspaint"), {
-  loading: () => <></>,
-  ssr: false,
-})
 
 export default async function Home() {
   let languageData, guildData;

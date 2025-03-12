@@ -23,11 +23,12 @@ import BlurFade from "@/components/magicui/blur-fade";
 import DotPattern from "@/components/magicui/dot-pattern";
 import { cn } from "@/lib/utils";
 
-export default function TOS({ 
-    searchParams 
-}: {
-    searchParams?: { [key: string]: string | string[] | undefined } 
-}) {
+export default async function TOS(
+    props: {
+        searchParams?: Promise<{ [key: string]: string | string[] | undefined }> 
+    }
+) {
+    const searchParams = await props.searchParams;
     return (
         <main className={"overflow-x-hidden h-[100vh]" + (searchParams?.no_bg == "true" ? " bg-black" : "")}>
             <DotPattern

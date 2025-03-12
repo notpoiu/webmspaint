@@ -27,10 +27,6 @@ async function getIp(headersList: Headers, request: NextRequest) {
     const vercelIP = ipAddress(request);
     if (vercelIP) return vercelIP;
 
-    if (request) {
-        if (request.ip) return request.ip;
-    }
-
     const forwarded = headersList.get("x-forwarded-for");
     const realIp = headersList.get("x-real-ip");
 

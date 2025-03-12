@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(request: NextRequest, slug: { params: { discord_id: string } }) {
-    const discord_id = slug.params.discord_id;
+export async function GET(request: NextRequest, slug: { params: Promise<{ discord_id: string }> }) {
+    const discord_id = (await slug.params).discord_id;
     const response = await fetch(`https://discord.com/api/v10/users/${discord_id}`, {
         method: "GET",
         headers: {

@@ -1,5 +1,4 @@
 "use client";
-
 import { ChevronsUpDown } from "lucide-react";
 import { Obsidian } from "./obsidian/obsidian";
 import WordFadeIn from "./ui/word-fade-in";
@@ -23,6 +22,8 @@ import {
 } from "@/components/ui/popover"
 
 import { LatestBuild, MenuMapping } from "../../features.config";
+
+import type { JSX } from "react";
 
 export function GameSelection({ onValueChange }: { onValueChange: (value: string) => void }) {
     const [open, setOpen] = React.useState(false)
