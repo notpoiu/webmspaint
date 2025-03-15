@@ -11,12 +11,6 @@ export type TelemetryData = {
 
 /**
  * Retrieves telemetry data with pagination and filtering options
- * @param limit Maximum number of records to return
- * @param offset Number of records to skip (for pagination)
- * @param startDate Optional filter for records after this date (timestamp)
- * @param endDate Optional filter for records before this date (timestamp)
- * @param placeId Optional filter for specific place ID
- * @param gameId Optional filter for specific game ID
  */
 export async function getTelemetryData({
   limit = 100,
@@ -49,16 +43,15 @@ export async function getTelemetryData({
       const filteredKeys: string[] = [];
       
       for (const key of allKeys) {
-        const data = await kv.get(key);
+        const data = await kv.get(key) as TelemetryData | null;
         if (data) {
-          const item = JSON.parse(data as string) as TelemetryData;
-          
+          // No need to JSON.parse - KV already returns the deserialized object
           let includeItem = true;
           
-          if (startDate && item.timestamp < startDate) includeItem = false;
-          if (endDate && item.timestamp > endDate) includeItem = false;
-          if (placeId !== undefined && item.placeid !== placeId) includeItem = false;
-          if (gameId !== undefined && item.gameid !== gameId) includeItem = false;
+          if (startDate && data.timestamp < startDate) includeItem = false;
+          if (endDate && data.timestamp > endDate) includeItem = false;
+          if (placeId !== undefined && data.placeid !== placeId) includeItem = false;
+          if (gameId !== undefined && data.gameid !== gameId) includeItem = false;
           
           if (includeItem) {
             filteredKeys.push(key);
@@ -78,8 +71,8 @@ export async function getTelemetryData({
     // Retrieve all telemetry data for these keys
     const telemetryData = await Promise.all(
       paginatedKeys.map(async (key) => {
-        const data = await kv.get(key);
-        return data ? JSON.parse(data as string) as TelemetryData : null;
+        // No need to JSON.parse - KV already returns the deserialized object
+        return await kv.get(key) as TelemetryData | null;
       })
     );
     
@@ -121,8 +114,8 @@ export async function getTelemetryStats(): Promise<{
     
     const telemetryData = await Promise.all(
       allKeys.map(async (key) => {
-        const data = await kv.get(key);
-        return data ? JSON.parse(data as string) as TelemetryData : null;
+        // No need to JSON.parse - KV already returns the deserialized object
+        return await kv.get(key) as TelemetryData | null;
       })
     );
     
