@@ -287,6 +287,7 @@ export function AnalyticsClient() {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   
+  
   // Add pagination state for raw data table
   const [rawDataCurrentPage, setRawDataCurrentPage] = useState(1);
   const [rawDataItemsPerPage, setRawDataItemsPerPage] = useState(10);
@@ -787,7 +788,23 @@ export function AnalyticsClient() {
                           </PaginationContent>
                         </Pagination>
                         
-                        
+                        <div className="flex items-center mr-4 absolute left-0">
+                          <span className="mr-2 text-sm text-muted-foreground">Items per page:</span>
+                          <input 
+                            type="number" 
+                            min="5"
+                            max="100"
+                            value={currentPage}
+                            onChange={(e) => {
+                              const value = parseInt(e.target.value);
+                              if (value >= 5 && value <= 100) {
+                                setItemsPerPage(value);
+                                setCurrentPage(1); // Reset to first page
+                              }
+                            }}
+                            className="w-16 h-8 rounded-md border border-input px-2 text-sm"
+                          />
+                        </div>
                       </div>
                     )}
                   </>
