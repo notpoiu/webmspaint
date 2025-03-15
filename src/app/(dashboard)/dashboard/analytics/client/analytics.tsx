@@ -86,14 +86,14 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 import CopyDropdown from "@/components/copy-dropdown";
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 
-type SortField = 'placeId' | 'count' | 'percentage' | 'gameId';
+type SortField = 'placeid' | 'count' | 'percentage' | 'gameid' | 'exec';
 type SortDirection = 'asc' | 'desc';
 type GameData = RobloxGameResponse["data"][0] | null;
 
 // Create a context for the game data cache
 interface GameCacheContextType {
   gameData: Record<number, GameData>;
-  fetchGameData: (gameId: number) => Promise<void>;
+  fetchGameData: (gameid: number) => Promise<void>;
   isLoading: Record<number, boolean>;
 }
 
@@ -139,26 +139,26 @@ function GameCacheProvider({ children }: { children: React.ReactNode }) {
   }, [gameData]);
 
   // Function to fetch game data and update cache
-  const fetchGameData = useCallback(async (gameId: number) => {
+  const fetchGameData = useCallback(async (gameid: number) => {
     // Skip if already loading or data exists
-    if (isLoading[gameId] || gameData[gameId]) return;
+    if (isLoading[gameid] || gameData[gameid]) return;
 
     // Mark as loading
-    setIsLoading(prev => ({ ...prev, [gameId]: true }));
+    setIsLoading(prev => ({ ...prev, [gameid]: true }));
 
     try {
-      const response = await fetch(`/api/lookup/roblox/${gameId}`);
+      const response = await fetch(`/api/lookup/roblox/${gameid}`);
       const data = await response.json();
       
       // Update cache with new data
-      setGameData(prev => ({ ...prev, [gameId]: data }));
+      setGameData(prev => ({ ...prev, [gameid]: data }));
     } catch (error) {
-      console.error(`Error fetching game info for ${gameId}:`, error);
+      console.error(`Error fetching game info for ${gameid}:`, error);
       // Store null for failed requests to prevent repeated failures
-      setGameData(prev => ({ ...prev, [gameId]: null }));
+      setGameData(prev => ({ ...prev, [gameid]: null }));
     } finally {
       // Mark as no longer loading
-      setIsLoading(prev => ({ ...prev, [gameId]: false }));
+      setIsLoading(prev => ({ ...prev, [gameid]: false }));
     }
   }, [gameData, isLoading]);
 
@@ -280,13 +280,16 @@ export function AnalyticsClient() {
   const [timeFilter, setTimeFilter] = useState<string>("all");
   
   // Sorting state for place distribution table
-  const [sortField, setSortField] = useState<SortField>('count');
-  const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
-
-  // Pagination state for place distribution
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [placeSortField, setPlaceSortField] = useState<SortField>('count');
+  const [placeSortDirection, setPlaceSortDirection] = useState<SortDirection>('desc');
+  const [placeCurrentPage, setPlaceCurrentPage] = useState(1);
+  const [placeItemsPerPage, setPlaceItemsPerPage] = useState(10);
   
+  // executors
+  const [executorsSortField, setExecutorsSortField] = useState<SortField>('count');
+  const [executorsSortDirection, setExecutorsSortDirection] = useState<SortDirection>('desc');
+  const [executorsCurrentPage, setExecutorsCurrentPage] = useState(1);
+  const [executorsItemsPerPage, setExecutorsItemsPerPage] = useState(10);
   
   // Add pagination state for raw data table
   const [rawDataCurrentPage, setRawDataCurrentPage] = useState(1);
@@ -353,89 +356,166 @@ export function AnalyticsClient() {
   const chartData = prepareChartData();
   
   // Group by game ID instead of place ID for the place distribution
-  const placeIdDistribution = telemetryData.reduce<Record<number, { placeid: number, count: number }>>((acc, item) => {
-    if (!acc[item.gameid]) {
-      acc[item.gameid] = {
-        placeid: item.placeid,
+  const placeIdDistribution = telemetryData.reduce<Record<number, { placeid: number, count: number }>>((placeAcc, placeItem) => {
+    if (!placeAcc[placeItem.gameid]) {
+      placeAcc[placeItem.gameid] = {
+        placeid: placeItem.placeid,
         count: 0
       };
     }
-    acc[item.gameid].count += 1;
-    return acc;
+    placeAcc[placeItem.gameid].count += 1;
+    return placeAcc;
   }, {});
   
   // Convert to array for sorting
-  const placeDistributionArray = Object.entries(placeIdDistribution).map(([gameId, data]) => ({
-    placeId: Number(data.placeid),
-    gameid: Number(gameId),
-    count: data.count,
-    percentage: (data.count / telemetryData.length) * 100
+  const placeDistributionArray = Object.entries(placeIdDistribution).map(([gameid, placeData]) => ({
+    placeid: Number(placeData.placeid),
+    gameid: Number(gameid),
+    count: placeData.count,
+    percentage: (placeData.count / telemetryData.length) * 100
   }));
   
   // Sort the place distribution array
-  const sortedPlaceDistribution = [...placeDistributionArray].sort((a, b) => {
-    if (sortField === 'placeId') {
-      return sortDirection === 'asc' 
-        ? a.placeId - b.placeId 
-        : b.placeId - a.placeId;
-    } else if (sortField === 'count') {
-      return sortDirection === 'asc' 
+  const placeSortedDistribution = [...placeDistributionArray].sort((a, b) => {
+    if (placeSortField === 'placeid') {
+      return placeSortDirection === 'asc' 
+        ? a.placeid - b.placeid 
+        : b.placeid - a.placeid;
+    } else if (placeSortField === 'count') {
+      return placeSortDirection === 'asc' 
         ? a.count - b.count 
         : b.count - a.count;
-    } else if (sortField === 'gameId') {
-      return sortDirection === 'asc'
+    } else if (placeSortField === 'gameid') {
+      return placeSortDirection === 'asc'
         ? a.gameid - b.gameid
         : b.gameid - a.gameid;
-    } else { // percentage
-      return sortDirection === 'asc' 
+    } else {
+      return placeSortDirection === 'asc' 
         ? a.percentage - b.percentage 
         : b.percentage - a.percentage;
     }
   });
   
   // Calculate pagination bounds
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = sortedPlaceDistribution.slice(indexOfFirstItem, indexOfLastItem);
-  const totalPages = Math.ceil(sortedPlaceDistribution.length / itemsPerPage);
+  const placeIndexOfLastItem = placeCurrentPage * placeItemsPerPage;
+  const placeIndexOfFirstItem = placeIndexOfLastItem - placeItemsPerPage;
+  const placeCurrentItems = placeSortedDistribution.slice(placeIndexOfFirstItem, placeIndexOfLastItem);
+  const placeTotalPages = Math.ceil(placeSortedDistribution.length / placeItemsPerPage);
   
   // Function to change page
-  const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
+  const placePaginate = (placePageNumber: number) => setPlaceCurrentPage(placePageNumber);
 
   // Generate page numbers
-  const pageNumbers = [];
-  const maxPageButtons = 5; // Show max 5 page buttons
+  const placePageNumbers = [];
+  const placeMaxPageButtons = 5; // Show max 5 page buttons
   
-  let startPage = Math.max(1, currentPage - Math.floor(maxPageButtons / 2));
-  const endPage = Math.min(totalPages, startPage + maxPageButtons - 1);
+  let placeStartPage = Math.max(1, placeCurrentPage - Math.floor(placeMaxPageButtons / 2));
+  const placeEndPage = Math.min(placeTotalPages, placeStartPage + placeMaxPageButtons - 1);
   
   // Adjust if we're near the end
-  if (endPage - startPage + 1 < maxPageButtons && startPage > 1) {
-    startPage = Math.max(1, endPage - maxPageButtons + 1);
+  if (placeEndPage - placeStartPage + 1 < placeMaxPageButtons && placeStartPage > 1) {
+    placeStartPage = Math.max(1, placeEndPage - placeMaxPageButtons + 1);
   }
   
-  for (let i = startPage; i <= endPage; i++) {
-    pageNumbers.push(i);
+  for (let i = placeStartPage; i <= placeEndPage; i++) {
+    placePageNumbers.push(i);
   }
   
   // Handle sort click
-  const handleSortClick = (field: SortField) => {
-    if (sortField === field) {
+  const placeHandleSortClick = (field: SortField) => {
+    if (placeSortField === field) {
       // Toggle direction if clicking the same field
-      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+      setPlaceSortDirection(placeSortDirection === 'asc' ? 'desc' : 'asc');
     } else {
       // Default to descending for new field
-      setSortField(field);
-      setSortDirection('desc');
+      setPlaceSortField(field);
+      setPlaceSortDirection('desc');
     }
   };
   
   // Render sort icon
-  const renderSortIcon = (field: SortField) => {
-    if (sortField !== field) {
+  const placeRenderSortIcon = (field: SortField) => {
+    if (placeSortField !== field) {
       return <ChevronDown className="h-4 w-4 opacity-50" />;
     }
-    return sortDirection === 'asc' 
+    return placeSortDirection === 'asc' 
+      ? <ChevronUp className="h-4 w-4" /> 
+      : <ChevronDown className="h-4 w-4" />;
+  };
+
+  // executor
+  const executorCounts = telemetryData.reduce((acc: Record<string, number>, item: { exec: string }) => {
+    acc[item.exec] = (acc[item.exec] || 0) + 1;
+    return acc;
+  }, {});
+  
+  // Convert to array for sorting
+  const executorDistributionArray = Object.entries(executorCounts).map(([exec, count]) => ({
+    exec,
+    count,
+    percentage: (count / telemetryData.length) * 100
+  }));
+  
+  // Sort the executor distribution array
+  const sortedExecutorsDistribution = [...executorDistributionArray].sort((a, b) => {
+    if (executorsSortField === 'exec') {
+      return executorsSortDirection === 'asc' 
+        ? a.exec.localeCompare(b.exec)
+        : b.exec.localeCompare(a.exec);
+    } else if (executorsSortField === 'count') {
+      return executorsSortDirection === 'asc' 
+        ? a.count - b.count 
+        : b.count - a.count;
+    } else { // percentage
+      return executorsSortDirection === 'asc' 
+        ? a.percentage - b.percentage 
+        : b.percentage - a.percentage;
+    }
+  });
+
+  // Calculate pagination bounds
+  const executorsIndexOfLastItem = executorsCurrentPage * executorsItemsPerPage;
+  const executorsIndexOfFirstItem = executorsIndexOfLastItem - executorsItemsPerPage;
+  const executorsCurrentItems = sortedExecutorsDistribution.slice(executorsIndexOfFirstItem, executorsIndexOfLastItem);
+  const executorsTotalPages = Math.ceil(sortedExecutorsDistribution.length / executorsItemsPerPage);
+  
+  // Function to change page
+  const executorsPaginate = (executorsPageNumber: number) => setExecutorsCurrentPage(executorsPageNumber);
+
+  // Generate page numbers
+  const executorsPageNumbers = [];
+  const executorsMaxPageButtons = 5; // Show max 5 page buttons
+  
+  let executorsStartPage = Math.max(1, executorsCurrentPage - Math.floor(executorsMaxPageButtons / 2));
+  const executorsEndPage = Math.min(executorsTotalPages, executorsStartPage + executorsMaxPageButtons - 1);
+  
+  // Adjust if we're near the end
+  if (executorsEndPage - executorsStartPage + 1 < executorsMaxPageButtons && executorsStartPage > 1) {
+    executorsStartPage = Math.max(1, executorsEndPage - executorsMaxPageButtons + 1);
+  }
+  
+  for (let i = executorsStartPage; i <= executorsEndPage; i++) {
+    executorsPageNumbers.push(i);
+  }
+  
+  // Handle sort click
+  const executorsHandleSortClick = (field: SortField) => {
+    if (executorsSortField === field) {
+      // Toggle direction if clicking the same field
+      setExecutorsSortDirection(executorsSortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      // Default to descending for new field
+      setExecutorsSortField(field);
+      setExecutorsSortDirection('desc');
+    }
+  };
+  
+  // Render sort icon
+  const executorsRenderSortIcon = (field: SortField) => {
+    if (executorsSortField !== field) {
+      return <ChevronDown className="h-4 w-4 opacity-50" />;
+    }
+    return executorsSortDirection === 'asc' 
       ? <ChevronUp className="h-4 w-4" /> 
       : <ChevronDown className="h-4 w-4" />;
   };
@@ -495,6 +575,7 @@ export function AnalyticsClient() {
             </Breadcrumb>
           </div>
         </header>
+
         <div className="flex items-center justify-between">
           <h2 className="text-3xl font-bold tracking-tight">mspaint analytics</h2>
           
@@ -586,9 +667,10 @@ export function AnalyticsClient() {
 
         {/* Charts and Tables in Tabs */}
         <Tabs defaultValue="chart" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="chart" className="data-[state=active]:bg-[rgb(25,25,25)]">Activity Chart</TabsTrigger>
             <TabsTrigger value="places" className="data-[state=active]:bg-[rgb(25,25,25)]">Place Distribution</TabsTrigger>
+            <TabsTrigger value="executors" className="data-[state=active]:bg-[rgb(25,25,25)]">Executor Distribution</TabsTrigger>
             <TabsTrigger value="table" className="data-[state=active]:bg-[rgb(25,25,25)]">Raw Data</TabsTrigger>
           </TabsList>
           
@@ -684,42 +766,42 @@ export function AnalyticsClient() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                {sortedPlaceDistribution.length > 0 ? (
+                {placeSortedDistribution.length > 0 ? (
                   <>
                     <Table>
                       <TableHeader>
                         <TableRow>
                           <TableHead 
                             className="cursor-pointer hover:bg-muted/50" 
-                            onClick={() => handleSortClick('gameId')}
+                            onClick={() => placeHandleSortClick('gameid')}
                           >
                             <div className="flex items-center">
-                              Game {renderSortIcon('gameId')}
+                              Game {placeRenderSortIcon('gameid')}
                             </div>
                           </TableHead>
                           <TableHead 
                             className="cursor-pointer hover:bg-muted/50 text-right" 
-                            onClick={() => handleSortClick('count')}
+                            onClick={() => placeHandleSortClick('count')}
                           >
                             <div className="flex items-center justify-end">
-                              Count {renderSortIcon('count')}
+                              Count {placeRenderSortIcon('count')}
                             </div>
                           </TableHead>
                           <TableHead 
                             className="cursor-pointer hover:bg-muted/50 text-right" 
-                            onClick={() => handleSortClick('percentage')}
+                            onClick={() => placeHandleSortClick('percentage')}
                           >
                             <div className="flex items-center justify-end">
-                              Percentage {renderSortIcon('percentage')}
+                              Percentage {placeRenderSortIcon('percentage')}
                             </div>
                           </TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {currentItems.map(({ placeId, gameid, count, percentage }) => (
-                          <TableRow key={placeId}>
+                        {placeCurrentItems.map(({ placeid, gameid, count, percentage }) => (
+                          <TableRow key={placeid}>
                             <TableCell>
-                              <GameInfoComponent gameid={gameid} placeid={placeId} />
+                              <GameInfoComponent gameid={gameid} placeid={placeid} />
                             </TableCell>
                             <TableCell className="text-right">{count}</TableCell>
                             <TableCell className="text-right">
@@ -731,23 +813,23 @@ export function AnalyticsClient() {
                     </Table>
                     
                     {/* Pagination controls */}
-                    {totalPages > 1 && (
+                    {placeTotalPages > 1 && (
                       <div className="mt-4">
                         <Pagination>
                           <PaginationContent>
                             <PaginationItem>
                               <PaginationPrevious 
-                                onClick={() => paginate(Math.max(1, currentPage - 1))}
-                                className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"} 
+                                onClick={() => placePaginate(Math.max(1, placeCurrentPage - 1))}
+                                className={placeCurrentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"} 
                               />
                             </PaginationItem>
                             
-                            {startPage > 1 && (
+                            {placeStartPage > 1 && (
                               <>
                                 <PaginationItem>
-                                  <PaginationLink onClick={() => paginate(1)}>1</PaginationLink>
+                                  <PaginationLink onClick={() => placePaginate(1)}>1</PaginationLink>
                                 </PaginationItem>
-                                {startPage > 2 && (
+                                {placeStartPage > 2 && (
                                   <PaginationItem>
                                     <PaginationLink className="cursor-default">...</PaginationLink>
                                   </PaginationItem>
@@ -755,34 +837,34 @@ export function AnalyticsClient() {
                               </>
                             )}
                             
-                            {pageNumbers.map(number => (
+                            {placePageNumbers.map(number => (
                               <PaginationItem key={number}>
                                 <PaginationLink 
-                                  onClick={() => paginate(number)}
-                                  isActive={currentPage === number}
+                                  onClick={() => placePaginate(number)}
+                                  isActive={placeCurrentPage === number}
                                 >
                                   {number}
                                 </PaginationLink>
                               </PaginationItem>
                             ))}
                             
-                            {endPage < totalPages && (
+                            {placeEndPage < placeTotalPages && (
                               <>
-                                {endPage < totalPages - 1 && (
+                                {placeEndPage < placeTotalPages - 1 && (
                                   <PaginationItem>
                                     <PaginationLink className="cursor-default">...</PaginationLink>
                                   </PaginationItem>
                                 )}
                                 <PaginationItem>
-                                  <PaginationLink onClick={() => paginate(totalPages)}>{totalPages}</PaginationLink>
+                                  <PaginationLink onClick={() => placePaginate(placeTotalPages)}>{placeTotalPages}</PaginationLink>
                                 </PaginationItem>
                               </>
                             )}
                             
                             <PaginationItem>
                               <PaginationNext 
-                                onClick={() => paginate(Math.min(totalPages, currentPage + 1))}
-                                className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                                onClick={() => placePaginate(Math.min(placeTotalPages, placeCurrentPage + 1))}
+                                className={placeCurrentPage === placeTotalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
                               />
                             </PaginationItem>
                           </PaginationContent>
@@ -794,12 +876,12 @@ export function AnalyticsClient() {
                             type="number" 
                             min="5"
                             max="100"
-                            value={currentPage}
+                            value={placeCurrentPage}
                             onChange={(e) => {
                               const value = parseInt(e.target.value);
                               if (value >= 5 && value <= 100) {
-                                setItemsPerPage(value);
-                                setCurrentPage(1); // Reset to first page
+                                setPlaceItemsPerPage(value);
+                                setPlaceCurrentPage(1); // Reset to first page
                               }
                             }}
                             className="w-16 h-8 rounded-md border border-input px-2 text-sm"
@@ -817,6 +899,146 @@ export function AnalyticsClient() {
             </Card>
           </TabsContent>
           
+          <TabsContent value="executors">
+            <Card>
+              <CardHeader>
+                <CardTitle>Executor Distribution</CardTitle>
+                <CardDescription>
+                  Activity breakdown by Executor - Click column headers to sort
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {sortedExecutorsDistribution.length > 0 ? (
+                  <>
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead 
+                            className="cursor-pointer hover:bg-muted/50" 
+                            onClick={() => executorsHandleSortClick('exec')}
+                          >
+                            <div className="flex items-center">
+                              Executor {executorsRenderSortIcon('exec')}
+                            </div>
+                          </TableHead>
+                          <TableHead 
+                            className="cursor-pointer hover:bg-muted/50 text-right" 
+                            onClick={() => executorsHandleSortClick('count')}
+                          >
+                            <div className="flex items-center justify-end">
+                              Count {executorsRenderSortIcon('count')}
+                            </div>
+                          </TableHead>
+                          <TableHead 
+                            className="cursor-pointer hover:bg-muted/50 text-right" 
+                            onClick={() => executorsHandleSortClick('percentage')}
+                          >
+                            <div className="flex items-center justify-end">
+                              Percentage {executorsRenderSortIcon('percentage')}
+                            </div>
+                          </TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {executorsCurrentItems.map(({ exec, count, percentage }) => (
+                          <TableRow key={exec}>
+                            <TableCell className="text-left">{exec}</TableCell>
+                            <TableCell className="text-right">{count}</TableCell>
+                            <TableCell className="text-right">
+                              {percentage.toFixed(1)}%
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                    
+                    {/* Pagination controls */}
+                    {executorsTotalPages > 1 && (
+                      <div className="mt-4">
+                        <Pagination>
+                          <PaginationContent>
+                            <PaginationItem>
+                              <PaginationPrevious 
+                                onClick={() => executorsPaginate(Math.max(1, executorsCurrentPage - 1))}
+                                className={executorsCurrentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"} 
+                              />
+                            </PaginationItem>
+                            
+                            {executorsStartPage > 1 && (
+                              <>
+                                <PaginationItem>
+                                  <PaginationLink onClick={() => executorsPaginate(1)}>1</PaginationLink>
+                                </PaginationItem>
+                                {executorsStartPage > 2 && (
+                                  <PaginationItem>
+                                    <PaginationLink className="cursor-default">...</PaginationLink>
+                                  </PaginationItem>
+                                )}
+                              </>
+                            )}
+                            
+                            {executorsPageNumbers.map(number => (
+                              <PaginationItem key={number}>
+                                <PaginationLink 
+                                  onClick={() => executorsPaginate(number)}
+                                  isActive={executorsCurrentPage === number}
+                                >
+                                  {number}
+                                </PaginationLink>
+                              </PaginationItem>
+                            ))}
+                            
+                            {executorsEndPage < executorsTotalPages && (
+                              <>
+                                {executorsEndPage < executorsTotalPages - 1 && (
+                                  <PaginationItem>
+                                    <PaginationLink className="cursor-default">...</PaginationLink>
+                                  </PaginationItem>
+                                )}
+                                <PaginationItem>
+                                  <PaginationLink onClick={() => executorsPaginate(executorsTotalPages)}>{executorsTotalPages}</PaginationLink>
+                                </PaginationItem>
+                              </>
+                            )}
+                            
+                            <PaginationItem>
+                              <PaginationNext 
+                                onClick={() => executorsPaginate(Math.min(executorsTotalPages, executorsCurrentPage + 1))}
+                                className={executorsCurrentPage === executorsTotalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                              />
+                            </PaginationItem>
+                          </PaginationContent>
+                        </Pagination>
+                        
+                        <div className="flex items-center mr-4 absolute left-4">
+                          <span className="mr-2 text-sm text-muted-foreground">Items per page:</span>
+                          <input 
+                            type="number" 
+                            min="5"
+                            max="100"
+                            value={executorsCurrentPage}
+                            onChange={(e) => {
+                              const value = parseInt(e.target.value);
+                              if (value >= 5 && value <= 100) {
+                                setExecutorsItemsPerPage(value);
+                                setExecutorsCurrentPage(1); // Reset to first page
+                              }
+                            }}
+                            className="w-16 h-8 rounded-md border border-input px-2 text-sm"
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <div className="flex flex-col items-center justify-center h-[200px]">
+                    <p className="text-gray-500">No data available for the selected time period</p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
           <TabsContent value="table">
             <Card>
               <CardHeader>
