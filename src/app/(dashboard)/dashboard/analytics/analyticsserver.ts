@@ -64,8 +64,14 @@ export async function getTelemetryData({
     // Retrieve all telemetry data for these keys
     const telemetryData = await Promise.all(
       allKeys.map(async (key) => {
-        // No need to JSON.parse - KV already returns the deserialized object
-        return await kv.get(key) as TelemetryData | null;
+        const data = await kv.get(key) as TelemetryData | null;
+        
+        if (!data) {
+          await kv.srem('telemetry:all-keys', key);
+          return null;
+        }
+
+        return data;
       })
     );
     
