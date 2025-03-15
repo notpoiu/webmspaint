@@ -47,7 +47,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ChevronDown, ChevronUp, Loader2, BarChart2, Clock, Filter, StarIcon, ScrollIcon, LinkIcon } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
-import { getGameInfo, RobloxGameResponse } from "@/server/roblox";
+import { RobloxGameResponse } from "@/app/api/lookup/roblox/[game_id]/route";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import CopyDropdown from "@/components/copy-dropdown";
 
@@ -58,7 +58,9 @@ function GameInfoComponent({ gameid, placeid }: { gameid: number, placeid?: numb
   const [data, setData] = useState<RobloxGameResponse["data"][0] | null>(null);
 
   useEffect(() => {
-    getGameInfo(gameid).then(data => setData(data));
+    fetch(`/api/lookup/roblox/${gameid}`, {
+      next: { revalidate: 3600 * 24 * 7 * 2 }
+    }).then(res => res.json()).then(data => setData(data));
   }, [gameid]);
 
   return (
