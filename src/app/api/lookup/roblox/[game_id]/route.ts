@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 
 export async function GET(request: NextRequest, slug: { params: Promise<{ game_id: string }> }) {
     const game_id = (await slug.params).game_id;
@@ -29,8 +29,9 @@ export async function GET(request: NextRequest, slug: { params: Promise<{ game_i
         });
     } catch (error) {
         console.error(`Error fetching game info for universe ${game_id}:`, error);
-        return NextResponse.json({
-            error: "Failed to fetch game info"
-        });
     }
+
+    return new Response(JSON.stringify({
+        error: "Failed to fetch game info"
+    }));
 }
