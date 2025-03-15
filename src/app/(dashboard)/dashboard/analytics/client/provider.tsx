@@ -32,7 +32,6 @@ const AnalyticsContext = createContext<AnalyticsContextType | undefined>(undefin
 export function AnalyticsProvider({ children }: { children: ReactNode }) {
   const [telemetryData, setTelemetryData] = useState<TelemetryData[]>([]);
   const [totalCount, setTotalCount] = useState<number>(0);
-  const [hasMore, setHasMore] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [stats, setStats] = useState<AnalyticsContextType['stats']>(null);
 
@@ -54,7 +53,6 @@ export function AnalyticsProvider({ children }: { children: ReactNode }) {
         const result = await getTelemetryData(queryOptions);
         setTelemetryData(result.data);
         setTotalCount(result.totalCount);
-        setHasMore(result.hasMore);
       } catch (error) {
         console.error("Error fetching telemetry data:", error);
       } finally {
@@ -67,7 +65,6 @@ export function AnalyticsProvider({ children }: { children: ReactNode }) {
             const result = await getTelemetryData(queryOptions);
             setTelemetryData(result.data);
             setTotalCount(result.totalCount);
-            setHasMore(result.hasMore);
             return result;
           } catch (error) {
             console.error("Error fetching telemetry data:", error);
@@ -125,7 +122,7 @@ export function AnalyticsProvider({ children }: { children: ReactNode }) {
       value={{
         telemetryData,
         totalCount,
-        hasMore,
+        hasMore: false,
         isLoading,
         stats,
         fetchTelemetryData,
