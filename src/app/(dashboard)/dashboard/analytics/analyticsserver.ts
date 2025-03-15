@@ -13,8 +13,6 @@ export type TelemetryData = {
  * Retrieves telemetry data with pagination and filtering options
  */
 export async function getTelemetryData({
-  limit = 100,
-  offset = 0,
   startDate,
   endDate,
   placeId,
@@ -29,7 +27,6 @@ export async function getTelemetryData({
 } = {}): Promise<{
   data: TelemetryData[];
   totalCount: number;
-  hasMore: boolean;
 }> {
   try {
     // Get all keys from the set
@@ -64,13 +61,9 @@ export async function getTelemetryData({
     
     const totalCount = allKeys.length;
     
-    // Apply pagination
-    const paginatedKeys = allKeys.slice(offset, offset + limit);
-    const hasMore = offset + limit < totalCount;
-    
     // Retrieve all telemetry data for these keys
     const telemetryData = await Promise.all(
-      paginatedKeys.map(async (key) => {
+      allKeys.map(async (key) => {
         // No need to JSON.parse - KV already returns the deserialized object
         return await kv.get(key) as TelemetryData | null;
       })
@@ -81,8 +74,7 @@ export async function getTelemetryData({
     
     return {
       data: validData,
-      totalCount,
-      hasMore
+      totalCount
     };
   } catch (err) {
     console.error("Failed to retrieve telemetry data:", err);
