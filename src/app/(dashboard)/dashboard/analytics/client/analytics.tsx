@@ -607,7 +607,7 @@ export function AnalyticsClient() {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
           {stats ? (
             <>
               <Card>
@@ -661,7 +661,7 @@ export function AnalyticsClient() {
             </>
           ) : (
             // Skeleton loaders for stats
-            Array(4).fill(0).map((_, i) => (
+            Array(5).fill(0).map((_, i) => (
               <Card key={i}>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <Skeleton className="h-4 w-[140px]" />
