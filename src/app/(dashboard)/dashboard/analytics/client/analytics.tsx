@@ -45,13 +45,52 @@ import {
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ArrowDown, ArrowUp, ChevronDown, ChevronUp, Loader2, BarChart2, Clock, Filter } from "lucide-react";
+import { ChevronDown, ChevronUp, Loader2, BarChart2, Clock, Filter, StarIcon, ScrollIcon, LinkIcon } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
+import { getGameInfo, RobloxGameResponse } from "@/server/roblox";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import CopyDropdown from "@/components/copy-dropdown";
 
-// Define sort types for place distribution
-type SortField = 'placeId' | 'count' | 'percentage';
+type SortField = 'placeId' | 'count' | 'percentage' | 'gameId';
 type SortDirection = 'asc' | 'desc';
+
+function GameInfoComponent({ gameid, placeid }: { gameid: number, placeid?: number }) {
+  const [data, setData] = useState<RobloxGameResponse["data"][0] | null>(null);
+
+  useEffect(() => {
+    getGameInfo(gameid).then(data => setData(data));
+  }, [gameid]);
+
+  return (
+    <Card className="px-2 py-2 flex flex-row justify-center items-center gap-2 max-w-[500px]">
+      <div>
+        <p>{data?.name}</p>
+        <div className="flex flex-row items-center space-x-2">
+          <div className="flex flex-row text-xs items-center text-muted-foreground">
+            <ScrollIcon className="h-4 w-4" />
+            <span className="max-w-[8rem] text-nowrap overflow-hidden text-ellipsis">{data?.description}</span>
+          </div>
+          <div className="flex flex-row text-xs items-center text-muted-foreground">
+            <StarIcon className="h-4 w-4" />{data?.favoritedCount}
+          </div>
+        </div>
+      </div>
+
+      <div className="flex flex-row gap-2 ml-auto">
+        <CopyDropdown size="sm" items={[
+          { name: "Copy Game ID", value: gameid.toString() },
+          { name: "Copy Place ID", value: (placeid ?? "No Place ID").toString() },
+        ]} />
+        <a href={`https://www.roblox.com/games/${data?.rootPlaceId}`} target="_blank" rel="noopener noreferrer"> 
+          <Button variant="outline" size={"sm"}>
+            <LinkIcon className="mr-2 h-4 w-4" />
+            View on Roblox
+          </Button>
+        </a>
+      </div>
+    </Card>
+  )
+}
 
 export function AnalyticsClient() {
   const { 
@@ -127,18 +166,26 @@ export function AnalyticsClient() {
 
   const chartData = prepareChartData();
   
-  // Group by place ID
-  const placeIdDistribution = telemetryData.reduce<Record<number, number>>((acc, item) => {
-    acc[item.placeid] = (acc[item.placeid] || 0) + 1;
+  // Group by game ID instead of place ID for the place distribution
+  const placeIdDistribution = telemetryData.reduce<Record<number, { placeid: number, count: number }>>((acc, item) => {
+    if (!acc[item.gameid]) {
+      acc[item.gameid] = {
+        placeid: item.placeid, // Store the game ID correctly
+        count: 0
+      };
+    }
+    acc[item.gameid].count += 1;
     return acc;
   }, {});
   
   // Convert to array for sorting
-  const placeDistributionArray = Object.entries(placeIdDistribution).map(([placeId, count]) => ({
-    placeId: Number(placeId),
-    count,
-    percentage: (count / telemetryData.length) * 100
+  const placeDistributionArray = Object.entries(placeIdDistribution).map(([gameId, data]) => ({
+    placeId: Number(data.placeid),
+    gameid: Number(gameId), // Use the stored gameid
+    count: data.count,
+    percentage: (data.count / telemetryData.length) * 100
   }));
+  
   
   // Sort the place distribution array
   const sortedPlaceDistribution = [...placeDistributionArray].sort((a, b) => {
@@ -403,10 +450,10 @@ export function AnalyticsClient() {
                     <TableRow>
                       <TableHead 
                         className="cursor-pointer hover:bg-muted/50" 
-                        onClick={() => handleSortClick('placeId')}
+                        onClick={() => handleSortClick('gameId')}
                       >
                         <div className="flex items-center">
-                          Place ID {renderSortIcon('placeId')}
+                          Game {renderSortIcon('gameId')}
                         </div>
                       </TableHead>
                       <TableHead 
@@ -428,12 +475,10 @@ export function AnalyticsClient() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {sortedPlaceDistribution.map(({ placeId, count, percentage }) => (
+                    {sortedPlaceDistribution.map(({ placeId, gameid, count, percentage }) => (
                       <TableRow key={placeId}>
-                        <TableCell className="font-medium">
-                          <a href={`https://www.roblox.com/games/${placeId}`} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
-                            {placeId}
-                          </a>
+                        <TableCell>
+                          <GameInfoComponent gameid={gameid} placeid={placeId} />
                         </TableCell>
                         <TableCell className="text-right">{count}</TableCell>
                         <TableCell className="text-right">
@@ -467,8 +512,7 @@ export function AnalyticsClient() {
                     <TableHeader>
                       <TableRow>
                         <TableHead>Executor</TableHead>
-                        <TableHead>Place ID</TableHead>
-                        <TableHead>Game ID</TableHead>
+                        <TableHead>Game</TableHead>
                         <TableHead>Timestamp</TableHead>
                       </TableRow>
                     </TableHeader>
@@ -477,11 +521,8 @@ export function AnalyticsClient() {
                         <TableRow key={index}>
                           <TableCell className="font-medium">{item.exec}</TableCell>
                           <TableCell>
-                            <a href={`https://www.roblox.com/games/${item.placeid}`} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
-                              {item.placeid}
-                            </a>
+                            <GameInfoComponent gameid={item.gameid} placeid={item.placeid} />
                           </TableCell>
-                          <TableCell>{item.gameid}</TableCell>
                           <TableCell>{new Date(item.timestamp).toLocaleString()}</TableCell>
                         </TableRow>
                       ))}
