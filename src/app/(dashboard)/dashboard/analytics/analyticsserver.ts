@@ -59,8 +59,6 @@ export async function getTelemetryData({
       allKeys = filteredKeys;
     }
     
-    const totalCount = allKeys.length;
-    
     // Retrieve all telemetry data for these keys
     const telemetryData = await Promise.all(
       allKeys.map(async (key) => {
@@ -80,7 +78,7 @@ export async function getTelemetryData({
     
     return {
       data: validData,
-      totalCount
+      totalCount: validData.length
     };
   } catch (err) {
     console.error("Failed to retrieve telemetry data:", err);
