@@ -13,13 +13,27 @@ export async function GET(request: NextRequest, slug: { params: Promise<{ game_i
         });
         
         if (!response.ok) {
-            throw new Error(`Failed to fetch game info: ${response.status}`);
+            return new Response(JSON.stringify({
+                error: "Failed to fetch game info"
+            }), {
+                status: 500,
+                headers: {
+                    "Cache-Control": "no-cache, no-store"
+                }
+            });
         }
         
         const data = await response.json();
         
         if (!data.data || data.data.length === 0) {
-            return null;
+            return new Response(JSON.stringify({
+                error: "Game not found"
+            }), {
+                status: 404,
+                headers: {
+                    "Cache-Control": "public, max-age=86400, s-maxage=86400"
+                }
+            });
         }
         
         return new Response(JSON.stringify(data.data[0]), {
