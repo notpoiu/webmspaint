@@ -56,7 +56,11 @@ export async function GET(request: NextRequest, slug: { params: Promise<{ game_i
             return null;
         }
         
-        return NextResponse.json(data.data[0]);
+        return new Response(JSON.stringify(data.data[0]), {
+            headers: {
+                "Cache-Control": "public, max-age=604800, s-maxage=604800, stale-while-revalidate=604800"
+            }
+        });
     } catch (error) {
         console.error(`Error fetching game info for universe ${game_id}:`, error);
         return NextResponse.json({

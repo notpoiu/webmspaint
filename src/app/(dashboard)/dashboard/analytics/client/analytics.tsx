@@ -1,7 +1,7 @@
 "use client";
 
 import { useAnalytics } from "./provider";
-import { useEffect, useState } from "react";
+import { useEffect, useState, createContext, useContext, useMemo, useCallback } from "react";
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
 import {
   Card,
@@ -53,27 +53,134 @@ import CopyDropdown from "@/components/copy-dropdown";
 
 type SortField = 'placeId' | 'count' | 'percentage' | 'gameId';
 type SortDirection = 'asc' | 'desc';
+type GameData = RobloxGameResponse["data"][0] | null;
 
+// Create a context for the game data cache
+interface GameCacheContextType {
+  gameData: Record<number, GameData>;
+  fetchGameData: (gameId: number) => Promise<void>;
+  isLoading: Record<number, boolean>;
+}
+
+const GameCacheContext = createContext<GameCacheContextType>({
+  gameData: {},
+  fetchGameData: async () => {},
+  isLoading: {}
+});
+
+// Game Cache Provider component
+function GameCacheProvider({ children }: { children: React.ReactNode }) {
+  const [gameData, setGameData] = useState<Record<number, GameData>>({});
+  const [isLoading, setIsLoading] = useState<Record<number, boolean>>({});
+
+  // Function to fetch game data and update cache
+  const fetchGameData = useCallback(async (gameId: number) => {
+    // Skip if already loading or data exists
+    if (isLoading[gameId] || gameData[gameId]) return;
+
+    // Mark as loading
+    setIsLoading(prev => ({ ...prev, [gameId]: true }));
+
+    try {
+      const response = await fetch(`/api/lookup/roblox/${gameId}`);
+      const data = await response.json();
+      
+      // Update cache with new data
+      setGameData(prev => ({ ...prev, [gameId]: data }));
+    } catch (error) {
+      console.error(`Error fetching game info for ${gameId}:`, error);
+      // Store null for failed requests to prevent repeated failures
+      setGameData(prev => ({ ...prev, [gameId]: null }));
+    } finally {
+      // Mark as no longer loading
+      setIsLoading(prev => ({ ...prev, [gameId]: false }));
+    }
+  }, [gameData, isLoading]);
+
+  const value = useMemo(() => ({
+    gameData,
+    fetchGameData,
+    isLoading
+  }), [gameData, fetchGameData, isLoading]);
+
+  return (
+    <GameCacheContext.Provider value={value}>
+      {children}
+    </GameCacheContext.Provider>
+  );
+}
+
+// Hook to access the game cache
+function useGameCache() {
+  return useContext(GameCacheContext);
+}
+
+// Updated GameInfoComponent to use cache
 function GameInfoComponent({ gameid, placeid }: { gameid: number, placeid?: number }) {
-  const [data, setData] = useState<RobloxGameResponse["data"][0] | null>(null);
-
+  const { gameData, fetchGameData, isLoading } = useGameCache();
+  const data = gameData[gameid];
+  
   useEffect(() => {
-    fetch(`/api/lookup/roblox/${gameid}`, {
-      next: { revalidate: 3600 * 24 * 7 * 2 }
-    }).then(res => res.json()).then(data => setData(data));
-  }, [gameid]);
+    if (!data && !isLoading[gameid]) {
+      fetchGameData(gameid);
+    }
+  }, [gameid, data, fetchGameData, isLoading]);
 
+  // Show skeleton while loading
+  if (!data && isLoading[gameid]) {
+    return (
+      <Card className="px-2 py-2 flex flex-row justify-center items-center gap-2 max-w-[500px]">
+        <div>
+          <Skeleton className="h-5 w-24 mb-2" />
+          <div className="flex flex-row items-center space-x-2">
+            <div className="flex flex-row text-xs items-center">
+              <ScrollIcon className="h-4 w-4" />
+              <Skeleton className="h-3 w-20 ml-1" />
+            </div>
+            <div className="flex flex-row text-xs items-center">
+              <StarIcon className="h-4 w-4" />
+              <Skeleton className="h-3 w-8 ml-1" />
+            </div>
+          </div>
+        </div>
+        <div className="flex flex-row gap-2 ml-auto">
+          <Skeleton className="h-8 w-8" />
+          <Skeleton className="h-8 w-24" />
+        </div>
+      </Card>
+    );
+  }
+
+  // Handle error/not found
+  if (!data) {
+    return (
+      <Card className="px-2 py-2 flex flex-row justify-center items-center gap-2 max-w-[500px]">
+        <div>
+          <p>Unknown Game</p>
+          <p className="text-xs text-muted-foreground">Game ID: {gameid}</p>
+        </div>
+        <div className="flex flex-row gap-2 ml-auto">
+          <CopyDropdown size="sm" items={[
+            { name: "Copy Game ID", value: gameid.toString() },
+            { name: "Copy Place ID", value: (placeid ?? "No Place ID").toString() },
+          ]} />
+        </div>
+      </Card>
+    );
+  }
+
+  // Normal rendering with data
   return (
     <Card className="px-2 py-2 flex flex-row justify-center items-center gap-2 max-w-[500px]">
       <div>
-        <p>{data?.name}</p>
+        <p>{data.name}</p>
         <div className="flex flex-row items-center space-x-2">
           <div className="flex flex-row text-xs items-center text-muted-foreground">
             <ScrollIcon className="h-4 w-4" />
-            <span className="max-w-[8rem] text-nowrap overflow-hidden text-ellipsis">{data?.description}</span>
+            <span className="max-w-[8rem] text-nowrap overflow-hidden text-ellipsis">{data.description}</span>
           </div>
           <div className="flex flex-row text-xs items-center text-muted-foreground">
-            <StarIcon className="h-4 w-4" />{data?.favoritedCount}
+            <StarIcon className="h-4 w-4" />{data.favoritedCount?.toLocaleString() || 0}
           </div>
         </div>
       </div>
@@ -83,7 +190,7 @@ function GameInfoComponent({ gameid, placeid }: { gameid: number, placeid?: numb
           { name: "Copy Game ID", value: gameid.toString() },
           { name: "Copy Place ID", value: (placeid ?? "No Place ID").toString() },
         ]} />
-        <a href={`https://www.roblox.com/games/${data?.rootPlaceId}`} target="_blank" rel="noopener noreferrer"> 
+        <a href={`https://www.roblox.com/games/${data.rootPlaceId}`} target="_blank" rel="noopener noreferrer"> 
           <Button variant="outline" size={"sm"}>
             <LinkIcon className="mr-2 h-4 w-4" />
             View on Roblox
@@ -91,7 +198,7 @@ function GameInfoComponent({ gameid, placeid }: { gameid: number, placeid?: numb
         </a>
       </div>
     </Card>
-  )
+  );
 }
 
 export function AnalyticsClient() {
@@ -111,13 +218,16 @@ export function AnalyticsClient() {
   const [sortField, setSortField] = useState<SortField>('count');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const memoizedLoadDataWithTimeFilter = useCallback(loadDataWithTimeFilter, [fetchTelemetryData]);
+
   useEffect(() => {
     // Initial data load
-    loadDataWithTimeFilter(timeFilter);
+    memoizedLoadDataWithTimeFilter(timeFilter);
     fetchStats(true);
-  }, [fetchStats]);
+  }, [fetchStats, timeFilter, memoizedLoadDataWithTimeFilter]);
 
-  const loadDataWithTimeFilter = (timeRange: string) => {
+  function loadDataWithTimeFilter(timeRange: string) {
     const now = Date.now();
     let startDate: number | undefined = undefined;
 
@@ -143,7 +253,7 @@ export function AnalyticsClient() {
     });
     
     setTimeFilter(timeRange);
-  };
+  }
 
   // Prepare data for charts with proper formatting
   const prepareChartData = () => {
@@ -172,7 +282,7 @@ export function AnalyticsClient() {
   const placeIdDistribution = telemetryData.reduce<Record<number, { placeid: number, count: number }>>((acc, item) => {
     if (!acc[item.gameid]) {
       acc[item.gameid] = {
-        placeid: item.placeid, // Store the game ID correctly
+        placeid: item.placeid,
         count: 0
       };
     }
@@ -183,11 +293,10 @@ export function AnalyticsClient() {
   // Convert to array for sorting
   const placeDistributionArray = Object.entries(placeIdDistribution).map(([gameId, data]) => ({
     placeId: Number(data.placeid),
-    gameid: Number(gameId), // Use the stored gameid
+    gameid: Number(gameId),
     count: data.count,
     percentage: (data.count / telemetryData.length) * 100
   }));
-  
   
   // Sort the place distribution array
   const sortedPlaceDistribution = [...placeDistributionArray].sort((a, b) => {
@@ -199,6 +308,10 @@ export function AnalyticsClient() {
       return sortDirection === 'asc' 
         ? a.count - b.count 
         : b.count - a.count;
+    } else if (sortField === 'gameId') {
+      return sortDirection === 'asc'
+        ? a.gameid - b.gameid
+        : b.gameid - a.gameid;
     } else { // percentage
       return sortDirection === 'asc' 
         ? a.percentage - b.percentage 
@@ -237,329 +350,331 @@ export function AnalyticsClient() {
   } satisfies ChartConfig;
 
   return (
-    <div className="space-y-6">
-      <header className="flex h-16 shrink-0 items-center gap-2">
-        <div className="flex items-center gap-2 px-4">
-          <SidebarTrigger className="-ml-1" />
-          <Separator orientation="vertical" className="mr-2 h-4" />
-          <Breadcrumb>
-            <BreadcrumbList>
-              <BreadcrumbItem className="hidden md:block">
-                <BreadcrumbLink href="#">
-                  Dashboard
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator className="hidden md:block" />
-              <BreadcrumbItem>
-                <BreadcrumbPage>Analytics</BreadcrumbPage>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
-        </div>
-      </header>
-      <div className="flex items-center justify-between">
-        <h2 className="text-3xl font-bold tracking-tight">mspaint analytics</h2>
-        
-        <div className="flex items-center gap-2">
-          <Select value={timeFilter} onValueChange={loadDataWithTimeFilter}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Select time range" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Time</SelectItem>
-              <SelectItem value="24hours">Last 24 Hours</SelectItem>
-              <SelectItem value="7days">Last 7 Days</SelectItem>
-              <SelectItem value="30days">Last 30 Days</SelectItem>
-            </SelectContent>
-          </Select>
+    <GameCacheProvider>
+      <div className="space-y-6">
+        <header className="flex h-16 shrink-0 items-center gap-2">
+          <div className="flex items-center gap-2 px-4">
+            <SidebarTrigger className="-ml-1" />
+            <Separator orientation="vertical" className="mr-2 h-4" />
+            <Breadcrumb>
+              <BreadcrumbList>
+                <BreadcrumbItem className="hidden md:block">
+                  <BreadcrumbLink href="#">
+                    Dashboard
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator className="hidden md:block" />
+                <BreadcrumbItem>
+                  <BreadcrumbPage>Analytics</BreadcrumbPage>
+                </BreadcrumbItem>
+              </BreadcrumbList>
+            </Breadcrumb>
+          </div>
+        </header>
+        <div className="flex items-center justify-between">
+          <h2 className="text-3xl font-bold tracking-tight">mspaint analytics</h2>
           
-          <Button 
-            variant="outline" 
-            onClick={() => {
-              loadDataWithTimeFilter(timeFilter);
-              fetchStats(false);
-            }}
-            disabled={isLoading}
-          >
-            {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Filter className="mr-2 h-4 w-4" />}
-            Refresh
-          </Button>
+          <div className="flex items-center gap-2">
+            <Select value={timeFilter} onValueChange={memoizedLoadDataWithTimeFilter}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Select time range" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Time</SelectItem>
+                <SelectItem value="24hours">Last 24 Hours</SelectItem>
+                <SelectItem value="7days">Last 7 Days</SelectItem>
+                <SelectItem value="30days">Last 30 Days</SelectItem>
+              </SelectContent>
+            </Select>
+            
+            <Button 
+              variant="outline" 
+              onClick={() => {
+                memoizedLoadDataWithTimeFilter(timeFilter);
+                fetchStats(false);
+              }}
+              disabled={isLoading}
+            >
+              {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Filter className="mr-2 h-4 w-4" />}
+              Refresh
+            </Button>
+          </div>
         </div>
-      </div>
 
-      {/* Stats Cards */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {stats ? (
-          <>
+        {/* Stats Cards */}
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          {stats ? (
+            <>
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Total Telemetry Records</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{stats.totalCount}</div>
+                </CardContent>
+              </Card>
+              
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Unique Places</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{stats.uniquePlaceIds}</div>
+                </CardContent>
+              </Card>
+              
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Unique Games</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{stats.uniqueGameIds}</div>
+                </CardContent>
+              </Card>
+              
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Last Activity</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-lg font-medium">
+                    {stats.mostRecentTimestamp 
+                      ? new Date(stats.mostRecentTimestamp).toLocaleString() 
+                      : "No activity"}
+                  </div>
+                </CardContent>
+              </Card>
+            </>
+          ) : (
+            // Skeleton loaders for stats
+            Array(4).fill(0).map((_, i) => (
+              <Card key={i}>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <Skeleton className="h-4 w-[140px]" />
+                </CardHeader>
+                <CardContent>
+                  <Skeleton className="h-8 w-[100px]" />
+                </CardContent>
+              </Card>
+            ))
+          )}
+        </div>
+
+        {/* Charts and Tables in Tabs */}
+        <Tabs defaultValue="chart" className="w-full">
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="chart" className="data-[state=active]:bg-[rgb(25,25,25)]">Activity Chart</TabsTrigger>
+            <TabsTrigger value="places" className="data-[state=active]:bg-[rgb(25,25,25)]">Place Distribution</TabsTrigger>
+            <TabsTrigger value="table" className="data-[state=active]:bg-[rgb(25,25,25)]">Raw Data</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="chart">
             <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Total Telemetry Records</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{stats.totalCount}</div>
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Unique Places</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{stats.uniquePlaceIds}</div>
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Unique Games</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{stats.uniqueGameIds}</div>
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Last Activity</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-lg font-medium">
-                  {stats.mostRecentTimestamp 
-                    ? new Date(stats.mostRecentTimestamp).toLocaleString() 
-                    : "No activity"}
+              <CardHeader className="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
+                <div className="grid flex-1 gap-1 text-center sm:text-left">
+                  <CardTitle>Telemetry Activity Over Time</CardTitle>
+                  <CardDescription>
+                    {timeFilter === "all" 
+                      ? "All time activity" 
+                      : `Activity in the last ${timeFilter === "24hours" ? "24 hours" : timeFilter === "7days" ? "7 days" : "30 days"}`}
+                  </CardDescription>
                 </div>
-              </CardContent>
-            </Card>
-          </>
-        ) : (
-          // Skeleton loaders for stats
-          Array(4).fill(0).map((_, i) => (
-            <Card key={i}>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <Skeleton className="h-4 w-[140px]" />
               </CardHeader>
-              <CardContent>
-                <Skeleton className="h-8 w-[100px]" />
+              <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
+                {chartData.length > 0 ? (
+                  <ChartContainer
+                    config={chartConfig}
+                    className="aspect-auto h-[350px] w-full"
+                  >
+                    <AreaChart data={chartData}>
+                      <defs>
+                        <linearGradient id="fillCount" x1="0" y1="0" x2="0" y2="1">
+                          <stop
+                            offset="5%"
+                            stopColor="var(--color-count)"
+                            stopOpacity={0.8}
+                          />
+                          <stop
+                            offset="95%"
+                            stopColor="var(--color-count)"
+                            stopOpacity={0.1}
+                          />
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid vertical={false} />
+                      <XAxis
+                        dataKey="date"
+                        tickLine={false}
+                        axisLine={false}
+                        tickMargin={8}
+                        minTickGap={32}
+                        tickFormatter={(value) => {
+                          const date = new Date(value)
+                          return date.toLocaleDateString("en-US", {
+                            month: "short",
+                            day: "numeric",
+                          })
+                        }}
+                      />
+                      <ChartTooltip
+                        cursor={false}
+                        content={
+                          <ChartTooltipContent
+                            labelFormatter={(value) => {
+                              return new Date(value).toLocaleDateString("en-US", {
+                                month: "long",
+                                day: "numeric",
+                                year: "numeric"
+                              })
+                            }}
+                            indicator="dot"
+                          />
+                        }
+                      />
+                      <Area
+                        dataKey="count"
+                        type="monotone"
+                        fill="url(#fillCount)"
+                        stroke="var(--color-count)"
+                        strokeWidth={2}
+                      />
+                      <ChartLegend content={<ChartLegendContent />} />
+                    </AreaChart>
+                  </ChartContainer>
+                ) : (
+                  <div className="flex flex-col items-center justify-center h-[350px]">
+                    <BarChart2 className="h-10 w-10 text-gray-400" />
+                    <p className="mt-2 text-gray-500">No data available for the selected time period</p>
+                  </div>
+                )}
               </CardContent>
             </Card>
-          ))
-        )}
-      </div>
-
-      {/* Charts and Tables in Tabs */}
-      <Tabs defaultValue="chart" className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="chart" className="data-[state=active]:bg-[rgb(25,25,25)]">Activity Chart</TabsTrigger>
-          <TabsTrigger value="places" className="data-[state=active]:bg-[rgb(25,25,25)]">Place Distribution</TabsTrigger>
-          <TabsTrigger value="table" className="data-[state=active]:bg-[rgb(25,25,25)]">Raw Data</TabsTrigger>
-        </TabsList>
-        
-        <TabsContent value="chart">
-          <Card>
-            <CardHeader className="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
-              <div className="grid flex-1 gap-1 text-center sm:text-left">
-                <CardTitle>Telemetry Activity Over Time</CardTitle>
+          </TabsContent>
+          
+          <TabsContent value="places">
+            <Card>
+              <CardHeader>
+                <CardTitle>Place ID Distribution</CardTitle>
                 <CardDescription>
-                  {timeFilter === "all" 
-                    ? "All time activity" 
-                    : `Activity in the last ${timeFilter === "24hours" ? "24 hours" : timeFilter === "7days" ? "7 days" : "30 days"}`}
+                  Activity breakdown by Place ID - Click column headers to sort
                 </CardDescription>
-              </div>
-            </CardHeader>
-            <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
-              {chartData.length > 0 ? (
-                <ChartContainer
-                  config={chartConfig}
-                  className="aspect-auto h-[350px] w-full"
-                >
-                  <AreaChart data={chartData}>
-                    <defs>
-                      <linearGradient id="fillCount" x1="0" y1="0" x2="0" y2="1">
-                        <stop
-                          offset="5%"
-                          stopColor="var(--color-count)"
-                          stopOpacity={0.8}
-                        />
-                        <stop
-                          offset="95%"
-                          stopColor="var(--color-count)"
-                          stopOpacity={0.1}
-                        />
-                      </linearGradient>
-                    </defs>
-                    <CartesianGrid vertical={false} />
-                    <XAxis
-                      dataKey="date"
-                      tickLine={false}
-                      axisLine={false}
-                      tickMargin={8}
-                      minTickGap={32}
-                      tickFormatter={(value) => {
-                        const date = new Date(value)
-                        return date.toLocaleDateString("en-US", {
-                          month: "short",
-                          day: "numeric",
-                        })
-                      }}
-                    />
-                    <ChartTooltip
-                      cursor={false}
-                      content={
-                        <ChartTooltipContent
-                          labelFormatter={(value) => {
-                            return new Date(value).toLocaleDateString("en-US", {
-                              month: "long",
-                              day: "numeric",
-                              year: "numeric"
-                            })
-                          }}
-                          indicator="dot"
-                        />
-                      }
-                    />
-                    <Area
-                      dataKey="count"
-                      type="monotone"
-                      fill="url(#fillCount)"
-                      stroke="var(--color-count)"
-                      strokeWidth={2}
-                    />
-                    <ChartLegend content={<ChartLegendContent />} />
-                  </AreaChart>
-                </ChartContainer>
-              ) : (
-                <div className="flex flex-col items-center justify-center h-[350px]">
-                  <BarChart2 className="h-10 w-10 text-gray-400" />
-                  <p className="mt-2 text-gray-500">No data available for the selected time period</p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
-        
-        <TabsContent value="places">
-          <Card>
-            <CardHeader>
-              <CardTitle>Place ID Distribution</CardTitle>
-              <CardDescription>
-                Activity breakdown by Place ID - Click column headers to sort
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              {sortedPlaceDistribution.length > 0 ? (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead 
-                        className="cursor-pointer hover:bg-muted/50" 
-                        onClick={() => handleSortClick('gameId')}
-                      >
-                        <div className="flex items-center">
-                          Game {renderSortIcon('gameId')}
-                        </div>
-                      </TableHead>
-                      <TableHead 
-                        className="cursor-pointer hover:bg-muted/50 text-right" 
-                        onClick={() => handleSortClick('count')}
-                      >
-                        <div className="flex items-center justify-end">
-                          Count {renderSortIcon('count')}
-                        </div>
-                      </TableHead>
-                      <TableHead 
-                        className="cursor-pointer hover:bg-muted/50 text-right" 
-                        onClick={() => handleSortClick('percentage')}
-                      >
-                        <div className="flex items-center justify-end">
-                          Percentage {renderSortIcon('percentage')}
-                        </div>
-                      </TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {sortedPlaceDistribution.map(({ placeId, gameid, count, percentage }) => (
-                      <TableRow key={placeId}>
-                        <TableCell>
-                          <GameInfoComponent gameid={gameid} placeid={placeId} />
-                        </TableCell>
-                        <TableCell className="text-right">{count}</TableCell>
-                        <TableCell className="text-right">
-                          {percentage.toFixed(1)}%
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              ) : (
-                <div className="flex flex-col items-center justify-center h-[200px]">
-                  <p className="text-gray-500">No data available for the selected time period</p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
-        
-        <TabsContent value="table">
-          <Card>
-            <CardHeader>
-              <CardTitle>Telemetry Raw Data</CardTitle>
-              <CardDescription>
-                Showing {telemetryData.length} of {totalCount} records
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              {telemetryData.length > 0 ? (
-                <div className="rounded-md border">
+              </CardHeader>
+              <CardContent>
+                {sortedPlaceDistribution.length > 0 ? (
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead>Executor</TableHead>
-                        <TableHead>Game</TableHead>
-                        <TableHead>Timestamp</TableHead>
+                        <TableHead 
+                          className="cursor-pointer hover:bg-muted/50" 
+                          onClick={() => handleSortClick('gameId')}
+                        >
+                          <div className="flex items-center">
+                            Game {renderSortIcon('gameId')}
+                          </div>
+                        </TableHead>
+                        <TableHead 
+                          className="cursor-pointer hover:bg-muted/50 text-right" 
+                          onClick={() => handleSortClick('count')}
+                        >
+                          <div className="flex items-center justify-end">
+                            Count {renderSortIcon('count')}
+                          </div>
+                        </TableHead>
+                        <TableHead 
+                          className="cursor-pointer hover:bg-muted/50 text-right" 
+                          onClick={() => handleSortClick('percentage')}
+                        >
+                          <div className="flex items-center justify-end">
+                            Percentage {renderSortIcon('percentage')}
+                          </div>
+                        </TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {telemetryData.map((item, index) => (
-                        <TableRow key={index}>
-                          <TableCell className="font-medium">{item.exec}</TableCell>
+                      {sortedPlaceDistribution.map(({ placeId, gameid, count, percentage }) => (
+                        <TableRow key={placeId}>
                           <TableCell>
-                            <GameInfoComponent gameid={item.gameid} placeid={item.placeid} />
+                            <GameInfoComponent gameid={gameid} placeid={placeId} />
                           </TableCell>
-                          <TableCell>{new Date(item.timestamp).toLocaleString()}</TableCell>
+                          <TableCell className="text-right">{count}</TableCell>
+                          <TableCell className="text-right">
+                            {percentage.toFixed(1)}%
+                          </TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
                   </Table>
-                </div>
-              ) : (
-                <div className="flex flex-col items-center justify-center h-[200px]">
-                  <Clock className="h-10 w-10 text-gray-400" />
-                  <p className="mt-2 text-gray-500">No data available for the selected time period</p>
-                </div>
-              )}
-            </CardContent>
-            <CardFooter>
-              {hasMore && (
-                <Button
-                  onClick={() => fetchTelemetryData({
-                    limit: 20,
-                    offset: telemetryData.length,
-                    startDate: timeFilter !== "all" ? getStartDateFromFilter(timeFilter) : undefined
-                  })}
-                  disabled={isLoading}
-                >
-                  {isLoading ? (
-                    <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Loading...</>
-                  ) : (
-                    "Load More"
-                  )}
-                </Button>
-              )}
-            </CardFooter>
-          </Card>
-        </TabsContent>
-      </Tabs>
-    </div>
+                ) : (
+                  <div className="flex flex-col items-center justify-center h-[200px]">
+                    <p className="text-gray-500">No data available for the selected time period</p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+          
+          <TabsContent value="table">
+            <Card>
+              <CardHeader>
+                <CardTitle>Telemetry Raw Data</CardTitle>
+                <CardDescription>
+                  Showing {telemetryData.length} of {totalCount} records
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {telemetryData.length > 0 ? (
+                  <div className="rounded-md border">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Executor</TableHead>
+                          <TableHead>Game</TableHead>
+                          <TableHead>Timestamp</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {telemetryData.map((item, index) => (
+                          <TableRow key={index}>
+                            <TableCell className="font-medium">{item.exec}</TableCell>
+                            <TableCell>
+                              <GameInfoComponent gameid={item.gameid} placeid={item.placeid} />
+                            </TableCell>
+                            <TableCell>{new Date(item.timestamp).toLocaleString()}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center justify-center h-[200px]">
+                    <Clock className="h-10 w-10 text-gray-400" />
+                    <p className="mt-2 text-gray-500">No data available for the selected time period</p>
+                  </div>
+                )}
+              </CardContent>
+              <CardFooter>
+                {hasMore && (
+                  <Button
+                    onClick={() => fetchTelemetryData({
+                      limit: 20,
+                      offset: telemetryData.length,
+                      startDate: timeFilter !== "all" ? getStartDateFromFilter(timeFilter) : undefined
+                    })}
+                    disabled={isLoading}
+                  >
+                    {isLoading ? (
+                      <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Loading...</>
+                    ) : (
+                      "Load More"
+                    )}
+                  </Button>
+                )}
+              </CardFooter>
+            </Card>
+          </TabsContent>
+        </Tabs>
+      </div>
+    </GameCacheProvider>
   );
 }
 
