@@ -1,5 +1,40 @@
 "use client";
 
+
+interface RobloxGameResponse {
+    data: {
+      id: number;
+      rootPlaceId: number;
+      name: string;
+      description: string;
+      sourceName?: string;
+      sourceDescription?: string;
+      creator: {
+        id: number;
+        name: string;
+        type: string;
+      };
+      price?: number;
+      allowedGearGenres: string[];
+      allowedGearCategories: string[];
+      isGenreEnforced: boolean;
+      copying: boolean;
+      playing: number;
+      visits: number;
+      maxPlayers: number;
+      created: string;
+      updated: string;
+      studioAccessToApisAllowed: boolean;
+      createVipServersAllowed: boolean;
+      universeAvatarType: string;
+      genre: string;
+      isAllGenre: boolean;
+      isFavoritedByUser: boolean;
+      favoritedCount: number;
+    }[];
+}
+  
+
 import { useAnalytics } from "./provider";
 import { useEffect, useState, createContext, useContext, useMemo, useCallback } from "react";
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
@@ -47,7 +82,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ChevronDown, ChevronUp, Loader2, BarChart2, Clock, Filter, StarIcon, ScrollIcon, LinkIcon } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
-import { RobloxGameResponse } from "@/app/api/lookup/roblox/[game_id]/route";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import CopyDropdown from "@/components/copy-dropdown";
 

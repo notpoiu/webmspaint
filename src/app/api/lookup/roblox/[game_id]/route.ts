@@ -1,39 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 
-export interface RobloxGameResponse {
-    data: {
-      id: number;
-      rootPlaceId: number;
-      name: string;
-      description: string;
-      sourceName?: string;
-      sourceDescription?: string;
-      creator: {
-        id: number;
-        name: string;
-        type: string;
-      };
-      price?: number;
-      allowedGearGenres: string[];
-      allowedGearCategories: string[];
-      isGenreEnforced: boolean;
-      copying: boolean;
-      playing: number;
-      visits: number;
-      maxPlayers: number;
-      created: string;
-      updated: string;
-      studioAccessToApisAllowed: boolean;
-      createVipServersAllowed: boolean;
-      universeAvatarType: string;
-      genre: string;
-      isAllGenre: boolean;
-      isFavoritedByUser: boolean;
-      favoritedCount: number;
-    }[];
-}
-  
-
 export async function GET(request: NextRequest, slug: { params: Promise<{ game_id: string }> }) {
     const game_id = (await slug.params).game_id;
 
@@ -50,7 +16,7 @@ export async function GET(request: NextRequest, slug: { params: Promise<{ game_i
             throw new Error(`Failed to fetch game info: ${response.status}`);
         }
         
-        const data = await response.json() as RobloxGameResponse;
+        const data = await response.json();
         
         if (!data.data || data.data.length === 0) {
             return null;
