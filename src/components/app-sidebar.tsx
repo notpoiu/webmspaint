@@ -2,7 +2,8 @@
 
 import * as React from "react"
 import {
-  FolderKeyIcon,
+  BarChart2Icon,
+  KeyIcon,
 } from "lucide-react"
 
 import Image from "next/image"
@@ -24,7 +25,7 @@ const data = {
     {
       title: "Serials",
       url: "#",
-      icon: FolderKeyIcon,
+      icon: KeyIcon,
       isActive: true,
       items: [
         {
@@ -36,6 +37,12 @@ const data = {
           url: "/dashboard/serials/modify",
         }
       ],
+    },
+    {
+      title: "Analytics",
+      url: "/dashboard/analytics",
+      icon: BarChart2Icon,
+      isActive: true
     }
   ],
 }
