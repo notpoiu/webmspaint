@@ -84,6 +84,7 @@ import { ChevronDown, ChevronUp, Loader2, BarChart2, Clock, Filter, StarIcon, Sc
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import CopyDropdown from "@/components/copy-dropdown";
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 
 type SortField = 'placeId' | 'count' | 'percentage' | 'gameId';
 type SortDirection = 'asc' | 'desc';
@@ -106,6 +107,36 @@ const GameCacheContext = createContext<GameCacheContextType>({
 function GameCacheProvider({ children }: { children: React.ReactNode }) {
   const [gameData, setGameData] = useState<Record<number, GameData>>({});
   const [isLoading, setIsLoading] = useState<Record<number, boolean>>({});
+
+  // Load cached data from localStorage on initial render
+  useEffect(() => {
+    try {
+      const cachedData = localStorage.getItem('mspaint-game-cache');
+      if (cachedData) {
+        const parsedData = JSON.parse(cachedData);
+        // Only use cache if it's less than 7 days old
+        if (parsedData.timestamp && (Date.now() - parsedData.timestamp < 7 * 24 * 60 * 60 * 1000)) {
+          setGameData(parsedData.data || {});
+        }
+      }
+    } catch (error) {
+      console.error("Error loading game cache from localStorage:", error);
+    }
+  }, []);
+
+  // Save to localStorage whenever gameData changes
+  useEffect(() => {
+    if (Object.keys(gameData).length > 0) {
+      try {
+        localStorage.setItem('mspaint-game-cache', JSON.stringify({
+          data: gameData,
+          timestamp: Date.now()
+        }));
+      } catch (error) {
+        console.error("Error saving game cache to localStorage:", error);
+      }
+    }
+  }, [gameData]);
 
   // Function to fetch game data and update cache
   const fetchGameData = useCallback(async (gameId: number) => {
@@ -252,6 +283,14 @@ export function AnalyticsClient() {
   const [sortField, setSortField] = useState<SortField>('count');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
 
+  // Pagination state for place distribution
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+  
+  // Add pagination state for raw data table
+  const [rawDataCurrentPage, setRawDataCurrentPage] = useState(1);
+  const [rawDataItemsPerPage, setRawDataItemsPerPage] = useState(10);
+
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const memoizedLoadDataWithTimeFilter = useCallback(loadDataWithTimeFilter, [fetchTelemetryData]);
 
@@ -353,6 +392,31 @@ export function AnalyticsClient() {
     }
   });
   
+  // Calculate pagination bounds
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = sortedPlaceDistribution.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(sortedPlaceDistribution.length / itemsPerPage);
+  
+  // Function to change page
+  const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
+
+  // Generate page numbers
+  const pageNumbers = [];
+  const maxPageButtons = 5; // Show max 5 page buttons
+  
+  let startPage = Math.max(1, currentPage - Math.floor(maxPageButtons / 2));
+  const endPage = Math.min(totalPages, startPage + maxPageButtons - 1);
+  
+  // Adjust if we're near the end
+  if (endPage - startPage + 1 < maxPageButtons && startPage > 1) {
+    startPage = Math.max(1, endPage - maxPageButtons + 1);
+  }
+  
+  for (let i = startPage; i <= endPage; i++) {
+    pageNumbers.push(i);
+  }
+  
   // Handle sort click
   const handleSortClick = (field: SortField) => {
     if (sortField === field) {
@@ -382,6 +446,31 @@ export function AnalyticsClient() {
       color: "hsl(var(--chart-1))",
     },
   } satisfies ChartConfig;
+
+  // Calculate pagination for raw data table
+  const rawDataTotalPages = Math.ceil(telemetryData.length / rawDataItemsPerPage);
+  const rawDataStartIndex = (rawDataCurrentPage - 1) * rawDataItemsPerPage;
+  const rawDataEndIndex = Math.min(rawDataStartIndex + rawDataItemsPerPage, telemetryData.length);
+  const paginatedRawData = telemetryData.slice(rawDataStartIndex, rawDataEndIndex);
+  
+  // Generate page numbers for raw data pagination
+  const rawDataPageNumbers = [];
+  const maxRawDataPageButtons = 5; // Show max 5 page buttons
+  
+  let rawDataStartPage = Math.max(1, rawDataCurrentPage - Math.floor(maxRawDataPageButtons / 2));
+  const rawDataEndPage = Math.min(rawDataTotalPages, rawDataStartPage + maxRawDataPageButtons - 1);
+  
+  // Adjust if we're near the end
+  if (rawDataEndPage - rawDataStartPage + 1 < maxRawDataPageButtons && rawDataStartPage > 1) {
+    rawDataStartPage = Math.max(1, rawDataEndPage - maxRawDataPageButtons + 1);
+  }
+  
+  for (let i = rawDataStartPage; i <= rawDataEndPage; i++) {
+    rawDataPageNumbers.push(i);
+  }
+  
+  // Function to paginate raw data
+  const paginateRawData = (pageNumber: number) => setRawDataCurrentPage(pageNumber);
 
   return (
     <GameCacheProvider>
@@ -595,49 +684,113 @@ export function AnalyticsClient() {
               </CardHeader>
               <CardContent>
                 {sortedPlaceDistribution.length > 0 ? (
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead 
-                          className="cursor-pointer hover:bg-muted/50" 
-                          onClick={() => handleSortClick('gameId')}
-                        >
-                          <div className="flex items-center">
-                            Game {renderSortIcon('gameId')}
-                          </div>
-                        </TableHead>
-                        <TableHead 
-                          className="cursor-pointer hover:bg-muted/50 text-right" 
-                          onClick={() => handleSortClick('count')}
-                        >
-                          <div className="flex items-center justify-end">
-                            Count {renderSortIcon('count')}
-                          </div>
-                        </TableHead>
-                        <TableHead 
-                          className="cursor-pointer hover:bg-muted/50 text-right" 
-                          onClick={() => handleSortClick('percentage')}
-                        >
-                          <div className="flex items-center justify-end">
-                            Percentage {renderSortIcon('percentage')}
-                          </div>
-                        </TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {sortedPlaceDistribution.map(({ placeId, gameid, count, percentage }) => (
-                        <TableRow key={placeId}>
-                          <TableCell>
-                            <GameInfoComponent gameid={gameid} placeid={placeId} />
-                          </TableCell>
-                          <TableCell className="text-right">{count}</TableCell>
-                          <TableCell className="text-right">
-                            {percentage.toFixed(1)}%
-                          </TableCell>
+                  <>
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead 
+                            className="cursor-pointer hover:bg-muted/50" 
+                            onClick={() => handleSortClick('gameId')}
+                          >
+                            <div className="flex items-center">
+                              Game {renderSortIcon('gameId')}
+                            </div>
+                          </TableHead>
+                          <TableHead 
+                            className="cursor-pointer hover:bg-muted/50 text-right" 
+                            onClick={() => handleSortClick('count')}
+                          >
+                            <div className="flex items-center justify-end">
+                              Count {renderSortIcon('count')}
+                            </div>
+                          </TableHead>
+                          <TableHead 
+                            className="cursor-pointer hover:bg-muted/50 text-right" 
+                            onClick={() => handleSortClick('percentage')}
+                          >
+                            <div className="flex items-center justify-end">
+                              Percentage {renderSortIcon('percentage')}
+                            </div>
+                          </TableHead>
                         </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
+                      </TableHeader>
+                      <TableBody>
+                        {currentItems.map(({ placeId, gameid, count, percentage }) => (
+                          <TableRow key={placeId}>
+                            <TableCell>
+                              <GameInfoComponent gameid={gameid} placeid={placeId} />
+                            </TableCell>
+                            <TableCell className="text-right">{count}</TableCell>
+                            <TableCell className="text-right">
+                              {percentage.toFixed(1)}%
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                    
+                    {/* Pagination controls */}
+                    {totalPages > 1 && (
+                      <div className="mt-4">
+                        <Pagination>
+                          <PaginationContent>
+                            <PaginationItem>
+                              <PaginationPrevious 
+                                onClick={() => paginate(Math.max(1, currentPage - 1))}
+                                className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"} 
+                              />
+                            </PaginationItem>
+                            
+                            {startPage > 1 && (
+                              <>
+                                <PaginationItem>
+                                  <PaginationLink onClick={() => paginate(1)}>1</PaginationLink>
+                                </PaginationItem>
+                                {startPage > 2 && (
+                                  <PaginationItem>
+                                    <PaginationLink className="cursor-default">...</PaginationLink>
+                                  </PaginationItem>
+                                )}
+                              </>
+                            )}
+                            
+                            {pageNumbers.map(number => (
+                              <PaginationItem key={number}>
+                                <PaginationLink 
+                                  onClick={() => paginate(number)}
+                                  isActive={currentPage === number}
+                                >
+                                  {number}
+                                </PaginationLink>
+                              </PaginationItem>
+                            ))}
+                            
+                            {endPage < totalPages && (
+                              <>
+                                {endPage < totalPages - 1 && (
+                                  <PaginationItem>
+                                    <PaginationLink className="cursor-default">...</PaginationLink>
+                                  </PaginationItem>
+                                )}
+                                <PaginationItem>
+                                  <PaginationLink onClick={() => paginate(totalPages)}>{totalPages}</PaginationLink>
+                                </PaginationItem>
+                              </>
+                            )}
+                            
+                            <PaginationItem>
+                              <PaginationNext 
+                                onClick={() => paginate(Math.min(totalPages, currentPage + 1))}
+                                className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                              />
+                            </PaginationItem>
+                          </PaginationContent>
+                        </Pagination>
+                        
+                        
+                      </div>
+                    )}
+                  </>
                 ) : (
                   <div className="flex flex-col items-center justify-center h-[200px]">
                     <p className="text-gray-500">No data available for the selected time period</p>
@@ -652,33 +805,117 @@ export function AnalyticsClient() {
               <CardHeader>
                 <CardTitle>Telemetry Raw Data</CardTitle>
                 <CardDescription>
-                  Showing {telemetryData.length} of {totalCount} records
+                  Showing {paginatedRawData.length} of {totalCount} records
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 {telemetryData.length > 0 ? (
-                  <div className="rounded-md border">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Executor</TableHead>
-                          <TableHead>Game</TableHead>
-                          <TableHead>Timestamp</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {telemetryData.map((item, index) => (
-                          <TableRow key={index}>
-                            <TableCell className="font-medium">{item.exec}</TableCell>
-                            <TableCell>
-                              <GameInfoComponent gameid={item.gameid} placeid={item.placeid} />
-                            </TableCell>
-                            <TableCell>{new Date(item.timestamp).toLocaleString()}</TableCell>
+                  <>
+                    <div className="rounded-md border">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Executor</TableHead>
+                            <TableHead>Game</TableHead>
+                            <TableHead>Timestamp</TableHead>
                           </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </div>
+                        </TableHeader>
+                        <TableBody>
+                          {paginatedRawData.map((item, index) => (
+                            <TableRow key={index}>
+                              <TableCell className="font-medium">{item.exec}</TableCell>
+                              <TableCell>
+                                <GameInfoComponent gameid={item.gameid} placeid={item.placeid} />
+                              </TableCell>
+                              <TableCell>{new Date(item.timestamp).toLocaleString()}</TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </div>
+                    
+                    {/* Raw Data Pagination controls */}
+                    {telemetryData.length > 0 && (
+                      <div className="mt-4 flex items-center relative">
+                        <div className="flex items-center mr-4 absolute left-0">
+                          <span className="mr-2 text-sm text-muted-foreground">Items per page:</span>
+                          <input 
+                            type="number" 
+                            min="5"
+                            max="100"
+                            value={rawDataItemsPerPage}
+                            onChange={(e) => {
+                              const value = parseInt(e.target.value);
+                              if (value >= 5 && value <= 100) {
+                                setRawDataItemsPerPage(value);
+                                setRawDataCurrentPage(1); // Reset to first page
+                              }
+                            }}
+                            className="w-16 h-8 rounded-md border border-input px-2 text-sm"
+                          />
+                        </div>
+                        
+                        <Pagination className="ml-auto">
+                          <PaginationContent>
+                            <PaginationItem>
+                              <PaginationPrevious 
+                                onClick={() => paginateRawData(Math.max(1, rawDataCurrentPage - 1))}
+                                className={rawDataCurrentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"} 
+                              />
+                            </PaginationItem>
+                            
+                            {rawDataStartPage > 1 && (
+                              <>
+                                <PaginationItem>
+                                  <PaginationLink onClick={() => paginateRawData(1)}>1</PaginationLink>
+                                </PaginationItem>
+                                {rawDataStartPage > 2 && (
+                                  <PaginationItem>
+                                    <PaginationLink className="cursor-default">...</PaginationLink>
+                                  </PaginationItem>
+                                )}
+                              </>
+                            )}
+                            
+                            {rawDataPageNumbers.map(number => (
+                              <PaginationItem key={number}>
+                                <PaginationLink 
+                                  onClick={() => paginateRawData(number)}
+                                  isActive={rawDataCurrentPage === number}
+                                >
+                                  {number}
+                                </PaginationLink>
+                              </PaginationItem>
+                            ))}
+                            
+                            {rawDataEndPage < rawDataTotalPages && (
+                              <>
+                                {rawDataEndPage < rawDataTotalPages - 1 && (
+                                  <PaginationItem>
+                                    <PaginationLink className="cursor-default">...</PaginationLink>
+                                  </PaginationItem>
+                                )}
+                                <PaginationItem>
+                                  <PaginationLink onClick={() => paginateRawData(rawDataTotalPages)}>{rawDataTotalPages}</PaginationLink>
+                                </PaginationItem>
+                              </>
+                            )}
+                            
+                            <PaginationItem>
+                              <PaginationNext 
+                                onClick={() => paginateRawData(Math.min(rawDataTotalPages, rawDataCurrentPage + 1))}
+                                className={rawDataCurrentPage === rawDataTotalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                              />
+                            </PaginationItem>
+                          </PaginationContent>
+                        </Pagination>
+                      </div>
+                    )}
+                    
+                    <div className="text-center text-sm text-muted-foreground mt-2">
+                      Showing {rawDataStartIndex + 1}-{rawDataEndIndex} of {telemetryData.length} items
+                    </div>
+                  </>
                 ) : (
                   <div className="flex flex-col items-center justify-center h-[200px]">
                     <Clock className="h-10 w-10 text-gray-400" />
