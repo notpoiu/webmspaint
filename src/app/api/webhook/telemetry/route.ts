@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
     const uniqueKey = `telemetry:${timestamp}:${data.placeid}:${data.gameid}`;
     
     try {
-        await kv.set(uniqueKey, JSON.stringify(telemetryData), {
+        await kv.set(uniqueKey, telemetryData, {
             ex: 30 * 24 * 60 * 60
         });
 

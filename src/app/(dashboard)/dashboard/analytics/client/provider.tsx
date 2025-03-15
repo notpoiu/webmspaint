@@ -22,8 +22,9 @@ interface AnalyticsContextType {
     endDate?: number;
     placeId?: number;
     gameId?: number;
+    silent?: boolean;
   }) => Promise<void>;
-  fetchStats: () => Promise<void>;
+  fetchStats: (silent?: boolean) => Promise<void>;
 }
 
 const AnalyticsContext = createContext<AnalyticsContextType | undefined>(undefined);
@@ -42,43 +43,81 @@ export function AnalyticsProvider({ children }: { children: ReactNode }) {
     endDate?: number;
     placeId?: number;
     gameId?: number;
+    silent?: boolean;
   }) => {
     setIsLoading(true);
     
-    const erm = async () => {
-        try {
-          const result = await getTelemetryData(options || {});
-          setTelemetryData(result.data);
-          setTotalCount(result.totalCount);
-          setHasMore(result.hasMore);
-          setIsLoading(false);
-          return result;
-        } catch (error) {
-          setIsLoading(false);
-          toast.error("Error fetching telemetry data: " + error);
-          throw error;
+    const { silent = true, ...queryOptions } = options || {};
+    
+    if (silent) {
+      try {
+        const result = await getTelemetryData(queryOptions);
+        setTelemetryData(result.data);
+        setTotalCount(result.totalCount);
+        setHasMore(result.hasMore);
+      } catch (error) {
+        console.error("Error fetching telemetry data:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    } else {
+      toast.promise(
+        async () => {
+          try {
+            const result = await getTelemetryData(queryOptions);
+            setTelemetryData(result.data);
+            setTotalCount(result.totalCount);
+            setHasMore(result.hasMore);
+            return result;
+          } catch (error) {
+            console.error("Error fetching telemetry data:", error);
+            throw error;
+          } finally {
+            setIsLoading(false);
+          }
+        },
+        {
+          loading: 'Loading telemetry data...',
+          success: 'Telemetry data loaded successfully!',
+          error: 'Failed to load telemetry data.'
         }
+      );
     }
-
-    erm();
   }, []);
 
-  const fetchStats = useCallback(async () => {
+  const fetchStats = useCallback(async (silent: boolean = true) => {
     setIsLoading(true);
     
-    const erm = async () => {
-        try {
-          const result = await getTelemetryStats();
-          setStats(result);
-          setIsLoading(false);
-          return result;
-        } catch (error) {
-          setIsLoading(false);
-          toast.error("Error fetching analytics stats: " + error);
+    if (silent) {
+      try {
+        const result = await getTelemetryStats();
+        setStats(result);
+      } catch (error) {
+        console.error("Error fetching telemetry stats:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    } else {
+      toast.promise(
+        async () => {
+          try {
+            const result = await getTelemetryStats();
+            setStats(result);
+            return result;
+          } catch (error) {
+            console.error("Error fetching telemetry stats:", error);
+            throw error;
+          } finally {
+            setIsLoading(false);
+          }
+        },
+        {
+          loading: 'Loading analytics stats...',
+          success: 'Analytics stats loaded successfully!',
+          error: 'Failed to load analytics stats.'
         }
+      );
     }
-
-    erm();
   }, []);
 
   return (

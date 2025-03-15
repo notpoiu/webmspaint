@@ -66,7 +66,7 @@ export function AnalyticsClient() {
   useEffect(() => {
     // Initial data load
     loadDataWithTimeFilter(timeFilter);
-    fetchStats();
+    fetchStats(true);
   }, [fetchStats]);
 
   const loadDataWithTimeFilter = (timeRange: string) => {
@@ -160,7 +160,7 @@ export function AnalyticsClient() {
             variant="outline" 
             onClick={() => {
               loadDataWithTimeFilter(timeFilter);
-              fetchStats();
+              fetchStats(false);
             }}
             disabled={isLoading}
           >
