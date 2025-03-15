@@ -45,9 +45,7 @@ export function AnalyticsProvider({ children }: { children: ReactNode }) {
   }) => {
     setIsLoading(true);
     
-    // Using Sonner's toast.promise pattern
-    toast.promise(
-      async () => {
+    const erm = async () => {
         try {
           const result = await getTelemetryData(options || {});
           setTelemetryData(result.data);
@@ -57,23 +55,18 @@ export function AnalyticsProvider({ children }: { children: ReactNode }) {
           return result;
         } catch (error) {
           setIsLoading(false);
-          console.error("Error fetching telemetry data:", error);
+          toast.error("Error fetching telemetry data: " + error);
           throw error;
         }
-      },
-      {
-        loading: 'Loading telemetry data...',
-        success: 'Telemetry data loaded successfully!',
-        error: 'Failed to load telemetry data.'
-      }
-    );
+    }
+
+    erm();
   }, []);
 
   const fetchStats = useCallback(async () => {
     setIsLoading(true);
     
-    toast.promise(
-      async () => {
+    const erm = async () => {
         try {
           const result = await getTelemetryStats();
           setStats(result);
@@ -81,16 +74,11 @@ export function AnalyticsProvider({ children }: { children: ReactNode }) {
           return result;
         } catch (error) {
           setIsLoading(false);
-          console.error("Error fetching telemetry stats:", error);
-          throw error;
+          toast.error("Error fetching analytics stats: " + error);
         }
-      },
-      {
-        loading: 'Loading analytics stats...',
-        success: 'Analytics stats loaded successfully!',
-        error: 'Failed to load analytics stats.'
-      }
-    );
+    }
+
+    erm();
   }, []);
 
   return (
