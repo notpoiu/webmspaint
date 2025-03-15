@@ -13,6 +13,7 @@ interface AnalyticsContextType {
     totalCount: number;
     uniquePlaceIds: number;
     uniqueGameIds: number;
+    uniqueExecutors: number;
     mostRecentTimestamp: number | null;
   } | null;
   fetchTelemetryData: (options?: {

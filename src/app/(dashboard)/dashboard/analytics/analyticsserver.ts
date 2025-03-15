@@ -93,6 +93,7 @@ export async function getTelemetryStats(): Promise<{
   totalCount: number;
   uniquePlaceIds: number;
   uniqueGameIds: number;
+  uniqueExecutors: number;
   mostRecentTimestamp: number | null;
 }> {
   try {
@@ -104,6 +105,7 @@ export async function getTelemetryStats(): Promise<{
         totalCount: 0,
         uniquePlaceIds: 0,
         uniqueGameIds: 0,
+        uniqueExecutors: 0,
         mostRecentTimestamp: null
       };
     }
@@ -119,12 +121,14 @@ export async function getTelemetryStats(): Promise<{
     
     const placeIds = new Set(validData.map(item => item.placeid));
     const gameIds = new Set(validData.map(item => item.gameid));
+    const executors = new Set(validData.map(item => item.exec));
     const timestamps = validData.map(item => item.timestamp);
     
     return {
       totalCount: validData.length,
       uniquePlaceIds: placeIds.size,
       uniqueGameIds: gameIds.size,
+      uniqueExecutors: executors.size,
       mostRecentTimestamp: timestamps.length > 0 ? Math.max(...timestamps) : null
     };
   } catch (err) {

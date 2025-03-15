@@ -636,6 +636,15 @@ export function AnalyticsClient() {
                   <div className="text-2xl font-bold">{stats.uniqueGameIds}</div>
                 </CardContent>
               </Card>
+
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Unique Executors</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{stats.uniqueExecutors}</div>
+                </CardContent>
+              </Card>
               
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
