@@ -134,11 +134,7 @@ export function AnalyticsClient() {
                     </BreadcrumbItem>
                     <BreadcrumbSeparator className="hidden md:block" />
                     <BreadcrumbItem>
-                    <BreadcrumbPage>Serials</BreadcrumbPage>
-                    </BreadcrumbItem>
-                    <BreadcrumbSeparator className="hidden md:block" />
-                    <BreadcrumbItem>
-                    <BreadcrumbPage>Create</BreadcrumbPage>
+                    <BreadcrumbPage>Analytics</BreadcrumbPage>
                     </BreadcrumbItem>
                 </BreadcrumbList>
                 </Breadcrumb>
