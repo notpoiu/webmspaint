@@ -26,14 +26,8 @@ export async function POST(req: NextRequest) {
       timestamp
     };
     
-    const uniqueKey = `telemetry:${timestamp}:${data.placeid}:${data.gameid}`;
-    
     try {
-        await kv.set(uniqueKey, telemetryData, {
-            ex: 30 * 24 * 60 * 60
-        });
-
-        await kv.sadd('telemetry:all-keys', uniqueKey);
+        await kv.sadd('telemetry-v2:all-keys', telemetryData);
         
         return new Response(JSON.stringify({ success: true }), {
             status: 200,
