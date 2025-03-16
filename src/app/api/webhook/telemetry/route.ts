@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
     };
     
     try {
-        await kv.sadd('telemetry-v2:all-keys', telemetryData);
+        await kv.sadd('telemetryv2:all-keys', telemetryData);
         
         return new Response(JSON.stringify({ success: true }), {
             status: 200,
