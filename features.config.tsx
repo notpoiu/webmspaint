@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import { BoxesIcon, BugIcon, EarthIcon, EllipsisIcon, FilesIcon, HouseIcon, LinkIcon, MapPinnedIcon, MessageSquareShareIcon, ScanEyeIcon, SettingsIcon, SparklesIcon, UserRoundIcon, WrenchIcon } from "lucide-react";
 import { ObsidianGroupboxSection } from "@/components/obsidian/obsidian";
 
@@ -6,13 +7,13 @@ export const LatestBuild = "0.2.0.3";
 const ObsidianTabContainer = ({ left, right, header }: { left?: string, right?: string, header?: string }) => {
     return (
         <div className="max-w-full h-full flex flex-col justify-center">
-            {header && <img src={`https://raw.githubusercontent.com/mspaint-cc/assets/refs/heads/main/images${header}`} alt="warning box" />}
+            {header && <img src={`https://raw.githubusercontent.com/mspaint-cc/assets/refs/heads/main/images${header}`} alt="warning box" loading="lazy" />}
             <div className="max-w-full h-full flex flex-row justify-center">
                 <ObsidianGroupboxSection>
-                    <img src={`https://raw.githubusercontent.com/mspaint-cc/assets/refs/heads/main/images${left ?? "/menu/empty.png"}`} alt="left" />
+                    <img src={`https://raw.githubusercontent.com/mspaint-cc/assets/refs/heads/main/images${left ?? "/menu/empty.png"}`} alt="left" loading="lazy" />
                 </ObsidianGroupboxSection>
                 <ObsidianGroupboxSection>
-                    <img src={`https://raw.githubusercontent.com/mspaint-cc/assets/refs/heads/main/images${right ?? "/menu/empty.png"}`} alt="right" />
+                    <img src={`https://raw.githubusercontent.com/mspaint-cc/assets/refs/heads/main/images${right ?? "/menu/empty.png"}`} alt="right" loading="lazy" />
                 </ObsidianGroupboxSection>
             </div>
         </div>

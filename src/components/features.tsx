@@ -91,18 +91,22 @@ export function Features() {
         tabContent: JSX.Element;
     }[]>(MenuMapping["DOORS"]["The Hotel"]["Tabs"]);
 
+    const memoizedObsidian = React.useMemo(() => (
+        <Obsidian
+            title={"mspaint v4"}
+            icon={"/icon.png"}
+            footer={`Game: ${footerGame} | Build: ${LatestBuild}`}
+            tabs={tabs}
+        />
+    ), [footerGame, tabs]);
+
     return (
         <div id="features" className="flex flex-col items-center text-center py-28 z-10">
             <WordFadeIn className="text-3xl md:text-3xl mb-5" words={`mspaint features:`} inView />
 
             <BlurFade inViewMargin="0px" inView>
                 <div className="max-w-[720px] max-h-[600px] scale-[0.8] max-sm:scale-[0.5] md:scale-90 lg:scale-100">
-                    <Obsidian
-                        title={"mspaint v4"}
-                        icon={"/icon.png"}
-                        footer={`Game: ${footerGame} | Build: ${LatestBuild}`}
-                        tabs={tabs}
-                    />
+                    {memoizedObsidian}
                 </div>
 
                 <GameSelection onValueChange={(game) => {

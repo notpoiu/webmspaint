@@ -134,6 +134,8 @@ export const Lid = memo(({
       alt="mspaint"
       fill
       className="object-fit absolute rounded-lg inset-0 h-full w-full"
+      decoding="async"
+      priority
     />
   ), [src]);
 

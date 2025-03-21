@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner"
 import { Analytics } from "@vercel/analytics/react"
+import "./globals.css";
 
 const description = "mspaint is the best freemium roblox script hub supporting games such as doors, 3008, room & doors, pressure, fisch, build a boat for treasure, grace and murder mystery 2";
 
@@ -34,8 +34,8 @@ export const metadata: Metadata = {
     "fisch",
     "babft",
     "grace",
-	"murder mystery 2",
-	"mm2"
+    "murder mystery 2",
+    "mm2"
   ],
 };
 

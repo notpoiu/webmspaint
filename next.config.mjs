@@ -1,5 +1,3 @@
-import million from "million/compiler";
-
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     images: {
@@ -36,7 +34,17 @@ const withPWA = withPWAInit({
   scope: '/app/dashboard',
 });
 
+
+import million from "million/compiler";
 export default million.next(withPWA(nextConfig), {
   enabled: process.env.NODE_ENV === 'development',
-  rsc: true
+  rsc: true,
+  telemetry: false
 });
+
+/*import MillionLint from "@million/lint";
+export default MillionLint.next({   
+  enabled: process.env.NODE_ENV === 'development',
+  rsc: true,
+  telemetry: false
+})(withPWA(nextConfig));*/
