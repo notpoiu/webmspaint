@@ -92,6 +92,10 @@ export default function Privacy(){
                 </ul>
                 <p>We do not use your information for marketing, tracking, profiling, or any purpose beyond what&apos;s required to deliver our services.</p>
 
+                <div className="bg-blue-900/30 border border-blue-500/50 rounded-md p-3 my-4">
+                    <p className="text-sm"><strong>Product Telemetry:</strong> When you use our products, we collect minimal telemetry data on startup, including job ID, game ID, and executor name. This data helps us improve our products and troubleshoot issues. This information is not linked to personal information and is used solely for operational purposes.</p>
+                </div>
+
                 <p className="mt-5 font-bold">3. Data Retention</p>
                 <p>We retain only your Discord User ID in our database indefinitely to maintain records of purchases and to facilitate support. All other Discord data that may be temporarily available during the authentication process is not permanently stored by us.</p>
 
