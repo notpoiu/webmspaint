@@ -116,7 +116,7 @@ export default function Privacy(){
                 <p>We may update this Privacy Policy from time to time. We encourage you to review this page periodically for any changes. Your continued use of our website after any changes to this Privacy Policy will constitute your acceptance of such changes.</p>
 
                 <p className="mt-5 font-bold">8. Contact Us</p>
-                <p>If you have any questions or concerns about this Privacy Policy, please contact us at <a href="mailto:support@mspaint.dev" className="text-blue-400 hover:underline">support@mspaint.cc</a> or through our <a href="https://discord.gg/mspaint" className="text-blue-400 hover:underline">Discord server</a>.</p>
+                <p>If you have any questions or concerns about this Privacy Policy, please contact us at <a href="mailto:support@mspaint.cc" className="text-blue-400 hover:underline">support@mspaint.cc</a> or through our <a href="https://discord.gg/mspaint" className="text-blue-400 hover:underline">Discord server</a>.</p>
             </div>
         </main>
     )
