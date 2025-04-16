@@ -27,7 +27,7 @@ import Executor from "@/components/executor";
 import { Features } from "@/components/features";
 import DynamicShopButton from "@/components/buy-mspaint";
 
-const gamesList = [
+export const gamesList = [
   "DOORS",
   "3008",
   "Rooms & Doors",
@@ -38,7 +38,8 @@ const gamesList = [
   "Murder Mystery 2",
   "Shrimp Game",
   "Word Bomb",
-  "Notoriety"
+  "Notoriety",
+  "Dead Rails"
 ];
 
 export default async function Home() {
@@ -163,6 +164,12 @@ export default async function Home() {
           <GameCard 
             title={"DOORS"} id={6516141723}
             image={`/games/DOORS.png`} 
+            status={true} issues={false}
+          />
+
+          <GameCard 
+            title={"Dead Rails"} id={116495829188952}
+            image={`/games/DeadRails.png`} 
             status={true} issues={false}
           />
 

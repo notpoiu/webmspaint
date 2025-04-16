@@ -4,6 +4,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner"
 import { Analytics } from "@vercel/analytics/react"
 import "./globals.css";
+import { gamesList } from "./page";
 
 const description = "mspaint is the best freemium roblox script hub supporting games such as doors, 3008, room & doors, pressure, fisch, build a boat for treasure, grace and murder mystery 2";
 
@@ -22,20 +23,11 @@ export const metadata: Metadata = {
     "mspaint",
     "roblox",
     "script",
-	"best script",
-	"working script",
-	"2024",
-	"2025",
-    "doors",
-    "3008",
-    "room & doors",
-    "r&d",
-    "pressure",
-    "fisch",
-    "babft",
-    "grace",
-    "murder mystery 2",
-    "mm2"
+    "best script",
+    "working script",
+    "2024",
+    "2025",
+    ...gamesList
   ],
 };
 
