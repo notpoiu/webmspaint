@@ -15,29 +15,35 @@ export default async function Page(
     }
 ) {
     const searchParams = await props.searchParams;
-    if (!searchParams) {
-        return notFound();
-    }
-
+    if (!searchParams) return notFound();
     const session = await auth();
+
+    // no serial = 404
     const serialParam = searchParams.serial;
-
-    if (!serialParam) {
-        return notFound();
-    }
-
+    if (!serialParam) return notFound();
+    
     const serials = serialParam.split(",");
+    if (serials.length === 0) return notFound();
 
-    if (serials.length === 0) {
-        return notFound();
-    }
-
+    // show claim stuff
     if (serials.length === 1) {
         const serial = serials[0];
         const { rows } = await sql`SELECT * FROM mspaint_keys WHERE serial = ${serial}`;
     
+        // already claimed
         if (rows.length === 0 || rows[0].claimed === true) {
-            return notFound();
+            return (
+                <main className="flex justify-center items-center flex-col h-screen">
+                    <Card className="max-w-[475px]">
+                        <CardHeader>
+                            <CardTitle>mspaint key</CardTitle>
+                            <CardDescription>
+                                This key is already claimed. If you are the buyer of this key, <Link href="https://discord.com/channels/1282361102935658777/1282373591652110417/1304067150171865131" target="_blank" className="text-blue-400 underline">use the script panel</Link> inside the <Link href="https://discord.gg/mspaint" target="_blank" className="text-blue-400 underline">Discord server</Link>.
+                            </CardDescription>
+                        </CardHeader>
+                    </Card>
+                </main>
+            )
         }
     
         return (
