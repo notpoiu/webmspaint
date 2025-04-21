@@ -139,7 +139,7 @@ function _internal_create_serial() {
     return serial;
 }
 
-export async function GenerateSerial(invoiceID: string | null, amount: number) {
+export async function GenerateSerial(invoiceID: string | null, amount: number, counting_suffix: boolean | undefined | null) {
     const allowed = await isUserAllowedOnDashboard();
 
     if (!allowed) {
@@ -174,7 +174,8 @@ export async function GenerateSerial(invoiceID: string | null, amount: number) {
     const serials = [];
     for (let i = 0; i < amount; i++) {
         const serial = _internal_create_serial();
-        await sql`INSERT INTO mspaint_keys (serial, order_id, claimed) VALUES (${serial}, ${actualInvoiceId}, false);`;
+        const invoiceIdNew = actualInvoiceId + (counting_suffix == true ? i.toString() : "");
+        await sql`INSERT INTO mspaint_keys (serial, order_id, claimed) VALUES (${serial}, ${invoiceIdNew}, false);`;
         serials.push(serial);
     }
 

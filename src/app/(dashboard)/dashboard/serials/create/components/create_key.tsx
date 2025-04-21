@@ -30,6 +30,7 @@ export default function CreateSerialKey() {
 
     const [amount, setAmount] = useState<number>(1);
     const [order_id, setOrderID] = useState<string | null>(null);
+    const [counting_suffix, setCountingSuffix] = useState<string | null>(null);
 
     return (
 
@@ -65,11 +66,17 @@ export default function CreateSerialKey() {
                         </AlertDialogDescription>
 
                         <div className="flex flex-row gap-2">
-
                             <Input
                                 type="text"
                                 placeholder="Order ID (optional)"
                                 onChange={(e) => setOrderID(e.target.value)}
+                                className="min-w-[75%] text-[16px]"
+                            />
+
+                            <Input
+                                type="text"
+                                placeholder="Add counting suffix to Order ID - Y/N (optional)"
+                                onChange={(e) => setCountingSuffix(e.target.value)}
                                 className="min-w-[75%] text-[16px]"
                             />
 
@@ -125,7 +132,7 @@ export default function CreateSerialKey() {
                                 return toast.error("Amount must be less than 50.");
                             }
 
-                            toast.promise(GenerateSerial(order_id, amount), {
+                            toast.promise(GenerateSerial(order_id, amount, counting_suffix?.toLowerCase() == "y"), {
                                 loading: "Generating serial key...",
                                 success: (serial) => {
                                     if ((serial as error_props).error) {
