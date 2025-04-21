@@ -3,6 +3,17 @@
 import { sql } from "@vercel/postgres";
 import { isUserAllowedOnDashboard } from "./authutils";
 
+const RESELLER_DATA = {
+  bloxproducts: {
+    name: "Bloxproducts",
+    webhook: process.env.BLOXPRODUCTS_WEBHOOK!,
+  },
+  robloxcheatz: {
+    name: "RobloxCheatz",
+    webhook: process.env.ROBLOXCHEATZ_WEBHOOK!,
+  },
+};
+
 export async function RedeemKey(serial: string, user_id: string) {
   if (user_id === "skibidiSigma") {
     return {
@@ -92,46 +103,49 @@ export async function RedeemKey(serial: string, user_id: string) {
 
   await sql`UPDATE mspaint_keys SET claimed = true, claimed_discord_id = ${user_id}, lrm_serial = ${keyCreation.user_key} WHERE serial = ${serial}`;
 
-  if ((rows[0].order_id as string).toLowerCase().includes("bloxproducts")) {
-    await fetch(`${process.env.BLOXPRODUCTS_WEBHOOK}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        content: null,
-        embeds: [
-          {
-            title: "BLOXPRODUCTS - mspaint key purchased",
-            description: "a key was purchased & redeemed via the bloxproducts.",
-            color: 5814783,
-            fields: [
-              {
-                name: "mspaint serial",
-                value: `||${serial}||`,
-                inline: true,
-              },
-              {
-                name: "Order ID",
-                value: `||${rows[0].order_id}||`,
-                inline: true,
-              },
-              {
-                name: "Discord",
-                value: `<@${user_id}> (${user_id})`,
-                inline: true,
-              },
-              {
-                name: "Luarmor Serial",
-                value: `||${keyCreation.user_key}||`,
-                inline: true,
-              },
-            ],
-          },
-        ],
-        attachments: [],
-      }),
-    });
+  const order_id = (rows[0].order_id as string).toLowerCase();
+  for (const [key, data] of Object.entries(RESELLER_DATA)) {
+    if (order_id.includes(key)) {
+      await fetch(data.webhook, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          content: null,
+          embeds: [
+            {
+              title: `${data.name} - mspaint key purchased`,
+              description: `a key was purchased & redeemed via the ${data.name} reseller.`,
+              color: 5814783,
+              fields: [
+                {
+                  name: "mspaint serial",
+                  value: `||${serial}||`,
+                  inline: true,
+                },
+                {
+                  name: "Order ID",
+                  value: `||${rows[0].order_id}||`,
+                  inline: true,
+                },
+                {
+                  name: "Discord",
+                  value: `<@${user_id}> (${user_id})`,
+                  inline: true,
+                },
+                {
+                  name: "Luarmor Serial",
+                  value: `||${keyCreation.user_key}||`,
+                  inline: true,
+                },
+              ],
+            },
+          ],
+          attachments: [],
+        }),
+      });
+    }
   }
 
   return {
