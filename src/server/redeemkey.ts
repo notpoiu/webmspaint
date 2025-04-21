@@ -174,7 +174,7 @@ export async function GenerateSerial(invoiceID: string | null, amount: number, c
     const serials = [];
     for (let i = 0; i < amount; i++) {
         const serial = _internal_create_serial();
-        const invoiceIdNew = actualInvoiceId + (counting_suffix == true ? i.toString() : "");
+        const invoiceIdNew = actualInvoiceId + (counting_suffix == true ? "-" + i.toString() : "");
         await sql`INSERT INTO mspaint_keys (serial, order_id, claimed) VALUES (${serial}, ${invoiceIdNew}, false);`;
         serials.push(serial);
     }
