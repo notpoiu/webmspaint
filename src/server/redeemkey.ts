@@ -2,17 +2,7 @@
 
 import { sql } from "@vercel/postgres";
 import { isUserAllowedOnDashboard } from "./authutils";
-
-const RESELLER_DATA = {
-  bloxproducts: {
-    name: "Bloxproducts",
-    webhook: process.env.BLOXPRODUCTS_WEBHOOK!,
-  },
-  robloxcheatz: {
-    name: "RobloxCheatz",
-    webhook: process.env.ROBLOXCHEATZ_WEBHOOK!,
-  },
-};
+import { RESELLER_DATA } from "@/data/resellers";
 
 export async function RedeemKey(serial: string, user_id: string) {
   if (user_id === "skibidiSigma") {
