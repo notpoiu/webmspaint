@@ -25,21 +25,21 @@ export default function Page() {
             <div className="min-h-screen w-full flex items-center justify-center">
                 <div className="flex items-center justify-center">
                     <BlurFade delay={0.2 + (1 * 0.05)} inView>
-                        <Card className="w-[350px]">
+                        <Card>
                             <CardHeader>
-                                <CardTitle>mspaint Key System</CardTitle>
+                                <CardTitle className="max-md:text-center">mspaint Key System</CardTitle>
                             </CardHeader>
-                            <CardFooter className="flex justify-center">
-                                <Link href={"https://ads.luarmor.net/get_key?for=mspaint_key-rXJfopyAkrky"}>
-                                    <Button className="mr-2">Linkvertise <Image className="ml-2" src="/icons/linkvertise.png" width={25} height={25} alt="Linkvertise" /></Button>
+                            <CardFooter className="flex px-5 gap-2 max-md:flex-col max-md:px-10">
+                                <Link href={"https://ads.luarmor.net/get_key?for=mspaint_key-rXJfopyAkrky"} className="max-md:w-full">
+                                    <Button className="max-md:w-full">Linkvertise <Image className="ml-2" src="/icons/linkvertise.png" width={25} height={25} alt="Linkvertise" /></Button>
                                 </Link>
 
-                                <Link href={""}>
-                                    <Button className="text-muted-foreground cursor-not-allowed" variant={"ghost"}>work.ink <Image className="ml-2" src="/icons/workink.png" width={25} height={25} alt="work.ink" /></Button>
+                                <Link href={""} className="max-md:w-full">
+                                    <Button className="text-muted-foreground cursor-not-allowed" variant={"outline"}>work.ink (DISABLED) <Image className="ml-2" src="/icons/workink.png" width={25} height={25} alt="work.ink" /></Button>
                                 </Link>
 
-                                <Link href={""}>
-                                    <Button className="text-muted-foreground cursor-not-allowed" variant={"ghost"}>Lootlabs <Image className="ml-2" src="/icons/lootlabs.png" width={25} height={25} alt="Lootlabs" /></Button>
+                                <Link href={""} className="max-md:w-full">
+                                    <Button className="text-muted-foreground cursor-not-allowed" variant={"outline"}>Lootlabs (DISABLED) <Image className="ml-2" src="/icons/lootlabs.png" width={25} height={25} alt="Lootlabs" /></Button>
                                 </Link>
                             </CardFooter>
                         </Card>
