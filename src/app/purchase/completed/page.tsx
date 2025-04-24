@@ -85,7 +85,7 @@ export default async function Page(
                             <CardDescription>
                                 This key is already claimed. If you are the buyer of this key, <Link href="https://discord.com/channels/1282361102935658777/1282373591652110417/1304067150171865131" target="_blank" className="text-blue-400 underline">use the script panel</Link> inside the <Link href="https://discord.gg/mspaint" target="_blank" className="text-blue-400 underline">Discord server</Link>.
                                 <br /><br />
-                                If you are the buyer but this key is already claimed, please create a ticket in their support server.
+                                If you are the buyer but has not claimed this key, please create a ticket in the support server of your reseller (or ours).
                             </CardDescription>
                         </CardHeader>
                         <CardFooter>
