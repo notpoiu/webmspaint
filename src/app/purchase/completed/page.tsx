@@ -77,6 +77,29 @@ export default async function Page(
         }
 
         if (rows[0].claimed === true) {
+            if (session && session.user && rows[0].claimed_discord_id == session.user.id) {
+                return (
+                    <main className="flex justify-center items-center flex-col h-screen">
+                        <Card className="max-w-[475px]">
+                            <CardHeader>
+                                <CardTitle>mspaint key</CardTitle>
+                                <CardDescription>
+                                    This key has already been claimed by you ({session.user.name}) {" "}
+                                    <Link href="https://discord.com/channels/1282361102935658777/1282373591652110417/1304067150171865131" target="_blank" className="text-blue-400 underline">Use the script panel</Link> inside the <Link href="https://discord.gg/mspaint" target="_blank" className="text-blue-400 underline">Discord server</Link>.
+                                    <br /><br />
+                                    If the script panel&apos;s get script button does not work you may contact our support team.
+                                </CardDescription>
+                            </CardHeader>
+                            <CardFooter>
+                                <Link href="/support">
+                                    <Button size={"sm"}>Join Support Server</Button>    
+                                </Link>
+                            </CardFooter>
+                        </Card>
+                    </main>
+                )
+            }
+
             return (
                 <main className="flex justify-center items-center flex-col h-screen">
                     <Card className="max-w-[475px]">
