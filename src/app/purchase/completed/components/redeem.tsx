@@ -48,11 +48,9 @@ export function RedeemComponent({serial, username, user_id}: {serial: string, us
                             return response;
                         }, {
                             loading: "Redeeming lifetime mspaint key...",
-                            success: (data) => {
+                            success: () => {
                                 setOpen(false);
-                                
-                                router.push(`/purchase/claimed?key=${encodeURIComponent(data.user_key)}`);
-
+                                router.refresh();
                                 return "Key redeemed successfully for " + username + "! You can now access mspaint via #getscript in discord.";
                             },
                             error: (error_data) => {
