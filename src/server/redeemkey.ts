@@ -156,14 +156,6 @@ function _internal_create_serial() {
   return serial;
 }
 
-function generate_uuid() {
-  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
-    const r = (Math.random() * 16) | 0,
-      v = c === "x" ? r : (r & 0x3) | 0x8;
-    return v.toString(16);
-  });
-}
-
 export async function GenerateSerial(invoiceID: string | null, amount: number) {
   const allowed = await isUserAllowedOnDashboard();
 
@@ -206,7 +198,7 @@ export async function GenerateSerial(invoiceID: string | null, amount: number) {
 
     const invoiceIDToInsert = actualInvoiceId?.replaceAll(
       "{UUID}",
-      generate_uuid()
+      crypto.randomUUID()
     );
 
     await sql`INSERT INTO mspaint_keys (serial, order_id, claimed) VALUES (${serial}, ${invoiceIDToInsert}, false);`;
