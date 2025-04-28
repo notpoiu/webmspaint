@@ -186,6 +186,12 @@ export default async function Home() {
           />
 
           <GameCard 
+            title={"Bubble Gum Simulator Infinity"} id={85896571713843}
+            image={`/games/BGSI.png`} 
+            status={true} issues={false}
+          />
+
+          <GameCard 
             title={"Pressure"} id={12411473842}
             image={`/games/Pressure.png`} 
             status={true} issues={false}
