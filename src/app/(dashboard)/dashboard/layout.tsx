@@ -6,7 +6,8 @@ import { maskEmail } from "@/server/stringutil";
 import { Metadata, Viewport } from "next";
 import { notFound, redirect } from "next/navigation";
 
-const description = "mspaint is the best free roblox script hub supporting games such as doors, 3008, room & doors, pressure, fisch and build a boat for treasure";
+const description =
+  "mspaint is the best free roblox script hub supporting games such as doors, 3008, room & doors, pressure, fisch and build a boat for treasure";
 
 export const metadata: Metadata = {
   title: {
@@ -22,8 +23,8 @@ export const metadata: Metadata = {
   },
   openGraph: {
     description: description,
-		images: 'https://www.mspaint.cc/icon.png',
-	},
+    images: "https://www.mspaint.cc/icon.png",
+  },
   keywords: [
     "mspaint",
     "roblox",
@@ -52,23 +53,23 @@ export default async function RootLayout({
   if (session && session.user) {
     const isAuthorized = await isUserAllowedOnDashboard();
 
-    if (!isAuthorized ) {
+    if (!isAuthorized) {
       return notFound();
     }
   } else {
     return redirect("/signin");
   }
 
-  return <SidebarProvider>
-    <AppSidebar
+  return (
+    <SidebarProvider className="bg-black">
+      <AppSidebar
         session_data={{
-            name: session.user.name ?? "unknown",
-            email: maskEmail(session.user.email ?? "example@upio.dev"),
-            avatar: session.user.image ?? "https://avatar.vercel.sh/42",
+          name: session.user.name ?? "unknown",
+          email: maskEmail(session.user.email ?? "example@upio.dev"),
+          avatar: session.user.image ?? "https://avatar.vercel.sh/42",
         }}
-    />
-    <SidebarInset>
-      {children}
-    </SidebarInset>
-  </SidebarProvider>
+      />
+      <SidebarInset className="bg-black">{children}</SidebarInset>
+    </SidebarProvider>
+  );
 }

@@ -1,15 +1,12 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import {
-  BarChart2Icon,
-  KeyIcon,
-} from "lucide-react"
+import * as React from "react";
+import { BarChart2Icon, KeyIcon } from "lucide-react";
 
-import Image from "next/image"
+import Image from "next/image";
 
-import { NavMain } from "@/components/nav-main"
-import { NavUser } from "@/components/nav-user"
+import { NavMain } from "@/components/nav-main";
+import { NavUser } from "@/components/nav-user";
 import {
   Sidebar,
   SidebarContent,
@@ -18,7 +15,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar"
+} from "@/components/ui/sidebar";
 
 const data = {
   navMain: [
@@ -35,32 +32,42 @@ const data = {
         {
           title: "Modify Serial",
           url: "/dashboard/serials/modify",
-        }
+        },
       ],
     },
     {
       title: "Analytics",
       url: "/dashboard/analytics",
       icon: BarChart2Icon,
-      isActive: true
-    }
+      isActive: true,
+    },
   ],
-}
+};
 
-export function AppSidebar({ session_data }: { session_data: {
-  name: string
-  email: string
-  avatar: string
-} }) {
+export function AppSidebar({
+  session_data,
+}: {
+  session_data: {
+    name: string;
+    email: string;
+    avatar: string;
+  };
+}) {
   return (
-    <Sidebar variant="inset">
+    <Sidebar variant="sidebar" className="bg-black">
       <SidebarHeader className="bg-black">
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
               <a href="#">
                 <div className="flex aspect-square size-8 items-center justify-center rounded-lg text-sidebar-primary-foreground">
-                  <Image src={"/icon.png"} alt="mspaint logo" width={256} height={256} className="size-6" />
+                  <Image
+                    src={"/icon.png"}
+                    alt="mspaint logo"
+                    width={256}
+                    height={256}
+                    className="size-6"
+                  />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-semibold">mspaint</span>
@@ -78,5 +85,5 @@ export function AppSidebar({ session_data }: { session_data: {
         <NavUser user={session_data} />
       </SidebarFooter>
     </Sidebar>
-  )
+  );
 }

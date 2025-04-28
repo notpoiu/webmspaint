@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useMemo } from "react";
 import { cn } from "@/lib/utils";
-import Marquee from "@/components/magicui/marquee";
+import { Marquee } from "@/components/magicui/marquee";
 
 interface GithubContent {
   type: string;
@@ -15,7 +15,7 @@ type Review = {
   body: string;
   img: string;
   stars: number;
-}
+};
 
 const ReviewCard = ({
   img,
@@ -38,11 +38,18 @@ const ReviewCard = ({
         "border-gray-950/[.1] bg-gray-950/[.01] hover:bg-gray-950/[.05]",
         // dark styles
         "dark:border-gray-50/[.1] dark:bg-gray-50/[.10] dark:hover:bg-gray-50/[.15]",
-        "max-h-[170px] transition-all duration-300",
+        "max-h-[170px] transition-all duration-300"
       )}
     >
       <div className="flex flex-row items-center gap-2">
-        <img className="rounded-full" width="32" height="32" alt="" src={img} loading="lazy" />
+        <img
+          className="rounded-full"
+          width="32"
+          height="32"
+          alt=""
+          src={img}
+          loading="lazy"
+        />
         <div className="flex flex-col">
           <figcaption className="text-sm font-medium dark:text-white">
             {name}
@@ -64,42 +71,52 @@ export default function ReviewMarquee() {
 
   useEffect(() => {
     async function fetchData() {
-      const response = await fetch("https://api.github.com/repos/mspaint-cc/assets/contents/reviews", {
-        next: { revalidate: 300 },
-        method: "GET"
-      });
-      
+      const response = await fetch(
+        "https://api.github.com/repos/mspaint-cc/assets/contents/reviews",
+        {
+          next: { revalidate: 300 },
+          method: "GET",
+        }
+      );
+
       const reviewsData = await response.json();
       const randomReviews = reviewsData.filter((review: unknown) => {
         const githubItem = review as GithubContent;
         if (githubItem.type === "file") return false;
         return Math.random() < 0.5;
       });
-      
+
       const slicedReviews = randomReviews.slice(0, 17);
       const reviews: Review[] = [];
       let totalStars = 0;
 
       for (const user_folder of slicedReviews) {
-        if (user_folder.type !== "dir") { continue; }
-        
-        const path = "https://raw.githubusercontent.com/mspaint-cc/assets/main/" + user_folder.path + "/";
+        if (user_folder.type !== "dir") {
+          continue;
+        }
+
+        const path =
+          "https://raw.githubusercontent.com/mspaint-cc/assets/main/" +
+          user_folder.path +
+          "/";
         const req = await fetch(path + "data.json");
         const data = await req.json();
-      
-        if (data.banned === true) { continue; }
-        
+
+        if (data.banned === true) {
+          continue;
+        }
+
         reviews.push({
           name: data.name,
           username: data.username,
           body: data.content,
           img: path + "pfp.png",
-          stars: data.stars
+          stars: data.stars,
         } as Review);
 
         totalStars += data.stars;
       }
-      
+
       setFirstRow(reviews.slice(0, reviews.length / 2));
       setSecondRow(reviews.slice(reviews.length / 2));
       setAverage(totalStars / reviews.length);
@@ -109,21 +126,27 @@ export default function ReviewMarquee() {
     fetchData();
   }, []);
 
-  const memoizedFirstMarquee = useMemo(() => (
-    <Marquee className="[--duration:60s]">
-      {firstRow.map((review) => (
-        <ReviewCard key={review.username} {...review} />
-      ))}
-    </Marquee>
-  ), [firstRow]);
+  const memoizedFirstMarquee = useMemo(
+    () => (
+      <Marquee className="[--duration:60s]">
+        {firstRow.map((review) => (
+          <ReviewCard key={review.username} {...review} />
+        ))}
+      </Marquee>
+    ),
+    [firstRow]
+  );
 
-  const memoizedSecondMarquee = useMemo(() => (
-    <Marquee reverse className="[--duration:60s]">
-      {secondRow.map((review) => (
-        <ReviewCard key={review.username} {...review} />
-      ))}
-    </Marquee>
-  ), [secondRow]);
+  const memoizedSecondMarquee = useMemo(
+    () => (
+      <Marquee reverse className="[--duration:60s]">
+        {secondRow.map((review) => (
+          <ReviewCard key={review.username} {...review} />
+        ))}
+      </Marquee>
+    ),
+    [secondRow]
+  );
 
   return isLoading ? (
     <div className="flex w-screen flex-col items-center justify-center">
@@ -131,7 +154,9 @@ export default function ReviewMarquee() {
     </div>
   ) : (
     <>
-      <p className="text-muted-foreground text-sm">Average mspaint rating: {average.toFixed(2)} ⭐</p>
+      <p className="text-muted-foreground text-sm">
+        Average mspaint rating: {average.toFixed(2)} ⭐
+      </p>
 
       <div className="relative py-10 flex w-screen flex-col items-center justify-center overflow-hidden bg-background md:shadow-xl text-left">
         {memoizedFirstMarquee}
