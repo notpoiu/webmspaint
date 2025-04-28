@@ -39,7 +39,8 @@ export const gamesList = [
   "Shrimp Game",
   "Word Bomb",
   "Notoriety",
-  "Dead Rails"
+  "Dead Rails",
+  "Bubble Gum Simulator Infinity"
 ];
 
 export default async function Home() {
