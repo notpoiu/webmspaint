@@ -34,8 +34,8 @@ export default function Page() {
                                     <Button className="max-md:w-full">Linkvertise <Image className="ml-2" src="/icons/linkvertise.png" width={25} height={25} alt="Linkvertise" /></Button>
                                 </Link>
 
-                                <Link href={""} className="max-md:w-full">
-                                    <Button className="text-muted-foreground cursor-not-allowed" variant={"outline"}>work.ink (DISABLED) <Image className="ml-2" src="/icons/workink.png" width={25} height={25} alt="work.ink" /></Button>
+                                <Link href={"https://ads.luarmor.net/get_key?for=mspaint_workink_key-kbDcHryVSREv"} className="max-md:w-full">
+                                    <Button className="max-md:w-full">work.ink <Image className="ml-2" src="/icons/workink.png" width={25} height={25} alt="work.ink" /></Button>
                                 </Link>
 
                                 <Link href={""} className="max-md:w-full">
