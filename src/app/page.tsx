@@ -138,12 +138,12 @@ export default async function Home() {
               </BlurFade>
 
               <div className="flex flex-row items-center justify-center mt-5 gap-8 max-md:flex-col">
-                <Executor name={"AWP.GG"}     image={"/executors/awp.png"}      url={"https://discord.gg/awpgg"} isWidth={true} />
-                <Executor name={"Zenith"}     image={"/executors/zenith.png"}   url={"https://zenith.win"}        />
-                <Executor name={"Synapse Z"}  image={"/executors/synz.ico"}     url={"https://synapsez.net"}      />
-                <Executor name={"Seliware"}   image={"/executors/seliware.png"} url={"https://seliware.com"}      />
-                <Executor name={"Solara"}     image={"/executors/solara.png"}   url={"https://getsolara.dev"}     />
-                <Executor name={"Delta"}      image={"/executors/delta.ico"}    url={"https://deltaexploits.gg"}  />
+                <Executor name={"AWP.GG"}     image={"https://q2p0njok3b.ufs.sh/f/Z155p1jPvLAsOyrdiI2gWyJPGmIcCjwipUf8hTRZV4L3kb5n"}    url={"https://discord.gg/awpgg"} isWidth={true} />
+                <Executor name={"Zenith"}     image={"https://q2p0njok3b.ufs.sh/f/Z155p1jPvLAsT3nEx1yJXhEGA6wmQvc0jSk7ZrMVC3nTg5i9"}    url={"https://zenith.win"}        />
+                <Executor name={"Synapse Z"}  image={"https://q2p0njok3b.ufs.sh/f/Z155p1jPvLAs7HnqFJwU1AloGrev4cJZMCItwahsWYkL5y0u"}    url={"https://synapsez.net"}      />
+                <Executor name={"Seliware"}   image={"https://q2p0njok3b.ufs.sh/f/Z155p1jPvLAsfZjhFPc93HZnPaFmTiUcpydAzsQLVK54BWrO"}    url={"https://seliware.com"}      />
+                <Executor name={"Solara"}     image={"https://q2p0njok3b.ufs.sh/f/Z155p1jPvLAsKTjfEJrg4CbGHLXhvIFxQV5pY6qirBw2Ju7n"}    url={"https://getsolara.dev"}     />
+                <Executor name={"Delta"}      image={"https://q2p0njok3b.ufs.sh/f/Z155p1jPvLAslPmgsgFtT6a830HkYDKeuAh9RwMGsqd24CQZ"}    url={"https://deltaexploits.gg"}  />
               </div>
 
               <BlurFade delay={0.2 + (7 * 0.05)} inView>
@@ -164,79 +164,79 @@ export default async function Home() {
         <BlurFade className="flex flex-row items-center justify-center mt-5 gap-3 max-md:flex-col flex-wrap px-10" delay={0.2 + (2 * 0.05)} inView>
           <GameCard 
             title={"DOORS"} id={6516141723}
-            image={`/games/DOORS.png`} 
+            image={`https://q2p0njok3b.ufs.sh/f/Z155p1jPvLAsJ2hyPErBlZ5kfsQT24O8oeiR73u9rdc6zgm1`} 
             status={true} issues={false}
           />
 
           <GameCard 
             title={"Dead Rails"} id={116495829188952}
-            image={`/games/DeadRails.png`} 
+            image={`https://q2p0njok3b.ufs.sh/f/Z155p1jPvLAs9AEEhFodlyrJ6uEv40SUmQtNBXAzhP87IaKM`} 
             status={true} issues={false}
           />
 
           <GameCard 
             title={"Fisch"} id={16732694052}
-            image={`/games/Fisch.png`}
+            image={`https://q2p0njok3b.ufs.sh/f/Z155p1jPvLAsncwz3g7ulbhtMx156dQV3GozKUs08gOmX9jv`}
             status={true} issues={false}
           />
 
           <GameCard 
             title={"Rooms & Doors"} id={5865058321}
-            image={`/games/R&D.png`} 
+            image={`https://q2p0njok3b.ufs.sh/f/Z155p1jPvLAsbnS21bRQaNIsxXOcZmM8nAt4WkiC0HGreJvP`} 
             status={true} issues={false}
           />
 
           <GameCard 
             title={"Bubble Gum Simulator Infinity"} id={85896571713843}
-            image={`/games/BGSI.png`} 
+            image={`https://q2p0njok3b.ufs.sh/f/Z155p1jPvLAsKDiSPErg4CbGHLXhvIFxQV5pY6qirBw2Ju7n`} 
             status={true} issues={false}
           />
 
           <GameCard 
             title={"Pressure"} id={12411473842}
-            image={`/games/Pressure.png`} 
+            image={`https://q2p0njok3b.ufs.sh/f/Z155p1jPvLAsH0LmZ6Layj1tLCfgrzV73ZonhEDeNGAiRdxQ`} 
             status={true} issues={false}
           />
 
           <GameCard 
             title={"3008"} id={2768379856}
-            image={`/games/3008.png`} 
+            image={`https://q2p0njok3b.ufs.sh/f/Z155p1jPvLAsw0tQCS53yIYB4kajObRWsGN6r8uJDg2QVmKc`} 
             status={true} issues={false}
           />
 
           <GameCard 
             title={"Build A Boat For Treasure"} id={537413528}
-            image={`/games/BABFT.png`}
+            image={`https://q2p0njok3b.ufs.sh/f/Z155p1jPvLAs98wtNJodlyrJ6uEv40SUmQtNBXAzhP87IaKM`}
             status={true} issues={false}
           />
 
           <GameCard 
             title={"Grace"} id={138837502355157}
-            image={`/games/Grace.png`}
+            image={`https://q2p0njok3b.ufs.sh/f/Z155p1jPvLAs57LO68MxTny6kRILmGKFZcwpAtJ8zEgP1fNh`}
             status={true} issues={false}
           />
 
           <GameCard 
             title={"Murder Mystery 2"} id={142823291}
-            image={`/games/MM2.png`}
+            image={`https://q2p0njok3b.ufs.sh/f/Z155p1jPvLAsBsdLSiOKJxivCc6LDnOGta3RYUHkWNMdS51o`}
             status={true} issues={false}
           />
 
           <GameCard 
             title={"Shrimp Game"} id={7606564092}
-            image={`/games/ShrimpGames.png`}
+            image={`https://q2p0njok3b.ufs.sh/f/Z155p1jPvLAsh99EheetQuqSgtNlpdaeF8iBM7RZIvJ02V9W`}
             status={true} issues={false}
           />
 
           <GameCard 
             title={"Word Bomb"} id={2653064683}
-            image={`/games/WordBomb.png`}
+            image={`https://q2p0njok3b.ufs.sh/f/Z155p1jPvLAsJ2uVLQbBlZ5kfsQT24O8oeiR73u9rdc6zgm1`}
             status={true} issues={false}
           />
 
           <GameCard 
             title={"Notoriety"} id={21532277}
-            image={`/games/Notoriety.png`}
+            image={`https://q2p0njok3b.ufs.sh/f/Z155p1jPvLAskzKaZ1yN8Yh20HbLkz1KupR6QJWqIBGA9FOj`}
             status={true} issues={false}
           />
         </BlurFade>
