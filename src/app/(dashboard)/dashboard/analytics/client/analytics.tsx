@@ -825,7 +825,10 @@ export function AnalyticsClient() {
               .map((_, i) => (
                 <Card key={i}>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <Skeleton className="h-4 w-[140px]" />
+                    <CardTitle className="text-sm font-medium">
+                      Loading
+                    </CardTitle>                    
+                    {/* <Skeleton className="h-4 w-[140px]" /> */}
                   </CardHeader>
                   <CardContent>
                     <Skeleton className="h-8 w-[100px]" />
@@ -956,7 +959,7 @@ export function AnalyticsClient() {
                   <div className="flex flex-col items-center justify-center h-[350px]">
                     <BarChart2 className="h-10 w-10 text-gray-400" />
                     <p className="mt-2 text-gray-500">
-                      No data available for the selected time period
+                      {isLoading ? "Loading data please wait..." : "No data available for the selected time period"}
                     </p>
                   </div>
                 )}
