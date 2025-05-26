@@ -129,12 +129,41 @@ export async function getTelemetryStatsv1(): Promise<{
       uniquePlaceIds: placeIds.size,
       uniqueGameIds: gameIds.size,
       uniqueExecutors: executors.size,
-      mostRecentTimestamp: timestamps.length > 0 ? Math.max(...timestamps) : null
+      mostRecentTimestamp: timestamps.length > 0 ? timestamps.reduce((a, b) => Math.max(a, b), -Infinity) : null
     };
   } catch (err) {
     console.error("Failed to retrieve telemetry stats:", err);
     throw new Error("Failed to retrieve telemetry statistics");
   }
+}
+
+/**
+ * Pull all telemetry keys statistics by batches to avoid size limit exception.
+ */
+async function pullTelemetryData(): Promise<TelemetryData[]> {
+
+    let cursor = 0;
+    let allKeys: TelemetryData[] = [];
+
+    do {
+      // Fetch a batch of keys using SSCAN
+      const [newCursor, batch] = await kv.sscan(
+        'telemetryv2:all-keys',
+        cursor,
+        { count: 10000 } // Adjust COUNT based on your data size
+      );
+      
+      // Add the batch to the accumulated keys
+      allKeys = [...allKeys, ...(batch as unknown as TelemetryData[])];
+      
+      // Update the cursor for the next iteration
+      cursor = parseInt(newCursor);
+    } while (cursor !== 0);
+    
+    // Sort keys in descending order (newest first)
+    allKeys = allKeys.sort().reverse();
+
+  return allKeys;
 }
 
 /**
@@ -155,11 +184,12 @@ export async function getTelemetryData({
   totalCount: number;
 }> {
   try {
+
+    let allKeys: TelemetryData[] = [];
+
     // Get all keys from the set
-    let allKeys = await kv.smembers('telemetryv2:all-keys') as TelemetryData[];
-    
     // Sort keys in descending order (newest first)
-    allKeys = allKeys.sort().reverse();
+    allKeys = await pullTelemetryData();
     
     // Filter keys if needed
     if (startDate || endDate || placeId || gameId) {
@@ -207,7 +237,7 @@ export async function getTelemetryStats(): Promise<{
 }> {
   try {
     // Get all keys and fetch data
-    const telemetryData = await kv.smembers('telemetryv2:all-keys') as TelemetryData[];
+    const telemetryData = await pullTelemetryData();
     
     if (telemetryData.length === 0) {
       return {
@@ -231,7 +261,7 @@ export async function getTelemetryStats(): Promise<{
       uniquePlaceIds: placeIds.size,
       uniqueGameIds: gameIds.size,
       uniqueExecutors: executors.size,
-      mostRecentTimestamp: timestamps.length > 0 ? Math.max(...timestamps) : null
+      mostRecentTimestamp: timestamps.length > 0 ? timestamps.reduce((a, b) => Math.max(a, b), -Infinity) : null
     };
   } catch (err) {
     console.error("Failed to retrieve telemetry stats:", err);
