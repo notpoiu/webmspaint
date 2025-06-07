@@ -117,8 +117,8 @@ export default async function Home() {
               
               <BlurFade delay={0.2 + (4 * 0.05)}>
                 <div className="flex flex-row items-center justify-center mt-2 gap-2">
-                  <Input type="text" className="overflow-hidden text-ellipsis min-w-[300px]" readOnly value={'loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/002c19202c9946e6047b0c6e0ad51f84.lua"))()'}/>
-                  <CopyButton text={'loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/002c19202c9946e6047b0c6e0ad51f84.lua"))()'} />
+                  <Input type="text" className="overflow-hidden text-ellipsis min-w-[300px]" readOnly value={'loadstring(game:HttpGet("https://api.luarmor.net/files/v4/loaders/002c19202c9946e6047b0c6e0ad51f84.lua"))()'}/>
+                  <CopyButton text={'loadstring(game:HttpGet("https://api.luarmor.net/files/v4/loaders/002c19202c9946e6047b0c6e0ad51f84.lua"))()'} />
                   
                   <Link aria-label="Discord Server" href={"https://discord.gg/mspaint"} target="_blank">
                     <ShinyButton className="px-2" aria-label="Discord Server">
