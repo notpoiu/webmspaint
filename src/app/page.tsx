@@ -40,7 +40,8 @@ export const gamesList = [
   "Word Bomb",
   "Notoriety",
   "Dead Rails",
-  "Bubble Gum Simulator Infinity"
+  "Bubble Gum Simulator Infinity",
+  "Grow A Garden"
 ];
 
 export default async function Home() {
@@ -181,8 +182,8 @@ export default async function Home() {
           />
 
           <GameCard 
-            title={"Rooms & Doors"} id={5865058321}
-            image={`https://q2p0njok3b.ufs.sh/f/Z155p1jPvLAsbnS21bRQaNIsxXOcZmM8nAt4WkiC0HGreJvP`} 
+            title={"Grow A Garden"} id={126884695634066}
+            image={`https://q2p0njok3b.ufs.sh/f/Z155p1jPvLAsHV5ApBayj1tLCfgrzV73ZonhEDeNGAiRdxQ0`} 
             status={true} issues={false}
           />
 
@@ -201,6 +202,12 @@ export default async function Home() {
           <GameCard 
             title={"3008"} id={2768379856}
             image={`https://q2p0njok3b.ufs.sh/f/Z155p1jPvLAsw0tQCS53yIYB4kajObRWsGN6r8uJDg2QVmKc`} 
+            status={true} issues={false}
+          />
+
+          <GameCard 
+            title={"Rooms & Doors"} id={5865058321}
+            image={`https://q2p0njok3b.ufs.sh/f/Z155p1jPvLAsbnS21bRQaNIsxXOcZmM8nAt4WkiC0HGreJvP`} 
             status={true} issues={false}
           />
 
