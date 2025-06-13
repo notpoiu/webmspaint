@@ -1,5 +1,7 @@
-export { auth as middleware } from "@/auth"
+export { auth as middleware } from "@/auth";
 
 export const config = {
-    matcher: ['/purchase/completed/:path*', '/dashboard/:path*', '/signin', '/signout']
-}
+  matcher: [
+    "/((?!icons|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)",
+  ],
+};
