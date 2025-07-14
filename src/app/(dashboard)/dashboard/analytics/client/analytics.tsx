@@ -346,10 +346,8 @@ export function AnalyticsClient() {
   const [placeItemsPerPage, setPlaceItemsPerPage] = useState(10);
 
   // executors
-  const [executorsSortField, setExecutorsSortField] =
-    useState<SortField>("count");
-  const [executorsSortDirection, setExecutorsSortDirection] =
-    useState<SortDirection>("desc");
+  const [executorsSortField, setExecutorsSortField] = useState<SortField>("count");
+  const [executorsSortDirection, setExecutorsSortDirection] = useState<SortDirection>("desc");
   const [executorsCurrentPage, setExecutorsCurrentPage] = useState(1);
   const [executorsItemsPerPage, setExecutorsItemsPerPage] = useState(10);
 
@@ -379,6 +377,9 @@ export function AnalyticsClient() {
       case "30days":
         startDate = now - 30 * 24 * 60 * 60 * 1000;
         break;
+      case "90days":
+        startDate = now - 90 * 24 * 60 * 60 * 1000;
+        break;        
       case "24hours":
         startDate = now - 24 * 60 * 60 * 1000;
         break;
@@ -425,6 +426,15 @@ export function AnalyticsClient() {
   const placeIdDistribution = telemetryData.reduce<
     Record<number, { placeid: number; count: number }>
   >((placeAcc, placeItem) => {
+    // Skip items outside the current time filter range
+    if (timeFilter !== "all") {
+      const itemDate = new Date(placeItem.timestamp).getTime();
+      const startDate = getStartDateFromFilter(timeFilter);
+      if (startDate && itemDate < startDate) {
+        return placeAcc;
+      }
+    }
+
     if (!placeAcc[placeItem.gameid]) {
       placeAcc[placeItem.gameid] = {
         placeid: placeItem.placeid,
@@ -728,6 +738,7 @@ export function AnalyticsClient() {
                 <SelectItem value="24hours">Last 24 Hours</SelectItem>
                 <SelectItem value="7days">Last 7 Days</SelectItem>
                 <SelectItem value="30days">Last 30 Days</SelectItem>
+                <SelectItem value="90days">Last 90 Days</SelectItem>
               </SelectContent>
             </Select>
 
@@ -873,15 +884,7 @@ export function AnalyticsClient() {
                 <div className="grid flex-1 gap-1 text-center sm:text-left">
                   <CardTitle>Telemetry Activity Over Time</CardTitle>
                   <CardDescription>
-                    {timeFilter === "all"
-                      ? "All time activity"
-                      : `Activity in the last ${
-                          timeFilter === "24hours"
-                            ? "24 hours"
-                            : timeFilter === "7days"
-                            ? "7 days"
-                            : "30 days"
-                        }`}
+                    {getDateFilterName(timeFilter)}
                   </CardDescription>
                 </div>
               </CardHeader>
@@ -972,7 +975,7 @@ export function AnalyticsClient() {
               <CardHeader>
                 <CardTitle>Place ID Distribution</CardTitle>
                 <CardDescription>
-                  Activity breakdown by Place ID - Click column headers to sort
+                  Activity breakdown by Place ID - Click column headers to sort - Filter: {getDateFilterName(timeFilter)}
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -1538,6 +1541,30 @@ export function AnalyticsClient() {
       </div>
     </GameCacheProvider>
   );
+}
+
+function getDateFilterName(filter: string): string {
+  var name = "";
+  switch (filter) {
+    case "24hours":
+      name = "24 hours"
+      break;
+    case "7days":
+      name = "7 days"
+      break;
+    case "30days":
+      name = "30 days"
+      break;
+    case "90days":
+      name = "90 days"
+      break;
+    case "all":
+      return "All time activity"
+    default:
+      name = "Not programmed."
+      break;
+  }
+  return "Activity in the last " + name;
 }
 
 // Helper function to get start date from filter
