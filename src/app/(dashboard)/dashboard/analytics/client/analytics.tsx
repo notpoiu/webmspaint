@@ -446,12 +446,18 @@ export function AnalyticsClient() {
   }, {});
 
   // Convert to array for sorting
+  // Calculate total count for filtered data
+  const filteredTotalCount = Object.values(placeIdDistribution).reduce(
+    (sum, item) => sum + item.count, 
+    0
+  );
+
   const placeDistributionArray = Object.entries(placeIdDistribution).map(
     ([gameid, placeData]) => ({
       placeid: Number(placeData.placeid),
       gameid: Number(gameid),
       count: placeData.count,
-      percentage: (placeData.count / telemetryData.length) * 100,
+      percentage: (placeData.count / filteredTotalCount) * 100,
     })
   );
 
@@ -554,7 +560,7 @@ export function AnalyticsClient() {
     ([exec, count]) => ({
       exec,
       count,
-      percentage: (count / telemetryData.length) * 100,
+      percentage: (count / filteredTotalCount) * 100,
     })
   );
 
