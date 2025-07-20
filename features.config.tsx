@@ -705,40 +705,7 @@ export const MenuMapping = {
             ]
         }
     },
-
-    "Shrimp Game": {
-        "Shrimp Game": {
-            "Game": "Shrimp Game [BETA]",
-            "Tabs": [
-                {
-                    title: "Main",
-                    icon: HouseIcon,
-                    tabContent: 
-                        <ObsidianTabContainer
-                            left="/menu/shrimp game/left_main.png"
-                            right="/menu/shrimp game/right_main.png"
-                        />
-                },
-                ...IncludedTabs
-            ]
-        },
-        "Lobby": {
-            "Game": "Shrimp Game [BETA]",
-            "Tabs": [
-                {
-                    title: "Main",
-                    icon: HouseIcon,
-                    tabContent: 
-                        <ObsidianTabContainer
-                            left="/menu/shrimp game/left_main_lobby.png"
-                        />
-                },
-                
-                ...IncludedTabs
-            ]
-        }
-    },
-
+    
     "Word Bomb": {
         "Word Bomb": {
             "Game": "Word Bomb",

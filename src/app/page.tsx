@@ -36,7 +36,6 @@ export const gamesList = [
   "BABFT",
   "Grace",
   "Murder Mystery 2",
-  "Shrimp Game",
   "Word Bomb",
   "Notoriety",
   "Dead Rails",
@@ -343,14 +342,6 @@ export default async function Home() {
             image={`https://q2p0njok3b.ufs.sh/f/Z155p1jPvLAsBsdLSiOKJxivCc6LDnOGta3RYUHkWNMdS51o`}
             status={true}
             issues={false}
-          />
-
-          <GameCard
-            title={"Shrimp Game"}
-            id={7606564092}
-            image={`https://q2p0njok3b.ufs.sh/f/Z155p1jPvLAsh99EheetQuqSgtNlpdaeF8iBM7RZIvJ02V9W`}
-            status={false}
-            issues={true}
           />
 
           <GameCard
