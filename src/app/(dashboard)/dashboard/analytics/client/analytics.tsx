@@ -1550,7 +1550,7 @@ export function AnalyticsClient() {
 }
 
 function getDateFilterName(filter: string): string {
-  var name = "";
+  let name = "";
   switch (filter) {
     case "24hours":
       name = "24 hours"
