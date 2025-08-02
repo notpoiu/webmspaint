@@ -19,7 +19,7 @@ export default async function Page() {
     const session = await auth();
 
     if (!session || !session.user) {
-        return redirect("/signin");
+        return redirect("/admin-sign-in");
     }
     
     return (

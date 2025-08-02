@@ -80,7 +80,7 @@ export function NavUser({
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => {
               userDiscordSignOut().then(() => {
-                router.push("/dashboard/signin");
+                router.push("/admin-sign-in");
               })
             }}>
               <LogOut />

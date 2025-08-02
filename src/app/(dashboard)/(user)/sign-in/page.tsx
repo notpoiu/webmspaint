@@ -24,13 +24,14 @@ export default async function SignInPage() {
         <CardHeader className="p-0">
           <div className="relative h-48 w-full">
             <Image
-              src="/mspaint.png" // mspaint logo
-              alt="mspaint Pro"
+              src="/mspaint.jpg" // mspaint logo
+              alt="mspaint"
               fill
               className="object-cover"
               quality={100}
             />
           </div>
+
           <div className="p-2">
             <CardTitle className="text-3xl font-bold text-center text-white-700">
               Dashboard
@@ -42,7 +43,7 @@ export default async function SignInPage() {
         </CardHeader>
 
         <CardContent className="p-4">
-          <div className="mt-2">
+          <div>
             <form
               action={async () => {
                 "use server";

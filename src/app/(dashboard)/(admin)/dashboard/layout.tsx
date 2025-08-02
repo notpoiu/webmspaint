@@ -57,7 +57,7 @@ export default async function RootLayout({
       return notFound();
     }
   } else {
-    return redirect("/signin");
+    return redirect("/admin-sign-in");
   }
 
   return (

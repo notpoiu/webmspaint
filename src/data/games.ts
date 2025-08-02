@@ -1,0 +1,16 @@
+export const gamesList = [
+  "DOORS",
+  "3008",
+  "Rooms & Doors",
+  "Pressure",
+  "Fisch",
+  "BABFT",
+  "Grace",
+  "Murder Mystery 2",
+  "Word Bomb",
+  "Notoriety",
+  "Dead Rails",
+  "Bubble Gum Simulator Infinity",
+  "Grow A Garden",
+  "Forsaken",
+];

@@ -13,6 +13,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { Navbar, NavbarBrand, NavbarContent, NavbarItem } from "@heroui/navbar";
 import Image from "next/image";
 import Iphone15Pro from "@/components/magicui/iphone-15-pro";
 import WordRotate from "@/components/ui/word-rotate";
@@ -26,55 +27,54 @@ import { ShinyButton } from "@/components/magicui/shiny-button";
 import Executor from "@/components/executor";
 import { Features } from "@/components/features";
 import DynamicShopButton from "@/components/buy-mspaint";
-
-export const gamesList = [
-  "DOORS",
-  "3008",
-  "Rooms & Doors",
-  "Pressure",
-  "Fisch",
-  "BABFT",
-  "Grace",
-  "Murder Mystery 2",
-  "Word Bomb",
-  "Notoriety",
-  "Dead Rails",
-  "Bubble Gum Simulator Infinity",
-  "Grow A Garden",
-  "Forsaken",
-];
+import { gamesList } from "@/data/games";
+import { auth } from "@/auth";
 
 export default async function Home() {
-  let languageData, guildData;
+  const session = await auth();
+  const noAccount = (!session || !session.user || !session.user.id);
 
   // discord
+  let languageData, guildData;
   try {
-    const guildResponse = await fetch(
-      "https://discord.com/api/v9/invites/mspaint?with_counts=true&with_expiration=true",
-      {
-        next: { revalidate: 60 },
-      }
-    );
+    const guildResponse = await fetch("https://discord.com/api/v9/invites/mspaint?with_counts=true&with_expiration=true", { next: { revalidate: 60 } });
     guildData = await guildResponse.json();
-  } catch {
-    guildData = { approximate_member_count: 14000 };
-  }
+  } catch { guildData = { approximate_member_count: 20000 }; }
 
   // languages
   try {
-    const response = await fetch(
-      "https://raw.githubusercontent.com/mspaint-cc/translations/refs/heads/main/Languages.json",
-      {
-        next: { revalidate: 20 },
-      }
-    );
-
+    const response = await fetch("https://raw.githubusercontent.com/mspaint-cc/translations/refs/heads/main/Languages.json", { next: { revalidate: 20 } });
     languageData = await response.json();
-  } catch {
-    languageData = { ["en"]: {} };
-  }
+  } catch { languageData = { ["en"]: {} }; }
 
-  return (
+  return (<>
+    <Navbar className="fixed top-0 left-0 right-0 z-50 bg-background/90 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <NavbarBrand>
+        <p className="font-bold text-inherit">mspaint</p>
+      </NavbarBrand>
+
+      <NavbarContent justify="end" className="mt-4 mb-4">
+        <NavbarItem>
+          <Link
+            href="https://shop.mspaint.cc/"
+            className="relative text-foreground transition-colors hover:text-neutral-200 after:content-[''] after:absolute after:left-0 after:-bottom-1 after:h-[2px] after:w-0 after:bg-primary after:transition-all hover:after:w-full"
+          >
+            Shop
+          </Link>
+        </NavbarItem>
+
+        <NavbarItem>
+          <Link
+            href={noAccount ? "/sign-in" : "/subscription-dashboard"}
+            className="relative text-foreground transition-colors hover:text-neutral-200 after:content-[''] after:absolute after:left-0 after:-bottom-1 after:h-[2px] after:w-0 after:bg-primary after:transition-all hover:after:w-full"
+          >
+            {noAccount ? "Sign In" : "Dashboard"}
+          </Link>
+        </NavbarItem>
+
+      </NavbarContent>
+    </Navbar>
+
     <main className="overflow-x-hidden">
       <DotPattern
         width={20}
@@ -158,7 +158,7 @@ export default async function Home() {
           }
           src={`https://ob4fgkbb3w.ufs.sh/f/q5sBExIITNsABaQo4HAKU9TJFX7q3z8ExZVAWyQeLOfamDgu`}
           outro={
-            <div className="flex flex-col items-center justify-center max-md:mb-[10rem]">
+            <div key={1} className="flex flex-col items-center justify-center max-md:mb-[10rem]">
               <BlurFade delay={0.2 + 1 * 0.05} inView>
                 <h1 className="text-2xl font-bold mt-[5rem] text-center px-5">
                   Supporting your favorite executors
@@ -533,5 +533,5 @@ export default async function Home() {
         </div>
       </div>
     </main>
-  );
+  </>);
 }

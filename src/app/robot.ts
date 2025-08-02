@@ -8,7 +8,8 @@ export default function robots(): MetadataRoute.Robots {
       disallow: [
         '/api',
         '/dashboard',
-        '/signin',
+        '/admin-sign-in',
+        '/sign-in',
         '/signout',
         '/purchase'
       ],
