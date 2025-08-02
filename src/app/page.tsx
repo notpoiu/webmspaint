@@ -50,6 +50,7 @@ export default async function Home() {
   return (<>
     <Navbar className="fixed top-0 left-0 right-0 z-50 bg-background/90 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <NavbarBrand>
+        <Image className="mr-2" alt="mspaint" src="/icon.png" width={25} height={25} />
         <p className="font-bold text-inherit">mspaint</p>
       </NavbarBrand>
 
