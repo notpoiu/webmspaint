@@ -1,4 +1,4 @@
-import BlurFade from "@/components/magicui/blur-fade";
+import { BlurFade } from "@/components/magicui/blur-fade";
 import DotPattern from "@/components/magicui/dot-pattern";
 import NumberTicker from "@/components/magicui/number-ticker";
 import Safari from "@/components/magicui/safari";
@@ -430,7 +430,7 @@ export default async function Home() {
 
         <h1 id="reviews" className="text-2xl mt-[2.5rem] text-center">
           Here&apos;s what people say about{" "}
-          <Highlight className="font-bold" inView animationSpeed={1.5}>
+          <Highlight className="font-bold">
             mspaint
           </Highlight>
         </h1>

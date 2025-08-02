@@ -2,7 +2,7 @@
 import { ChevronsUpDown } from "lucide-react";
 import { Obsidian } from "./obsidian/obsidian";
 import WordFadeIn from "./ui/word-fade-in";
-import BlurFade from "./magicui/blur-fade";
+import { BlurFade } from "./magicui/blur-fade";
 
 import * as React from "react"
 
