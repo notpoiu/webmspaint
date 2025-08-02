@@ -24,7 +24,7 @@ import { IconCommand } from "@tabler/icons-react";
 import { IconCaretLeftFilled } from "@tabler/icons-react";
 import { IconCaretDownFilled } from "@tabler/icons-react";
 import Image from "next/image";
-import BlurFade from "../magicui/blur-fade";
+import { BlurFade } from "../magicui/blur-fade";
 
 export const MacbookComponent = ({
   src,

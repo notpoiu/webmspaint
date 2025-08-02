@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import BlurFade from "./magicui/blur-fade";
+import { BlurFade } from "./magicui/blur-fade";
 import { cn } from "@/lib/utils";
 
 export default function Executor({ url, name, image, isWidth }: { url: string, name: string, image: string, isWidth?: boolean }) {

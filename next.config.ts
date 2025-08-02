@@ -3,6 +3,12 @@ import { type NextConfig } from "next";
 const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
+      // Add Discord domain for avatars
+      {
+        protocol: "https",
+        hostname: "cdn.discordapp.com",
+      },
+      // Existing patterns
       {
         protocol: "https",
         hostname: "utfs.io",
@@ -23,7 +29,7 @@ const nextConfig: NextConfig = {
         hostname: "ob4fgkbb3w.ufs.sh",
         pathname: "/f/q5sBExIITNsABaQo4HAKU9TJFX7q3z8ExZVAWyQeLOfamDgu",
       },
-
+      
       {
         protocol: "https",
         hostname: "q2p0njok3b.ufs.sh",

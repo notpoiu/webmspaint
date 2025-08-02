@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { BarChart2Icon, KeyIcon } from "lucide-react";
+import { BarChart2Icon, KeyIcon, UserCogIcon } from "lucide-react";
 
 import Image from "next/image";
 
@@ -16,7 +16,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-
+//test
 const data = {
   navMain: [
     {
@@ -35,6 +35,24 @@ const data = {
         },
       ],
     },
+
+    {
+      title: "Users",
+      url: "#",
+      icon: UserCogIcon,
+      isActive: true,
+      items: [
+        {
+          title: "Edit Users",
+          url: "/dashboard/users/edit",
+        },        
+        {
+          title: "Luarmor Sync",
+          url: "/dashboard/users/luarmor",
+        },
+      ],
+    },
+
     {
       title: "Analytics",
       url: "/dashboard/analytics",
