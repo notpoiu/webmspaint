@@ -9,11 +9,11 @@ const ArrowRightIcon = dynamic(() => import('@radix-ui/react-icons').then(module
 
 const BuyMspaintButton = memo(() => {
     return <AnimatedShinyText 
-        className="inline-flex items-center justify-center px-4 py-1 transition ease-out hover:text-neutral-600 hover:duration-300 hover:dark:text-neutral-400"
-        aria-label="Buy mspaint lifetime"
+        className="inline-flex items-center justify-center px-4 py-1 transition ease-out text-neutral-500 hover:text-neutral-600 hover:duration-300 hover:dark:text-neutral-400"
+        aria-label="Buy mspaint"
     >
         <ShoppingBagIcon className="mr-2" />
-        <span>Buy mspaint lifetime</span>
+        <span>Buy mspaint</span>
         <ArrowRightIcon className="ml-1 size-3 transition-transform duration-300 ease-in-out group-hover:translate-x-0.5" />
     </AnimatedShinyText>;
 });

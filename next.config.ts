@@ -136,6 +136,11 @@ const nextConfig: NextConfig = {
         hostname: "ob4fgkbb3w.ufs.sh",
         pathname: "/f/q5sBExIITNsABgYQjlAKU9TJFX7q3z8ExZVAWyQeLOfamDgu",
       },
+      {
+        protocol: "https",
+        hostname: "q2p0njok3b.ufs.sh",
+        pathname: "/f/Z155p1jPvLAs5ImRVrMxTny6kRILmGKFZcwpAtJ8zEgP1fNh",
+      },
     ],
   },
 };

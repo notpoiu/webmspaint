@@ -167,14 +167,6 @@ export default async function Home() {
 
               <div className="flex flex-row items-center justify-center mt-5 gap-8 max-md:flex-col">
                 <Executor
-                  name={"AWP.GG"}
-                  image={
-                    "https://q2p0njok3b.ufs.sh/f/Z155p1jPvLAsOyrdiI2gWyJPGmIcCjwipUf8hTRZV4L3kb5n"
-                  }
-                  url={"https://discord.gg/awpgg"}
-                  isWidth={true}
-                />
-                <Executor
                   name={"Zenith"}
                   image={
                     "https://q2p0njok3b.ufs.sh/f/Z155p1jPvLAsT3nEx1yJXhEGA6wmQvc0jSk7ZrMVC3nTg5i9"
@@ -182,18 +174,18 @@ export default async function Home() {
                   url={"https://zenith.win"}
                 />
                 <Executor
-                  name={"Synapse Z"}
-                  image={
-                    "https://q2p0njok3b.ufs.sh/f/Z155p1jPvLAs7HnqFJwU1AloGrev4cJZMCItwahsWYkL5y0u"
-                  }
-                  url={"https://synapsez.net"}
-                />
-                <Executor
                   name={"Seliware"}
                   image={
                     "https://q2p0njok3b.ufs.sh/f/Z155p1jPvLAsfZjhFPc93HZnPaFmTiUcpydAzsQLVK54BWrO"
                   }
                   url={"https://seliware.com"}
+                />
+                <Executor
+                  name={"Nucleus"}
+                  image={
+                    "https://q2p0njok3b.ufs.sh/f/Z155p1jPvLAs5ImRVrMxTny6kRILmGKFZcwpAtJ8zEgP1fNh"
+                  }
+                  url={"https://nucleus.rip"}
                 />
                 <Executor
                   name={"Solara"}
