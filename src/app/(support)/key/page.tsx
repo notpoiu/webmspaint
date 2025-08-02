@@ -1,15 +1,18 @@
 "use client";
 
+import { redirect } from "next/navigation";
+
+/*
 import { BlurFade } from "@/components/magicui/blur-fade";
 import DotPattern from "@/components/magicui/dot-pattern";
 import { Button } from "@/components/ui/button";
 import { Card, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
-import Link from "next/link";
+import Link from "next/link"; */
 
 export default function Page() {
-    return (
+  /*return (
         <main className="overflow-x-hidden">
             <DotPattern
                 width={20}
@@ -47,5 +50,9 @@ export default function Page() {
                 </div>
             </div>
         </main>
-    );
+    );*/
+
+  return redirect(
+    "https://blog.mspaint.cc/mspaint-transitioning-subscription-model"
+  );
 }
