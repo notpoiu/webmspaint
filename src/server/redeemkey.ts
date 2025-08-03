@@ -10,6 +10,13 @@ const LRM_Headers = {
   "Content-Type": "application/json",
 };
 
+enum HTTP_METHOD {
+  GET = "GET",
+  POST = "POST",
+  PATCH = "PATCH",
+  DELETE = "DELETE"
+}
+
 /**
  * A simple handler to do CRUD operations with luarmor users, decreasing code footprint.
  * @param method GET, POST, PATCH, DELETE
@@ -17,7 +24,7 @@ const LRM_Headers = {
  * @returns
  */
 export async function RequestLuarmorUsersEndpoint(
-  method: string,
+  method: HTTP_METHOD,
   filters: string = "",
   body: unknown = null
 ) {
@@ -67,7 +74,7 @@ export async function RedeemKey(serial: string, user_id: string) {
   }
 
   const checkpointKeyResponse = await RequestLuarmorUsersEndpoint(
-    "GET",
+    HTTP_METHOD.GET,
     `discord_id=${user_id}`
   );
 
@@ -100,7 +107,7 @@ export async function RedeemKey(serial: string, user_id: string) {
 
   if (does_user_have_checkpoint_key) {
     await RequestLuarmorUsersEndpoint(
-      "DELETE",
+      HTTP_METHOD.DELETE,
       `user_key=${checkpointKey.users[0].user_key}`
     );
   }
@@ -122,7 +129,7 @@ export async function RedeemKey(serial: string, user_id: string) {
     }
 
     //Creating a new user
-    const response = await RequestLuarmorUsersEndpoint("POST", "", {
+    const response = await RequestLuarmorUsersEndpoint(HTTP_METHOD.POST, "", {
       discord_id: user_id,
       note: (rows[0].order_id ?? "Generic ID") + " - " + serial,
       auth_expire: keyExpirationDate,
@@ -174,7 +181,7 @@ export async function RedeemKey(serial: string, user_id: string) {
     }
 
     //Updating an existing user
-    const response = await RequestLuarmorUsersEndpoint("PATCH", "", {
+    const response = await RequestLuarmorUsersEndpoint(HTTP_METHOD.PATCH, "", {
       user_key: getExistingUser.lrm_serial,
       auth_expire: keyExpirationDate,
     });
@@ -426,7 +433,7 @@ export async function SyncUserExpiration(discord_id: string) {
   if (!allowed) return { status: 403, error: "Permission denied" };
 
   const response = await RequestLuarmorUsersEndpoint(
-    "GET",
+    HTTP_METHOD.GET,
     `discord_id=${discord_id}`
   );
 
@@ -462,10 +469,18 @@ export async function SyncExpirationsFromLuarmor(step: number) {
   const allowed = await isUserAllowedOnDashboard();
   if (!allowed) return { status: 403, error: "Permission denied" };
 
+  const batchSize = 1000;
   let totalUpdated = 0;
-  let totalUsers = 0;
+  let totalDeleted = 0;
 
-  const response = await RequestLuarmorUsersEndpoint("GET");
+  const minRange = (step - 1) * batchSize
+  const maxRange = minRange + batchSize - 1
+
+  // 1. Fetch the batch
+  const response = await RequestLuarmorUsersEndpoint(
+    HTTP_METHOD.GET,
+    `from=${minRange}&until=${maxRange}`
+  );
 
   if (!response.ok) {
     return {
@@ -476,66 +491,99 @@ export async function SyncExpirationsFromLuarmor(step: number) {
 
   const data = await response.json();
   const users = data.users || [];
-  totalUsers += users.length;
+  
+  //need to get before filtering to avoid step issues
+  const totalUsers = users.length;
 
-  // Filter and prepare user data for bulk update
-  const validUsers = users
-    .filter(
-      (user: { user_key?: string; auth_expire?: string }) =>
-        user.user_key && user.auth_expire != null
-    )
-    .map(
-      (user: { user_key: string; auth_expire: string; banned?: boolean }) => {
-        const timestamp_expire = parseInt(user.auth_expire, 10);
-        const expireTime =
-          timestamp_expire == -1
-            ? -1
-            : new Date(timestamp_expire * 1000).getTime();
+  // 2. Normalize & filter out any without user_key
+  const filteredRows = users
+    .filter((u: { discord_id: string; note?: string }) => u.discord_id != "" && u.note != "Ad Reward")
+    .map((u: { user_key: string;  discord_id: string; auth_expire: string; banned: boolean; }) => {
+      const expireAt = parseInt(u.auth_expire, 10);
+      return {
+        lrm_serial: u.user_key!,
+        discord_id: u.discord_id,
+        expires_at: expireAt === -1 ? -1 : new Date(expireAt * 1000).getTime(),
+        is_banned: Boolean(u.banned),
+      };
+  });
 
-        return {
-          lrm_serial: user.user_key,
-          expires_at: expireTime,
-          is_banned: Boolean(user.banned),
-        };
-      }
-    );
+  // 4. Delete any rows not present in this batch
+  if (filteredRows.length > 0) {
 
-  if (validUsers.length > 0) {
-    const placeholders = validUsers
-      .map((_: unknown, index: number) => {
-        const baseIndex = index * 3;
-        return `($${baseIndex + 1}, $${baseIndex + 2}, $${baseIndex + 3})`;
-      })
-      .join(", ");
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const allDiscordIds = filteredRows.map((r: { discord_id: any; }) => r.discord_id);
 
-    const values = validUsers.flatMap(
-      (user: {
-        lrm_serial: string;
-        expires_at: number;
-        is_banned: boolean;
-      }) => [user.lrm_serial, user.expires_at, user.is_banned]
-    );
+    const placeholders = allDiscordIds
+      .map((_: unknown, i: number) => 
+        `$${i + 1}`)
+    .join(', ');
 
-    const query = `
-      UPDATE mspaint_users 
-      SET 
-        expires_at = updates.new_expires_at::bigint,
-        is_banned = updates.new_is_banned::boolean
-      FROM (VALUES ${placeholders}) AS updates(lrm_serial, new_expires_at, new_is_banned)
-      WHERE mspaint_users.lrm_serial = updates.lrm_serial
-        AND (
-          mspaint_users.expires_at IS DISTINCT FROM updates.new_expires_at::bigint
-          OR mspaint_users.is_banned IS DISTINCT FROM updates.new_is_banned::boolean
-        )
+    const deleteQuery = `
+      DELETE FROM mspaint_users
+      WHERE discord_id NOT IN (${placeholders});
     `;
 
-    const result = await sql.query(query, values);
-    totalUpdated = result.rowCount || 0;
+    const deleteResult = await sql.query(deleteQuery, allDiscordIds);
+
+    totalDeleted = deleteResult.rowCount ?? 0;
+  } else {
+    // Here we'll leave the table untouched.
+    totalDeleted = 0;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const values = filteredRows.flatMap((r: any) => [
+    r.lrm_serial,
+    r.discord_id,
+    r.expires_at,
+    r.is_banned,
+  ]);
+
+  const placeholders = filteredRows
+    .map((_: unknown, i: number) => {
+      const baseIndex = i * 4;
+      return `($${baseIndex + 1}, $${baseIndex + 2}, $${baseIndex + 3}, $${baseIndex + 4})`;
+    })
+  .join(', ');
+
+  // 3. Bulk INSERT … ON CONFLICT … DO UPDATE
+  if (filteredRows.length > 0) {
+    const query = `
+      INSERT INTO mspaint_users (lrm_serial, discord_id, expires_at, is_banned)
+      VALUES ${placeholders}
+      ON CONFLICT (discord_id)
+      DO UPDATE SET
+        lrm_serial = EXCLUDED.lrm_serial,
+        expires_at = EXCLUDED.expires_at,
+        is_banned = EXCLUDED.is_banned
+      WHERE
+        mspaint_users.lrm_serial IS DISTINCT FROM EXCLUDED.lrm_serial
+        OR mspaint_users.expires_at IS DISTINCT FROM EXCLUDED.expires_at
+        OR mspaint_users.is_banned IS DISTINCT FROM EXCLUDED.is_banned;
+    `;
+
+    const insertResult = await sql.query(query, values);
+    // rowCount here is # of filteredRows inserted + # of filteredRows updated
+    totalUpdated = insertResult.rowCount ?? 0;
+  }
+
+  // Check if we should fetch next batch
+  const hasMore = users.length > 0;
+
+  if (hasMore) {
+    return {
+      status: 206,
+      total_updated: totalUpdated,
+      total_deleted: totalDeleted,
+      total_users: totalUsers
+    };      
   }
 
   return {
     status: 200,
     total_updated: totalUpdated,
-    total_users: totalUsers,
+    total_deleted: totalDeleted,
+    total_users: totalUsers,    
   };
 }

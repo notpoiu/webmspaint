@@ -30,18 +30,18 @@ export default function SyncLuarmorComponent() {
     let step = 1;
     let totalUpdated = 0;
     let totalUsers = 0;
-
+    let totalDeleted = 0;
     try {
       while (true) {
         // const result ={
         //   status: 200,
         //   total_updated: 123,
-        //   total_users: 123456,
-        //   error: "lol"
+        //   total_users: 123456,  
+        //   error: "lol"  
         // }
-
+        
         const result = await SyncExpirationsFromLuarmor(step);
-
+        
         if (result.status === 206) {
           // Partial content, update progress and continue
           setSyncStep(step);
@@ -49,8 +49,9 @@ export default function SyncLuarmorComponent() {
 
           totalUpdated += result.total_updated ?? 0;
           totalUsers += result.total_users ?? 0;
+          totalDeleted += result.total_deleted ?? 0;
 
-          const progressValue = Math.min((step / 30) * 100, 99); // Estimate progress
+          const progressValue = Math.min((step / 5) * 100, 99); // Estimate progress
           setProgress(Math.round(progressValue));
         } else if (result.status === 200) {
           // Final batch, show success
@@ -63,21 +64,21 @@ export default function SyncLuarmorComponent() {
         } else {
           // Error case
           setIsSyncing(false);
-          throw new Error(result.error || "Sync failed (Generic)");
+          throw new Error(result.error || "Sync failed (Generic)")
         }
       }
 
       setNotification({
-        type: "success",
-        message: `Updated ${totalUpdated} out of ${totalUsers} expiration dates!`,
+        type: 'success',
+        message: `Updated ${totalUpdated} out of ${totalUsers} Users!\nDeleted ${totalDeleted} present in mspaint but not in Luarmor`
       });
-
+      
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       setIsSyncing(false);
       setNotification({
-        type: "error",
-        message: `Unexpected error during sync: ${error.message}`,
+        type: 'error',
+        message: `Unexpected error during sync: ${error.message}`
       });
     }
   };

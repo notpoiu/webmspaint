@@ -48,6 +48,7 @@ export default function MiniDashboardCard({
   }
 
   // Determine subscription status
+  const isMember = subscription != null;
   const isLifetime = subscription?.expires_at == -1;
   const expirationDate = subscription?.expires_at ?? 0;
   const isExpired = expirationDate - Date.now() <= 0;
@@ -64,6 +65,7 @@ export default function MiniDashboardCard({
           <div className="flex flex-col sm:flex-row sm:items-start gap-4 sm:gap-6">
             <div className="flex-shrink-0 mx-auto sm:mx-0">
               {session.user.image && (
+                // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={session.user.image}
                   alt="Discord Avatar"
@@ -104,30 +106,39 @@ export default function MiniDashboardCard({
                     : "Active"}
                 </Badge>
               </div> */}
+                {isMember ? (
+                  <>
+                    <h3 className="text-xs sm:text-sm font-medium uppercase tracking-wider  mt-2">
+                      subscription Status
+                    </h3>
 
-                <h3 className="text-xs sm:text-sm font-medium uppercase tracking-wider  mt-2">
-                  subscription Status
-                </h3>
+                    <div>
+                      {isActive &&
+                        !isLifetime &&
+                        (!isExpired ? (
+                          <TimeUpdater
+                            initialTimeLeft={timeLeftMs}
+                            freezeAfterTimeout={true}
+                          />
+                        ) : (
+                          <p className="text-base text-red-400 mt-2">
+                            Expired - Renew Now!
+                          </p>
+                        ))}
+                      {isLifetime && (
+                        <p className="text-base text-green-400 mt-2">
+                          Lifetime access ★
+                        </p>
+                      )}
+                    </div>
+                  </>
+                ) : (
 
-                <div>
-                  {isActive &&
-                    !isLifetime &&
-                    (!isExpired ? (
-                      <TimeUpdater
-                        initialTimeLeft={timeLeftMs}
-                        freezeAfterTimeout={true}
-                      />
-                    ) : (
-                      <p className="text-base text-red-400 mt-2">
-                        Expired - Renew Now!
-                      </p>
-                    ))}
-                  {isLifetime && (
-                    <p className="text-base text-green-400 mt-2">
-                      Lifetime access ★
-                    </p>
-                  )}
-                </div>
+                  <h3 className="text-xs sm:text-sm font-medium uppercase tracking-wider text-red-400 mt-2">
+                    You&apos;re not a registered member.                  
+                  </h3>
+
+                )}
               </div>
 
               <div className="grid grid-cols-2 gap-3 mt-6">
@@ -157,15 +168,17 @@ export default function MiniDashboardCard({
                 <div className="mt-4">
                   <Sheet>
                     <SheetTrigger asChild>
-                      <Button
-                        variant="secondary"
-                        className="w-full flex items-center justify-center py-2"
-                      >
-                        <PackageIcon />
-                        <span className="text-xs sm:text-sm">
-                          Subscription History
-                        </span>
-                      </Button>
+                      {isMember && (
+                        <Button
+                          variant="secondary"
+                          className="w-full flex items-center justify-center py-2"
+                        >
+                          <PackageIcon />
+                          <span className="text-xs sm:text-sm">
+                            Subscription History
+                          </span>
+                        </Button>
+                      )}
                     </SheetTrigger>
                     <SheetContent>
                       <SheetHeader>
