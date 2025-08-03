@@ -1,12 +1,13 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
-import { Toaster } from "@/components/ui/sonner"
-import { Analytics } from "@vercel/analytics/react"
+import { Toaster } from "@/components/ui/sonner";
+import { Analytics } from "@vercel/analytics/react";
 import "./globals.css";
 import { gamesList } from "@/data/games";
 
-const description = "mspaint is the best freemium roblox script hub supporting games such as doors, 3008, room & doors, pressure, fisch, build a boat for treasure, grace and murder mystery 2";
+const description =
+  "mspaint is the best premium roblox script hub supporting games such as doors, 3008, room & doors, pressure, fisch, build a boat for treasure, grace and murder mystery 2";
 
 const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
@@ -17,8 +18,8 @@ export const metadata: Metadata = {
   description: description,
   openGraph: {
     description: description,
-		images: 'https://www.mspaint.cc/icon.png',
-	},
+    images: "https://www.mspaint.cc/icon.png",
+  },
   keywords: [
     "mspaint",
     "roblox",
@@ -27,7 +28,7 @@ export const metadata: Metadata = {
     "working script",
     "2024",
     "2025",
-    ...gamesList
+    ...gamesList,
   ],
 };
 
@@ -35,7 +36,7 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
-  userScalable: false
+  userScalable: false,
 };
 
 export default function RootLayout({
@@ -48,9 +49,7 @@ export default function RootLayout({
       {/* <head>
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
       </head> */}
-      <body
-        className={`${inter.className} antialiased`}
-      >
+      <body className={`${inter.className} antialiased`}>
         <ThemeProvider
           attribute="class"
           forcedTheme="dark"
