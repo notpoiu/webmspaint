@@ -38,25 +38,25 @@ export async function generateMetadata(props: {
   const searchParams = await props.searchParams;
   const serial = searchParams?.serial;
 
-  if (!searchParams || !serial) {
-    return {
-      title: "Not Found",
-      description: "Unable to retrieve serial information",
-    };
-  }
+  let title = "Purchase Completed";
+  let description =
+    "Thank you for your purchase! Your support helps us keep mspaint running.";
 
-  if (serial.split(",").length > 1) {
-    return {
-      title: "Bulk Purchase Completed",
-      description:
-        "Your mspaint bulk purchase has been completed successfully.",
-    };
+  if (serial && serial.split(",").length > 1) {
+    title = "Bulk Purchase Completed";
+    description = "Your mspaint bulk purchase has been completed successfully.";
+  } else if (!searchParams || !serial) {
+    title = "Invalid Purchase";
+    description = "Unable to retrieve serial information";
   }
 
   return {
-    title: "Purchase Completed",
-    description:
-      "Thank you for your purchase! Your support helps us keep mspaint running.",
+    title,
+    description,
+    openGraph: {
+      description,
+      images: "",
+    },
   };
 }
 
