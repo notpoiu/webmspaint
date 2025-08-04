@@ -3,7 +3,9 @@
 import {
   ColumnDef,
   ColumnFiltersState,
+  FilterFn,
   getFilteredRowModel,
+  Row,
 } from "@tanstack/react-table";
 import {
   flexRender,
@@ -78,6 +80,14 @@ export type SerialDef = {
   expires_at: number | null;
 };
 
+const claimedAtFilter: FilterFn<SerialDef> = (row, columnId, filterValue) => {
+  const value = row.getValue<boolean>(columnId);
+  const label = value ? "claimed" : "unclaimed";
+
+  if (typeof filterValue !== 'string') return true;
+  return label.includes(filterValue.toLowerCase());
+};
+
 export function SerialDataTable({ data }: DataTableProps<SerialDef>) {
   const [selectedSerial, setSelectedSerial] = React.useState<
     SerialDef | undefined
@@ -111,20 +121,20 @@ export function SerialDataTable({ data }: DataTableProps<SerialDef>) {
   const columns: ColumnDef<SerialDef>[] = [
     {
       accessorKey: "claimed_at",
-      header: () => <p className="ml-2">Status</p>,
+      header: () => <p className="flex ml-4">Status</p>,
       cell: ({ row }) => {
         const claimedAt = row.getValue("claimed_at");
         return (
-          <div className="flex justify-center items-center">
+          <div className="ml-1">
             <Badge
               variant={claimedAt ? "outline" : "default"}
-              className="justify-center"
             >
               {claimedAt ? "Claimed" : "Unclaimed"}
             </Badge>
           </div>
         );
       },
+      filterFn: claimedAtFilter
     },
     {
       accessorKey: "order_id",
@@ -431,28 +441,7 @@ export function SerialDataTable({ data }: DataTableProps<SerialDef>) {
           placeholder={`Filter by ${filterTarget}...`}
           value={filterValue}
           onChange={(event) => {
-            if (filterTarget == "claimed_at") {
-              const text = event.target.value;
-
-              if (text.trim() == "") {
-                table.getColumn(filterTarget)?.setFilterValue(undefined);
-                setFilterValue(event.target.value);
-                return;
-              }
-
-              if (
-                text.toLowerCase().includes("u") ||
-                text.toLowerCase().includes("n") ||
-                text.toLowerCase().includes("false")
-              ) {
-                table.getColumn(filterTarget)?.setFilterValue(false);
-              } else {
-                table.getColumn(filterTarget)?.setFilterValue(true);
-              }
-            } else {
-              table.getColumn(filterTarget)?.setFilterValue(event.target.value);
-            }
-
+            table.getColumn(filterTarget)?.setFilterValue(event.target.value);
             setFilterValue(event.target.value);
           }}
           className="max-w-sm text-[16px]"
