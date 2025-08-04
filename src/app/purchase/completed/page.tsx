@@ -30,13 +30,35 @@ import {
 } from "@radix-ui/react-icons";
 import { FileTextIcon } from "lucide-react";
 import { ShimmerButton } from "@/components/magicui/shimmer-button";
-import Image from "next/image";
-import {
-  calculateTimeStringRemaining,
-  calculateTimeStringRemainingFormated,
-} from "@/lib/utils";
-import { GetUserSubscription } from "@/server/redeemkey";
-import { TimeUpdater } from "@/components/time-updater";
+import { Metadata } from "next";
+
+export async function generateMetadata(props: {
+  searchParams?: Promise<{ [key: string]: string | undefined }>;
+}): Promise<Metadata> {
+  const searchParams = await props.searchParams;
+  const serial = searchParams?.serial;
+
+  if (!searchParams || !serial) {
+    return {
+      title: "Not Found",
+      description: "Unable to retrieve serial information",
+    };
+  }
+
+  if (serial.split(",").length > 1) {
+    return {
+      title: "Bulk Purchase Completed",
+      description:
+        "Your mspaint bulk purchase has been completed successfully.",
+    };
+  }
+
+  return {
+    title: "Purchase Completed",
+    description:
+      "Thank you for your purchase! Your support helps us keep mspaint running.",
+  };
+}
 
 function InvalidSearchParams() {
   return (

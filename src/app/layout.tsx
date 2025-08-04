@@ -13,7 +13,7 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: {
     default: "mspaint",
-    template: "%s | mspaint",
+    template: "mspaint | %s",
   },
   description: description,
   openGraph: {
