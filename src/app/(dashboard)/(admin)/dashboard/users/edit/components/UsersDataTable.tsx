@@ -74,11 +74,14 @@ export default function UsersDataTable({ data }: DataTableProps<UserDef>) {
   const [time, setTime] = React.useState(Date.now());
   const [syncingRows, setSyncingRows] = React.useState<Set<string>>(new Set());
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
-  const [purchaseHistory, setPurchaseHistory] = React.useState<
-    TimelineElement[]
-  >([]);
+  const [purchaseHistory, setPurchaseHistory] = React.useState<TimelineElement[]>([]);
   const [isLoadingHistory, setIsLoadingHistory] = React.useState(false);
   const [historyError, setHistoryError] = React.useState<string | null>(null);
+  const [sortOrder, setSortOrder] = React.useState<'oldest' | 'newest'>('oldest');
+  
+  const toggleSortOrder = () => {
+    setSortOrder(prev => prev === 'oldest' ? 'newest' : 'oldest');
+  };
 
   const fetchPurchaseHistory = async () => {
     setIsLoadingHistory(true);
@@ -148,6 +151,7 @@ export default function UsersDataTable({ data }: DataTableProps<UserDef>) {
     if (isDialogOpen && selectedUser) {
       fetchPurchaseHistory();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isDialogOpen, selectedUser]);
 
   React.useEffect(() => {
@@ -163,9 +167,12 @@ export default function UsersDataTable({ data }: DataTableProps<UserDef>) {
 
   useEffect(() => {
     GetAllUserData().then((data) => {
-      setUserData(data as UserDef[]);
+      const sortedData = sortOrder === 'oldest' 
+        ? data as UserDef[]
+        : [...(data as UserDef[])].reverse();
+      setUserData(sortedData);
     });
-  }, [userRefreshKey]);
+  }, [userRefreshKey, sortOrder]);
 
   const columns: ColumnDef<UserDef>[] = [
     {
@@ -333,7 +340,7 @@ export default function UsersDataTable({ data }: DataTableProps<UserDef>) {
   const [filterTarget, setFilterTarget] = React.useState<string>("discord_id");
 
   const table = useReactTable<UserDef>({
-    data: userData,
+    data: userData.reverse(),
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -396,6 +403,13 @@ export default function UsersDataTable({ data }: DataTableProps<UserDef>) {
             <SelectItem value="lrm_serial">Luarmor Key</SelectItem>
           </SelectContent>
         </Select>
+        <Button 
+          onClick={toggleSortOrder} 
+          variant="outline" 
+          className="ml-2"
+        >
+          {sortOrder !== 'oldest' ? 'Sort by newest' : 'Sort by oldest'}
+        </Button>        
       </div>
       <div className="rounded-md border">
         <Table>

@@ -98,6 +98,11 @@ export function SerialDataTable({ data }: DataTableProps<SerialDef>) {
   const [serialRefreshKey, setSerialRefreshKey] = React.useState(0);
   const [time, setTime] = React.useState(Date.now());
   const [syncingRows, setSyncingRows] = React.useState<Set<string>>(new Set());
+  const [sortOrder, setSortOrder] = React.useState<'oldest' | 'newest'>('oldest');
+  
+  const toggleSortOrder = () => {
+    setSortOrder(prev => prev === 'oldest' ? 'newest' : 'oldest');
+  };
 
   React.useEffect(() => {
     const interval = setInterval(() => setTime(Date.now()), 60000);
@@ -114,9 +119,12 @@ export function SerialDataTable({ data }: DataTableProps<SerialDef>) {
 
   useEffect(() => {
     GetAllSerialData().then((data) => {
-      setSerialData(data as SerialDef[]);
+      const sortedData = sortOrder === 'oldest' 
+        ? data as SerialDef[]
+        : [...(data as SerialDef[])].reverse();
+      setSerialData(sortedData);
     });
-  }, [serialRefreshKey]);
+  }, [serialRefreshKey, sortOrder]);
 
   const columns: ColumnDef<SerialDef>[] = [
     {
@@ -374,7 +382,7 @@ export function SerialDataTable({ data }: DataTableProps<SerialDef>) {
   const [filterTarget, setFilterTarget] = React.useState<string>("serial");
 
   const table = useReactTable<SerialDef>({
-    data: serialData,
+    data: serialData.reverse(),
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -468,6 +476,13 @@ export function SerialDataTable({ data }: DataTableProps<SerialDef>) {
             <SelectItem value="discord_id">Discord User ID</SelectItem>
           </SelectContent>
         </Select>
+        <Button 
+          onClick={toggleSortOrder} 
+          variant="outline" 
+          className="ml-2"
+        >
+          {sortOrder !== 'oldest' ? 'Sort by newest' : 'Sort by oldest'}
+        </Button>
       </div>
       <div className="rounded-md border">
         <Table>
