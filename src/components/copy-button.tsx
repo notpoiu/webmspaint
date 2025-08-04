@@ -34,3 +34,39 @@ export default function CopyButton({text}: {text: string}) {
     </Button>
   ), [copied, text]);
 }
+
+export function CopyButtonWithText({text}: {text: string}) {
+  const [copied, setCopied] = useState(false);
+
+  return useMemo(() => (
+    <div className="flex justify-center w-full mt-2">
+      <Button
+        variant="outline"
+        className="flex items-center gap-2 px-4 py-2 rounded-md"
+        onClick={() => {
+          navigator.clipboard.writeText(text);
+          setCopied(true);
+          setTimeout(() => setCopied(false), 2000);
+        }}
+        aria-label={copied ? "Copied to clipboard" : "Copy"}
+      >
+        <span className="text-sm">
+          {copied ? "Copied to clipboard" : "Copy"}
+        </span>
+
+        <div className="relative w-4 h-4">
+          <Copy
+            className={`absolute inset-0 transition-transform duration-300 ${
+              copied ? "scale-0" : "scale-100"
+            }`}
+          />
+          <Check
+            className={`absolute inset-0 transition-transform duration-300 ${
+              copied ? "scale-100" : "scale-0"
+            }`}
+          />
+        </div>
+      </Button>
+    </div>
+  ), [copied, text]);
+}

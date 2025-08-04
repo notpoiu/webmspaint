@@ -113,9 +113,9 @@ export default async function Page(props: {
     if (rows.length === 0) {
       return (
         <main className="flex justify-center items-center flex-col min-h-screen p-4">
-          <CrossCircledIcon className="h-24 w-24 sm:h-32 sm:w-32 text-red-500 mb-8" />
+          <CrossCircledIcon className="h-0 w-0 sm:h-32 sm:w-32 text-red-500 mb-2" />
           <Card className="max-w-[475px] w-full">
-            <CardHeader>
+            <CardHeader className="pb-2">
               <CardTitle>mspaint key</CardTitle>
               <CardDescription>
                 Sorry, the mspaint serial{" "}
@@ -156,11 +156,11 @@ export default async function Page(props: {
       ) {
         return (
           <main className="flex justify-center items-center flex-col min-h-screen relative p-4">
-            <FileTextIcon className="h-24 w-24 sm:h-32 sm:w-32 text-blue-500 mb-8" />
+            <FileTextIcon className="h-0 w-0 sm:h-32 sm:w-32 text-blue-500 mb-2" />
             <div className="relative z-10 w-full max-w-[475px]">
               <Card className="w-full">
-                <CardHeader>
-                  <CardTitle>mspaint script</CardTitle>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-2xl">mspaint key claimed sucessfully!</CardTitle>
                   <CardDescription>
                     Thank you for your support! without you we wouldn&apos;t be
                     able to keep mspaint running.
@@ -185,10 +185,9 @@ export default async function Page(props: {
                       user_id={session.user.id || "skibidiSigma"}
                     />
                   </div>
-
-                  <div className="flex flex-row gap-2 items-center w-full mt-5">
-                    <ClientCodeBlock serial={lrm_serial} />
-                  </div>
+                  {/* <div className="flex flex-col gap-2 items-center w-full mt-5"> */}
+                    <ClientCodeBlock classNameBlock={"border-[5px] border-border/40 rounded-md"} serial={lrm_serial} />
+                  {/* </div> */}
 
                   <Separator className="mt-2 mb-3" />
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -200,20 +199,33 @@ export default async function Page(props: {
                         Not you? Sign out.
                       </p>
                     </div>
-                    <form
-                      action={async () => {
-                        "use server";
-                        await signOut();
-                      }}
-                    >
-                      <Button
-                        variant={"destructive"}
-                        size="sm"
-                        className="w-full sm:w-auto"
+
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4">
+                      <Link href="/subscription-dashboard" className="w-full">
+                        <Button
+                          variant="default"
+                          size="sm"
+                          className="cursor-pointer w-full sm:w-auto mb-2 sm:mb-0"
+                        >
+                          Go to Dashboard
+                        </Button>
+                      </Link>
+
+                      <form
+                        action={async () => {
+                          "use server";
+                          await signOut();
+                        }}
                       >
-                        Sign Out
-                      </Button>
-                    </form>
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          className="w-full sm:w-auto"
+                        >
+                          Sign Out
+                        </Button>
+                      </form>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -228,10 +240,10 @@ export default async function Page(props: {
 
       return (
         <main className="flex justify-center items-center flex-col min-h-screen p-4">
-          <ExclamationTriangleIcon className="h-24 w-24 sm:h-32 sm:w-32 text-yellow-500 mb-8" />
+          <ExclamationTriangleIcon className="h-0 w-0 sm:h-32 sm:w-32 text-yellow-500 mb-2" />
 
           <Card className="max-w-[475px] w-full">
-            <CardHeader>
+            <CardHeader className="pb-2">
               <CardTitle className="flex justify-center text-center text-lg sm:text-xl">
                 This mspaint key is already claimed.
               </CardTitle>
@@ -330,12 +342,11 @@ export default async function Page(props: {
 
     return (
       <main className="flex justify-center items-center flex-col min-h-screen relative p-4">
-        <CheckCircledIcon className="h-24 w-24 sm:h-32 sm:w-32 text-green-500 mb-8 z-10" />
-
+        <CheckCircledIcon className="h-0 w-0 sm:h-32 sm:w-32 text-green-500 mb-2 z-10" />
         <div className="relative z-10 w-full max-w-[475px]">
           <Card className="w-full">
-            <CardHeader>
-              <CardTitle className="flex justify-center text-center text-lg sm:text-xl">
+            <CardHeader className="pb-2">
+              <CardTitle className="flex justify-center text-center text-lg sm:text-2xl">
                 Your mspaint key is valid!
               </CardTitle>
               {session && session.user ? null : (
@@ -367,7 +378,7 @@ export default async function Page(props: {
                       user_id={session.user.id || "skibidiSigma"}
                     />
                   </div>
-                  <p className="text-foreground text-center text-sm mt-4">
+                  <p className="text-foreground text-center text-sm mb-2 -mt-1">
                     Key duration: {keyDuration ?? "Lifetime"}
                   </p>
                   <Separator className="mt-2 mb-3" />
@@ -432,9 +443,9 @@ export default async function Page(props: {
   } else {
     return (
       <main className="flex justify-center items-center flex-col min-h-screen p-4">
-        <CheckCircledIcon className="h-24 w-24 sm:h-32 sm:w-32 text-green-500 mb-8" />
+        <CheckCircledIcon className="h-0 w-0 sm:h-32 sm:w-32 text-green-500 mb-2" />
         <Card className="max-w-[475px] w-full">
-          <CardHeader>
+          <CardHeader className="pb-2">
             <CardTitle className="flex justify-center text-center text-lg sm:text-xl">
               mspaint bulk keys purchase successful!
             </CardTitle>

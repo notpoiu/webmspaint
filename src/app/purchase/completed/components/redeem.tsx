@@ -81,67 +81,69 @@ export function RedeemComponent({
           />
         </div>
       )}
-      <AlertDialog open={open} onOpenChange={setOpen}>
-        <AlertDialogTrigger asChild>
-          <RainbowButton
-            variant={"default"}
-            size={"lg"}
-            disabled={keyClaimed || serial == null}
-            style={{ fontWeight: "bold" }}
-          >
-            {keyClaimed || serial == null
-              ? "Successfully claimed!"
-              : `Redeem mspaint for ${username}`}
-          </RainbowButton>
-        </AlertDialogTrigger>
-        <AlertDialogContent className="bg-black">
-          <AlertDialogHeader>
-            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This action cannot be undone. This will redeem the mspaint key for{" "}
-              {username}. We are not responsible for any lost keys.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <Button
-              onClick={() => {
-                toast.promise(
-                  async () => {
-                    const response = await RedeemKey(serial as string, user_id);
-                    if (response.status !== 200) {
-                      throw new Error(response.error);
-                    }
-
-                    return response;
-                  },
-                  {
-                    loading: "Redeeming mspaint key...",
-                    success: () => {
-                      setOpen(false);
-                      refresh().then(() => {
-                        setKeyClaimed(true);
-                      });
-                      return (
-                        "Key redeemed successfully for " +
-                        username +
-                        "! You can now access mspaint via #getscript in discord."
-                      );
-                    },
-                    error: (error_data) => {
-                      setOpen(false);
-                      return "Failed to redeem key: " + error_data.message;
-                    },
-                  }
-                );
-              }}
+      {serial != null && (
+        <AlertDialog open={open} onOpenChange={setOpen}>
+          <AlertDialogTrigger className="mb-2" asChild>
+            <RainbowButton
+              variant={"default"}
+              size={"lg"}
+              disabled={keyClaimed || serial == null}
+              style={{ fontWeight: "bold" }}
             >
-              Continue
-            </Button>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+              {keyClaimed || serial == null
+                ? "Successfully claimed!"
+                : `Redeem mspaint for ${username}`}
+            </RainbowButton>
+          </AlertDialogTrigger>
+          <AlertDialogContent className="bg-black">
+            <AlertDialogHeader>
+              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This action cannot be undone. This will redeem the mspaint key for{" "}
+                {username}. We are not responsible for any lost keys.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <Button
+                onClick={() => {
+                  toast.promise(
+                    async () => {
+                      const response = await RedeemKey(serial as string, user_id);
+                      if (response.status !== 200) {
+                        throw new Error(response.error);
+                      }
+
+                      return response;
+                    },
+                    {
+                      loading: "Redeeming mspaint key...",
+                      success: () => {
+                        setOpen(false);
+                        refresh().then(() => {
+                          setKeyClaimed(true);
+                        });
+                        return (
+                          "Key redeemed successfully for " +
+                          username +
+                          "! You can now access mspaint via #getscript in discord."
+                        );
+                      },
+                      error: (error_data) => {
+                        setOpen(false);
+                        return "Failed to redeem key: " + error_data.message;
+                      },
+                    }
+                  );
+                }}
+              >
+                Continue
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      )}
     </>
   );
 }
