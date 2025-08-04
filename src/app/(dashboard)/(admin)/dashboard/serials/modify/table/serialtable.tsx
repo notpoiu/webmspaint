@@ -62,7 +62,7 @@ import { toast } from "sonner";
 import {
   DeleteSerial,
   GetAllSerialData,
-  SyncUserExpiration,
+  SyncSingleLuarmorUser,
 } from "@/server/redeemkey";
 
 interface DataTableProps<TData> {
@@ -320,7 +320,7 @@ export function SerialDataTable({ data }: DataTableProps<SerialDef>) {
                         return;
                       }
 
-                      const result = await SyncUserExpiration(
+                      const result = await SyncSingleLuarmorUser(
                         row.original.discord_id
                       );
 

@@ -21,16 +21,18 @@ enum HTTP_METHOD {
  * A simple handler to do CRUD operations with luarmor users, decreasing code footprint.
  * @param method GET, POST, PATCH, DELETE
  * @param filters refer to https://docs.luarmor.net/#getting-users for more information
+ * @param path extra manipulation in the same branch as the user, for now is only exclusive for "/resethwid" refer to https://docs.luarmor.net/#resetting-the-hwid-of-a-key
  * @returns
  */
 export async function RequestLuarmorUsersEndpoint(
   method: HTTP_METHOD,
   filters: string = "",
-  body: unknown = null
+  body: unknown = null,
+  path: string = ""
 ) {
   const apiUrl = `${process.env.LRM_PROXY_URL}/v3/projects/${
     process.env.LRM_PROJECT_ID
-  }/users${filters == "" ? "" : "?" + filters}`;
+  }/users${filters == "" ? "" : "?" + filters}${path}`;
 
   if (body) {
     const response = await fetch(apiUrl, {
@@ -157,10 +159,10 @@ export async function RedeemKey(serial: string, user_id: string) {
         ? -1
         : new Date(keyExpirationDate * 1000).getTime();
 
-    await sql`INSERT INTO mspaint_users (lrm_serial, discord_id, expires_at, is_banned) VALUES (${keyCreation.user_key}, ${user_id}, ${dbExpiresAt}, FALSE)`;
+    await sql`INSERT INTO mspaint_users (lrm_serial, discord_id, expires_at) VALUES (${keyCreation.user_key}, ${user_id}, ${dbExpiresAt})`;
   } else {
     // Update user expiration + other info first
-    const result = await SyncUserExpiration(user_id);
+    const result = await SyncSingleLuarmorUser(user_id);
     if (result.status !== 200) {
       throw Error(`Luarmor sync error: ${result.error}`);
     }
@@ -194,7 +196,7 @@ export async function RedeemKey(serial: string, user_id: string) {
     }
 
     //Make a final syncronization with updated expiration date
-    await SyncUserExpiration(user_id);
+    await SyncSingleLuarmorUser(user_id);
   }
 
   await sql`UPDATE mspaint_keys_new
@@ -428,7 +430,7 @@ export async function GetAllUserData() {
   return rows;
 }
 
-export async function SyncUserExpiration(discord_id: string) {
+export async function SyncSingleLuarmorUser(discord_id: string) {
   const allowed = await isUserAllowedOnDashboard();
   if (!allowed) return { status: 403, error: "Permission denied" };
 
@@ -456,10 +458,10 @@ export async function SyncUserExpiration(discord_id: string) {
     timestamp_expire == -1 ? -1 : new Date(timestamp_expire * 1000).getTime();
   try {
     await sql`UPDATE mspaint_users
-      SET expires_at = ${expireTime}, is_banned = ${Boolean(user.banned)}
+      SET expires_at = ${expireTime}, is_banned = ${Boolean(user.banned)}, user_status = ${user.status}
       WHERE discord_id = ${discord_id}
     `;
-    return { status: 200, success: "User expiration synced" };
+    return { status: 200, success: "User synced successfully" };
   } catch (error) {
     return { status: 500, error: `Unable to sync: ${error}` };
   }
@@ -498,13 +500,15 @@ export async function SyncExpirationsFromLuarmor(step: number) {
   // 2. Normalize & filter out any without user_key
   const filteredRows = users
     .filter((u: { discord_id: string; note?: string }) => u.discord_id != "" && u.note != "Ad Reward")
-    .map((u: { user_key: string;  discord_id: string; auth_expire: string; banned: boolean; }) => {
+    .map((u: {
+      user_key: string; discord_id: string; auth_expire: string; banned: boolean; status: string;}) => {
       const expireAt = parseInt(u.auth_expire, 10);
       return {
         lrm_serial: u.user_key!,
         discord_id: u.discord_id,
         expires_at: expireAt === -1 ? -1 : new Date(expireAt * 1000).getTime(),
         is_banned: Boolean(u.banned),
+        user_status: u.status
       };
   });
 
@@ -538,33 +542,35 @@ export async function SyncExpirationsFromLuarmor(step: number) {
     r.discord_id,
     r.expires_at,
     r.is_banned,
+    r.user_status
   ]);
 
   const placeholders = filteredRows
     .map((_: unknown, i: number) => {
-      const baseIndex = i * 4;
-      return `($${baseIndex + 1}, $${baseIndex + 2}, $${baseIndex + 3}, $${baseIndex + 4})`;
+      const baseIndex = i * 5;
+      return `($${baseIndex + 1}, $${baseIndex + 2}, $${baseIndex + 3}, $${baseIndex + 4}, $${baseIndex + 5})`;
     })
   .join(', ');
 
-  // 3. Bulk INSERT … ON CONFLICT … DO UPDATE
+  // Bulk INSERT … ON CONFLICT … DO UPDATE
   if (filteredRows.length > 0) {
     const query = `
-      INSERT INTO mspaint_users (lrm_serial, discord_id, expires_at, is_banned)
+      INSERT INTO mspaint_users (lrm_serial, discord_id, expires_at, is_banned, user_status)
       VALUES ${placeholders}
       ON CONFLICT (discord_id)
       DO UPDATE SET
         lrm_serial = EXCLUDED.lrm_serial,
         expires_at = EXCLUDED.expires_at,
-        is_banned = EXCLUDED.is_banned
+        is_banned = EXCLUDED.is_banned,
+        user_status = EXCLUDED.user_status
       WHERE
         mspaint_users.lrm_serial IS DISTINCT FROM EXCLUDED.lrm_serial
         OR mspaint_users.expires_at IS DISTINCT FROM EXCLUDED.expires_at
-        OR mspaint_users.is_banned IS DISTINCT FROM EXCLUDED.is_banned;
+        OR mspaint_users.is_banned IS DISTINCT FROM EXCLUDED.is_banned
+        OR mspaint_users.user_status IS DISTINCT FROM EXCLUDED.user_status;
     `;
 
     const insertResult = await sql.query(query, values);
-    // rowCount here is # of filteredRows inserted + # of filteredRows updated
     totalUpdated = insertResult.rowCount ?? 0;
   }
 

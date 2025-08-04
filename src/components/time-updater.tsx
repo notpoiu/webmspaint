@@ -34,7 +34,7 @@ export function TimeUpdater({ initialTimeLeft, freezeAfterTimeout = false }: Tim
     
     // Set new timeout
     timeoutRef.current = setTimeout(() => {
-      const updatedTimeLeft = initialTimeLeft - 3000;
+      const updatedTimeLeft = initialTimeLeft - 1200;
       
       // Calculate time display
       const [_, color] = calculateTimeStringRemainingFormated(updatedTimeLeft);
@@ -43,11 +43,12 @@ export function TimeUpdater({ initialTimeLeft, freezeAfterTimeout = false }: Tim
       setTimeLeftText(formattedText ?? "Unknown");
       setTimeLeftColor(color);
       setIsLoading(false);
-    }, 3000);
+    }, 1200);
 
     return () => {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, freezeAfterTimeout ? [] : [initialTimeLeft]);
 
   if (isLoading) {

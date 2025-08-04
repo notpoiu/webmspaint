@@ -70,7 +70,7 @@ export default function SyncLuarmorComponent() {
 
       setNotification({
         type: 'success',
-        message: `Updated ${totalUpdated} out of ${totalUsers} Users!\nDeleted ${totalDeleted} present in mspaint but not in Luarmor`
+        message: `Updated ${totalUpdated + totalDeleted} out of ${totalUsers} Users!\n Cleared ${totalDeleted} users.`
       });
       
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -91,8 +91,7 @@ export default function SyncLuarmorComponent() {
             <AlertDialogTitle>Confirm Sync?</AlertDialogTitle>
             {/* Warning notification */}
             <AlertDialogDescription>
-              Sync all the users expiration date from Luarmor to mspaint
-              database.
+              Sync all the users from Luarmor to mspaint database.
               <br />
               <br />
               This should only be used if there was a major compensation/change

@@ -45,7 +45,7 @@ import { toast } from "sonner";
 import {
   GetAllUserData,
   GetUserPurchaseHistory,
-  SyncUserExpiration,
+  SyncSingleLuarmorUser,
 } from "@/server/redeemkey";
 import {
   Dialog,
@@ -176,6 +176,18 @@ export default function UsersDataTable({ data }: DataTableProps<UserDef>) {
 
   const columns: ColumnDef<UserDef>[] = [
     {
+      accessorKey: "user_status",
+      header: "Status",
+      cell: ({ row }) => {
+        const status: string = row.getValue("user_status");
+        return (         
+          <div className="flex">
+            <Badge variant={"outline"}>{status.toUpperCase()}</Badge>
+          </div>
+        )
+      }
+    },
+    {
       accessorKey: "discord_id",
       header: "Discord ID",
     },
@@ -296,7 +308,7 @@ export default function UsersDataTable({ data }: DataTableProps<UserDef>) {
                         return;
                       }
 
-                      const result = await SyncUserExpiration(
+                      const result = await SyncSingleLuarmorUser(
                         row.original.discord_id
                       );
 
