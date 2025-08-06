@@ -58,21 +58,28 @@ export async function RedeemKey(serial: string, user_id: string) {
     };
   }
 
-  // if (true) {
-  //   return {
-  //     status: 200,
-  //     error: "This is just a test real",
-  //   }
-  // }
-
-  const { rows } =
-    await sql`SELECT * FROM mspaint_keys_new WHERE serial = ${serial}`;
+  const { rows } = await sql`SELECT * FROM mspaint_keys_new WHERE serial = ${serial}`;
 
   if (rows.length === 0 || rows[0].claimed === true) {
     return {
       status: 404,
       error: "key not found",
     };
+  }
+
+  if (rows.length > 1) {
+    return {
+      status: 500,
+      error: "Serial key must be unique. Contact support.",
+    };
+  }
+
+  const serialKeyData = rows[0];
+  if (serialKeyData.claimed_at !== null ) {
+    return {
+      status: 403,
+      error: "Serial key already redeemed.",
+    };      
   }
 
   const checkpointKeyResponse = await RequestLuarmorUsersEndpoint(
