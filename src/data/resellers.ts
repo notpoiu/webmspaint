@@ -1,4 +1,9 @@
 export const RESELLER_DATA = {
+    mspaintcc: {
+      name: "mspaint",
+      webhook: process.env.MSPAINT_WEBHOOK!,
+      discord: "https://mspaint.cc/discord"
+    },
     bloxproducts: {
       name: "Bloxproducts",
       webhook: process.env.BLOXPRODUCTS_WEBHOOK!,

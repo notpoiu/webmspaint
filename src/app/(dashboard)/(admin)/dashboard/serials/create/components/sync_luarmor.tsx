@@ -10,9 +10,9 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { SyncExpirationsFromLuarmor } from "@/server/redeemkey";
 import { Progress } from "@/components/ui/progress";
 import { X } from "lucide-react";
+import { SyncExpirationsFromLuarmor } from "@/server/dashutils";
 
 export default function SyncLuarmorComponent() {
   const [open, setOpen] = useState(false);

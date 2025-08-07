@@ -132,6 +132,7 @@ export function RedeemComponent({
                       },
                       error: (error_data) => {
                         setOpen(false);
+                        if (error_data.status === 403) refresh();
                         return "Failed to redeem key: " + error_data.message;
                       },
                     }

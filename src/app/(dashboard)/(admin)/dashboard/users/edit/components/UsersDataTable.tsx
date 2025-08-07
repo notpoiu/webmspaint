@@ -43,11 +43,6 @@ import { CalendarIcon, LoaderIcon, MoreHorizontal } from "lucide-react";
 import { calculateTimeStringRemainingFormated, cn } from "@/lib/utils";
 import { toast } from "sonner";
 import {
-  GetAllUserData,
-  GetUserPurchaseHistory,
-  SyncSingleLuarmorUser,
-} from "@/server/redeemkey";
-import {
   Dialog,
   DialogContent,
   DialogHeader,
@@ -55,6 +50,7 @@ import {
 } from "@/components/ui/dialog";
 import { TimelineElement } from "@/types";
 import { TimelineLayout } from "@/components/ui/timeline-layout";
+import { GetAllUserData, GetUserPurchaseHistory } from "@/server/dashutils";
 
 interface DataTableProps<TData> {
   data: TData[];
@@ -266,7 +262,7 @@ export default function UsersDataTable({ data }: DataTableProps<UserDef>) {
               <Button
                 variant="ghost"
                 className="h-8 w-8 p-0"
-                onClick={(e) => e.stopPropagation()}
+                onClick={(e) => {e.stopPropagation(); setIsDialogOpen(false)}}
               >
                 <span className="sr-only">Open menu</span>
                 <MoreHorizontal className="h-4 w-4" />
@@ -308,12 +304,17 @@ export default function UsersDataTable({ data }: DataTableProps<UserDef>) {
                         return;
                       }
 
-                      const result = await SyncSingleLuarmorUser(
-                        row.original.discord_id
-                      );
+                      const response = await fetch("/api/sync-user", {
+                        method: "POST",
+                        headers: {
+                          "Content-Type": "application/json"
+                        }
+                      });
+                  
+                      const result = await response.json();
 
                       if (result.status === 200) {
-                        toast.success("Sync successful");
+                        toast.success(result.success);
                         refreshData();
                       } else {
                         toast.error(result.error || "Sync failed");
@@ -337,6 +338,49 @@ export default function UsersDataTable({ data }: DataTableProps<UserDef>) {
                   )}
                 </div>
               </DropdownMenuItem>
+              
+              <DropdownMenuSeparator />
+
+              <DropdownMenuItem
+                className="text-red-500"
+                onClick={() => {
+                  toast.promise(
+                    (async () => {
+                      if (row.original.is_banned) throw new Error("Unable to HWID Reset a banned user.");
+
+                      const response = await fetch("/api/reset-hwid", {
+                        method: "POST",
+                        headers: {
+                          "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                          lrm_serial: row.original.lrm_serial
+                        })
+                      });
+                    
+                      if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.error || "HWID reset failed.");
+                      }
+                      
+                      return await response.json();
+                    })(),
+                    {
+                      loading: "Resetting user HWID...",
+                      success: (data) => {
+                        refreshData();
+                        return data.success || "HWID reset successful!";
+                      },
+                      error: (error) => {
+                        return error.message;
+                      }
+                    }
+                  );
+                }}
+              >
+                HWID Reset
+              </DropdownMenuItem>
+
             </DropdownMenuContent>
           </DropdownMenu>
         );
@@ -449,20 +493,34 @@ export default function UsersDataTable({ data }: DataTableProps<UserDef>) {
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
-                  onClick={() => {
-                    setSelectedUser(row.original);
-                    setIsDialogOpen(true);
-                  }}
                   className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800"
                 >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
-                  ))}
+                  {row.getVisibleCells().map((cell) => {
+                    if (cell.column.id === "actions") {
+                      return (
+                        <TableCell key={cell.id} onClick={e => e.stopPropagation()}>
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
+                        </TableCell>
+                      );
+                    }
+                    return (
+                      <TableCell 
+                        key={cell.id} 
+                        onClick={() => {
+                          setSelectedUser(row.original);
+                          setIsDialogOpen(true);
+                        }}
+                      >
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </TableCell>
+                    );
+                  })}
                 </TableRow>
               ))
             ) : (

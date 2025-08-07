@@ -355,7 +355,6 @@ export function AnalyticsClient() {
   const [rawDataCurrentPage, setRawDataCurrentPage] = useState(1);
   const [rawDataItemsPerPage, setRawDataItemsPerPage] = useState(10);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   const memoizedLoadDataWithTimeFilter = useCallback(loadDataWithTimeFilter, [
     fetchTelemetryData,
   ]);

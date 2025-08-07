@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import React, { useState } from "react";
-import { GetUserSubscription, ModifySubscription } from "@/server/redeemkey";
+import { GetUserSubscription, ModifySubscription } from "@/server/dashutils";
 
 export default function ModifySubscriptionComponent() {
   const [discordId, setDiscordId] = useState("");

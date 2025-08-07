@@ -1,5 +1,6 @@
 import { auth } from "@/auth";
 import GreetingDashText from "@/components/greeting";
+import RateLimitCardList from "@/components/RateLimitCardList";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -45,6 +46,10 @@ export default async function Page() {
             <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
                 <GreetingDashText name={session.user.name ?? "unknown"} />
                 <p>Welcome to mspaint web dashboard!</p>
+                <div className="mt-8">
+                    <h2 className="text-xl font-bold mb-4">Luarmor API total ratelimit usage</h2>
+                    <RateLimitCardList />
+                </div>
             </div>
         </>
     );

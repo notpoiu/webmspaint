@@ -1,6 +1,24 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 
+export enum HTTP_METHOD {
+  GET = "GET",
+  POST = "POST",
+  PATCH = "PATCH",
+  DELETE = "DELETE"
+}
+
+export function _internal_create_serial() {
+  const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  let serial = "";
+
+  for (let i = 0; i < 16; i++) {
+    serial += characters.charAt(Math.floor(Math.random() * characters.length));
+  }
+
+  return serial;
+}
+
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
@@ -56,7 +74,7 @@ export function calculateTimeStringRemaining(claimedDate: string | number, durat
 
       const daysLeft = Math.floor(timeLeftMs / (1000 * 60 * 60 * 24));
       const hoursLeft = Math.floor((timeLeftMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      const minsLeft = Math.floor((timeLeftMs % (1000 * 60 * 60)) / (1000 * 60));
+      const minsLeft = Math.ceil((timeLeftMs % (1000 * 60 * 60)) / (1000 * 60));
 
       let timeRemaining = '';
       if (daysLeft > 0) {
@@ -82,7 +100,7 @@ export function calculateTimeStringRemainingFormated(timeLeftMs: number): [strin
 
   const daysLeft = Math.floor(timeLeftMs / (1000 * 60 * 60 * 24));
   const hoursLeft = Math.floor((timeLeftMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-  const minsLeft = Math.floor((timeLeftMs % (1000 * 60 * 60)) / (1000 * 60));
+  const minsLeft = Math.ceil((timeLeftMs % (1000 * 60 * 60)) / (1000 * 60));
   
   // Determine time left text and color
   let timeLeftText  = '';

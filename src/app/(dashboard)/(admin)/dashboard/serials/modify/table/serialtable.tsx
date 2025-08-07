@@ -59,12 +59,7 @@ import {
   parseIntervalToMs,
 } from "@/lib/utils";
 import { toast } from "sonner";
-import {
-  DeleteSerial,
-  GetAllSerialData,
-  SyncSingleLuarmorUser,
-} from "@/server/redeemkey";
-
+import { DeleteSerial, GetAllSerialData } from "@/server/dashutils";
 interface DataTableProps<TData> {
   data: TData[];
 }
@@ -320,15 +315,20 @@ export function SerialDataTable({ data }: DataTableProps<SerialDef>) {
                         return;
                       }
 
-                      const result = await SyncSingleLuarmorUser(
-                        row.original.discord_id
-                      );
+                      const response = await fetch("/api/sync-user", {
+                        method: "POST",
+                        headers: {
+                          "Content-Type": "application/json"
+                        }
+                      });
+
+                      const result = await response.json();
 
                       if (result.status === 200) {
-                        toast.success("Sync successful");
+                        toast.success(result.success);
                         refreshData();
                       } else {
-                        toast.error(result.error || "Sync failed");
+                        toast.error( result.error || "Sync failed" );
                       }
                     } finally {
                       setSyncingRows((prev) => {

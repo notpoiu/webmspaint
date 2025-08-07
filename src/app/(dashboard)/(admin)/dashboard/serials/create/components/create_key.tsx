@@ -23,11 +23,11 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { GenerateSerial } from "@/server/redeemkey";
 import { DownloadIcon } from "lucide-react";
 import React, { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { calculateTimeStringRemainingFormated } from "@/lib/utils";
+import { GenerateSerial } from "@/server/dashutils";
 
 interface error_props {
   status: number;
@@ -362,7 +362,7 @@ export default function CreateSerialKey() {
 
                   let durationMinutes = null; // Lifetime case
                   if (expirationType === ExpirationType.THIRTY_DAYS) {
-                    durationMinutes = 30 * 24 * 60; // 30 days in minutes
+                    durationMinutes = 31 * 24 * 60; // 30 + 1 days in minutes
                   } else if (expirationType === ExpirationType.CUSTOM) {
                     durationMinutes = (expireDays * 24 * 60) + (expireHours * 60) + expireMinutes;
                   }

@@ -1,9 +1,9 @@
 import { auth, signOut } from '@/auth';
 import { redirect } from 'next/navigation';
 import MiniDashboardCard from '@/components/mini-dashboard-card';
-import { GetUserSubscription, GetUserPurchaseHistory } from '@/server/redeemkey';
 import DotPattern from '@/components/magicui/dot-pattern';
 import { cn } from '@/lib/utils';
+import { GetUserPurchaseHistory, GetUserSubscription } from '@/server/dashutils';
 
 export default async function SubscriptionDashboard() {
   const session = await auth();

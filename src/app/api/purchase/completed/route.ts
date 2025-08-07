@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
 
         switch (keyItem) {
             case "mspaint-30-days-key":
-                durationMinutes = 30 * 24 * 60; // 30 days in minutes
+                durationMinutes = 31 * 24 * 60; // 30 days in minutes
             break;
 
             case "mspaint-lifetime-key":

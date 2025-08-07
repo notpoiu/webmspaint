@@ -160,7 +160,7 @@ export default async function Page(props: {
             <div className="relative z-10 w-full max-w-[475px]">
               <Card className="w-full">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-2xl">mspaint key claimed sucessfully!</CardTitle>
+                  <CardTitle className="text-2xl">mspaint key claimed successfully!</CardTitle>
                   <CardDescription>
                     Thank you for your support! without you we wouldn&apos;t be
                     able to keep mspaint running.
