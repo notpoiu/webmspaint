@@ -78,6 +78,9 @@ export default function MiniDashboardCard({
   const lastSyncTime = getTimeAgoFromUnix(subscription?.last_sync);
   const timeLeftMs = expirationDate - Date.now();
 
+  const discordName = session?.user?.name ?? '';
+  const displayName = discordName.length > 16 ? discordName.slice(0, 13) + '...' : discordName;
+
   return (
     <div className="w-full max-w-md mx-auto sm:mx-0 mt-6">
       <Card className="relative rounded-lg z-10 border-transparent">
@@ -122,7 +125,7 @@ export default function MiniDashboardCard({
                   Discord Account
                 </h3>
                 <p className="text-lg sm:text-xl font-semibold text-white text-center sm:text-left">
-                  {session.user.name}
+                  {displayName}
                 </p>
               </div>
 

@@ -97,6 +97,9 @@ export default async function Page(props: {
 
   const session = await auth();
 
+  const discordName = session?.user?.name ?? '';
+  const displayName = discordName.length > 16 ? discordName.slice(0, 13) + '...' : discordName;
+
   const serialParam = searchParams.serial;
   if (!serialParam) return InvalidSearchParams();
 
@@ -181,7 +184,7 @@ export default async function Page(props: {
                   <div className="flex justify-center">
                     <RedeemComponent
                       serial={null}
-                      username={session.user.name ?? "unknown"}
+                      username={displayName ?? "unknown"}
                       user_id={session.user.id || "skibidiSigma"}
                     />
                   </div>
@@ -193,7 +196,7 @@ export default async function Page(props: {
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <div className="flex flex-col">
                       <p className="text-sm sm:text-base">
-                        Logged in as {session.user.name}
+                        Logged in as {displayName}
                       </p>
                       <p className="text-muted-foreground text-xs sm:text-sm">
                         Not you? Sign out.
@@ -374,18 +377,18 @@ export default async function Page(props: {
                   <div className="flex justify-center">
                     <RedeemComponent
                       serial={serial}
-                      username={session.user.name ?? "unknown"}
+                      username={displayName ?? "unknown"}
                       user_id={session.user.id || "skibidiSigma"}
                     />
                   </div>
-                  <p className="text-foreground text-center text-sm mb-2 -mt-1">
+                  <p className="text-foreground text-center text-sm font-medium mb-2 -mt-1">
                     Key duration: {keyDuration ?? "Lifetime"}
                   </p>
                   <Separator className="mt-2 mb-3" />
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <div className="flex flex-col">
                       <p className="text-sm sm:text-base">
-                        Logged in as {session.user.name}
+                        Logged in as {displayName}
                       </p>
 
                       <p className="text-muted-foreground text-xs sm:text-sm">
