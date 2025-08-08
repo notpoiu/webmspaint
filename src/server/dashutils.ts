@@ -376,7 +376,6 @@ export async function ResetHardwareIDWithLuarmor(lrm_serial: string, force: bool
   }
 
   const data = await response.json();
-
   if (!data.success) {
     return {
       status: 500,
