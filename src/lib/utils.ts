@@ -125,3 +125,29 @@ export function calculateTimeStringRemainingFormated(timeLeftMs: number): [strin
 
   return [timeLeftText, timeLeftColor];
 }
+
+export function getTimeAgoFromUnix(unixTimestampMs: number): string {
+  try {
+    const now = Date.now();
+    const timeDiffMs = now - (unixTimestampMs);
+    if (timeDiffMs <= (60000)) { //1 minute in ms
+      return "Just now";
+    }
+
+    const days = Math.floor(timeDiffMs / (1000 * 60 * 60 * 24));
+    const hours = Math.floor(timeDiffMs / (1000 * 60 * 60));
+    const minutes = Math.max(1, Math.floor(timeDiffMs / (1000 * 60)));
+
+    if (days >= 1) {
+      if (days > 1200) return "Never";
+      return `${days} day${days > 1 ? 's' : ''} ago`;
+    } else if (hours >= 1) {
+      return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+    } else {
+      return `${minutes} minute${minutes !== 1 ? 's' : ''} ago`;
+    }
+
+  } catch {
+    return "- -";
+  }
+}

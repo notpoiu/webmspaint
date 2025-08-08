@@ -68,7 +68,7 @@ export class RateLimitService {
 
   public async trackRequest(
     endpoint: string,
-    identifier: string
+    identifier: string = 'mspaint_admin_server'
   ): Promise<void> {
     const key = `ratelimit:${endpoint}`;
     const now = Date.now();

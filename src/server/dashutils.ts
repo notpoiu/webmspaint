@@ -3,6 +3,7 @@
 import { sql } from "@vercel/postgres";
 import { isUserAllowedOnDashboard } from "./authutils";
 import { _internal_create_serial, createInterval, HTTP_METHOD } from "@/lib/utils";
+import { rateLimitService } from "./ratelimit";
 
 const LRM_Headers = {
   Authorization: `Bearer ${process.env.LRM_PROXY_API_KEY}`,
@@ -231,7 +232,10 @@ export async function SyncSingleLuarmorUser(discord_id: string) {
     timestamp_expire == -1 ? -1 : new Date(timestamp_expire * 1000).getTime();
   try {
     await sql`UPDATE mspaint_users
-      SET expires_at = ${expireTime}, is_banned = ${Boolean(user.banned)}, user_status = ${user.status}
+      SET expires_at = ${expireTime}, 
+      is_banned = ${Boolean(user.banned)}, 
+      user_status = ${user.status}, 
+      last_sync = ${Date.now()}
       WHERE discord_id = ${discord_id}
     `;
     return { status: 200, success: "User synced successfully" };
@@ -240,18 +244,21 @@ export async function SyncSingleLuarmorUser(discord_id: string) {
   }
 }
 
-export async function SyncExpirationsFromLuarmor(step: number) {
-  const allowed = await isUserAllowedOnDashboard();
-  if (!allowed) return { status: 403, error: "Permission denied" };
+export async function SyncExpirationsFromLuarmor(step: number, authbypass?: string) {
 
-  const batchSize = 1000;
+  if (!authbypass || authbypass !== `Bearer ${process.env.CRON_SECRET}`) {
+    const allowed = await isUserAllowedOnDashboard();
+    if (!allowed) return { status: 403, error: "Permission denied" };
+  }
+
+  const batchSize = 1500;
   let totalUpdated = 0;
-  let totalDeleted = 0;
 
   const minRange = (step - 1) * batchSize
   const maxRange = minRange + batchSize - 1
 
   // 1. Fetch the batch
+  await rateLimitService.trackRequest("syncuser");
   const response = await RequestLuarmorUsersEndpoint(
     HTTP_METHOD.GET,
     `from=${minRange}&until=${maxRange}`
@@ -284,30 +291,6 @@ export async function SyncExpirationsFromLuarmor(step: number) {
         user_status: u.status
       };
   });
-
-  // 4. Delete any rows not present in this batch
-  if (filteredRows.length > 0) {
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const allDiscordIds = filteredRows.map((r: { discord_id: any; }) => r.discord_id);
-
-    const placeholders = allDiscordIds
-      .map((_: unknown, i: number) => 
-        `$${i + 1}`)
-    .join(', ');
-
-    const deleteQuery = `
-      DELETE FROM mspaint_users
-      WHERE discord_id NOT IN (${placeholders});
-    `;
-
-    //const deleteResult = await sql.query(deleteQuery, allDiscordIds);
-
-    totalDeleted = 0; //deleteResult.rowCount ?? 0;
-  } else {
-    // Here we'll leave the table untouched.
-    totalDeleted = 0;
-  }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const values = filteredRows.flatMap((r: any) => [
@@ -354,15 +337,26 @@ export async function SyncExpirationsFromLuarmor(step: number) {
     return {
       status: 206,
       total_updated: totalUpdated,
-      total_deleted: totalDeleted,
       total_users: totalUsers
     };      
+  }
+
+  //Finally update the syncronization time for all users
+  try {
+    const currentUnixtime = Date.now();
+    await sql`UPDATE mspaint_users SET last_sync = ${currentUnixtime}`
+  } catch (error) {
+    return {
+      status: 200,
+      total_updated: totalUpdated,
+      total_users: totalUsers,
+      warning: "Unable to update syncronization status."
+    };
   }
 
   return {
     status: 200,
     total_updated: totalUpdated,
-    total_deleted: totalDeleted,
     total_users: totalUsers,    
   };
 }
