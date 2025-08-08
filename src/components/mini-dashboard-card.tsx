@@ -284,6 +284,7 @@ export default function MiniDashboardCard({
                                       }
                                     }
                                   );
+                                  router.refresh();
                                 }
                               }
                               >
