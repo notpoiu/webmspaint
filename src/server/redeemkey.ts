@@ -3,9 +3,12 @@
 import { sql } from "@vercel/postgres";
 import { RESELLER_DATA } from "@/data/resellers";
 import { HTTP_METHOD, parseIntervalToMs } from "@/lib/utils";
-import { RequestLuarmorUsersEndpoint, GetUserSubscription, SyncSingleLuarmorUser } from "./dashutils";
+import {
+  RequestLuarmorUsersEndpoint,
+  GetUserSubscription,
+  SyncSingleLuarmorUser,
+} from "./dashutils";
 import { rateLimitService } from "./ratelimit";
-
 
 export async function RedeemKey(serial: string, user_id: string) {
   if (user_id === "skibidiSigma") {
@@ -15,7 +18,8 @@ export async function RedeemKey(serial: string, user_id: string) {
     };
   }
 
-  const { rows } = await sql`SELECT * FROM mspaint_keys_new WHERE serial = ${serial}`;
+  const { rows } =
+    await sql`SELECT * FROM mspaint_keys_new WHERE serial = ${serial}`;
 
   if (rows.length === 0 || rows[0].claimed === true) {
     return {
@@ -32,11 +36,11 @@ export async function RedeemKey(serial: string, user_id: string) {
   }
 
   const serialKeyData = rows[0];
-  if (serialKeyData.claimed_at !== null ) {
+  if (serialKeyData.claimed_at !== null) {
     return {
       status: 403,
       error: "Serial key already redeemed.",
-    };      
+    };
   }
 
   const checkpointKeyResponse = await RequestLuarmorUsersEndpoint(
@@ -130,7 +134,7 @@ export async function RedeemKey(serial: string, user_id: string) {
     // Update user expiration + other info first
     await rateLimitService.trackRequest("syncuser", user_id);
 
-    const result = await SyncSingleLuarmorUser(user_id);
+    const result = await SyncSingleLuarmorUser(user_id, false);
     if (result.status !== 200) {
       throw Error(`Luarmor sync error: ${result.error}`);
     }
@@ -168,8 +172,10 @@ export async function RedeemKey(serial: string, user_id: string) {
     await SyncSingleLuarmorUser(user_id);
   }
 
-  const luarmorSerial = !getExistingUser ? keyCreation.user_key : getExistingUser.lrm_serial;
-  
+  const luarmorSerial = !getExistingUser
+    ? keyCreation.user_key
+    : getExistingUser.lrm_serial;
+
   await sql`UPDATE mspaint_keys_new
     SET claimed_at = NOW(),
       linked_to = ${user_id}
@@ -259,14 +265,14 @@ export async function RedeemKey(serial: string, user_id: string) {
                 name: `Key duration: ${validFor ?? "Lifetime"}`,
                 value: `Claimed at: <t:${unixtimeStamp}:d><t:${unixtimeStamp}:T>`,
                 inline: true,
-              },              
-            ]        
+              },
+            ],
           },
         ],
         attachments: [],
       }),
     });
-    break;    
+    break;
   }
 
   return {

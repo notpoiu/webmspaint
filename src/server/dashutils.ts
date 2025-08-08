@@ -2,14 +2,17 @@
 
 import { sql } from "@vercel/postgres";
 import { isUserAllowedOnDashboard } from "./authutils";
-import { _internal_create_serial, createInterval, HTTP_METHOD } from "@/lib/utils";
+import {
+  _internal_create_serial,
+  createInterval,
+  HTTP_METHOD,
+} from "@/lib/utils";
 import { rateLimitService } from "./ratelimit";
 
 const LRM_Headers = {
   Authorization: `Bearer ${process.env.LRM_PROXY_API_KEY}`,
   "Content-Type": "application/json",
 };
-
 
 /**
  * A simple handler to do CRUD operations with luarmor users, decreasing code footprint.
@@ -204,9 +207,13 @@ export async function GetAllUserData() {
   return rows;
 }
 
-export async function SyncSingleLuarmorUser(discord_id: string) {
+export async function SyncSingleLuarmorUser(
+  discord_id: string,
+  from_dashboard: boolean = true
+) {
   const allowed = await isUserAllowedOnDashboard();
-  if (!allowed) return { status: 403, error: "Permission denied" };
+  if (!allowed && from_dashboard)
+    return { status: 403, error: "Permission denied" };
 
   const response = await RequestLuarmorUsersEndpoint(
     HTTP_METHOD.GET,
@@ -244,8 +251,10 @@ export async function SyncSingleLuarmorUser(discord_id: string) {
   }
 }
 
-export async function SyncExpirationsFromLuarmor(step: number, authbypass?: string) {
-
+export async function SyncExpirationsFromLuarmor(
+  step: number,
+  authbypass?: string
+) {
   if (!authbypass || authbypass !== `Bearer ${process.env.CRON_SECRET}`) {
     const allowed = await isUserAllowedOnDashboard();
     if (!allowed) return { status: 403, error: "Permission denied" };
@@ -254,8 +263,8 @@ export async function SyncExpirationsFromLuarmor(step: number, authbypass?: stri
   const batchSize = 1500;
   let totalUpdated = 0;
 
-  const minRange = (step - 1) * batchSize
-  const maxRange = minRange + batchSize - 1
+  const minRange = (step - 1) * batchSize;
+  const maxRange = minRange + batchSize - 1;
 
   // 1. Fetch the batch
   await rateLimitService.trackRequest("syncuser");
@@ -273,24 +282,35 @@ export async function SyncExpirationsFromLuarmor(step: number, authbypass?: stri
 
   const data = await response.json();
   const users = data.users || [];
-  
+
   //need to get before filtering to avoid step issues
   const totalUsers = users.length;
 
   // 2. Normalize & filter out any without user_key
   const filteredRows = users
-    .filter((u: { discord_id: string; note?: string }) => u.discord_id != "" && u.note != "Ad Reward")
-    .map((u: {
-      user_key: string; discord_id: string; auth_expire: string; banned: boolean; status: string;}) => {
-      const expireAt = parseInt(u.auth_expire, 10);
-      return {
-        lrm_serial: u.user_key!,
-        discord_id: u.discord_id,
-        expires_at: expireAt === -1 ? -1 : new Date(expireAt * 1000).getTime(),
-        is_banned: Boolean(u.banned),
-        user_status: u.status
-      };
-  });
+    .filter(
+      (u: { discord_id: string; note?: string }) =>
+        u.discord_id != "" && u.note != "Ad Reward"
+    )
+    .map(
+      (u: {
+        user_key: string;
+        discord_id: string;
+        auth_expire: string;
+        banned: boolean;
+        status: string;
+      }) => {
+        const expireAt = parseInt(u.auth_expire, 10);
+        return {
+          lrm_serial: u.user_key!,
+          discord_id: u.discord_id,
+          expires_at:
+            expireAt === -1 ? -1 : new Date(expireAt * 1000).getTime(),
+          is_banned: Boolean(u.banned),
+          user_status: u.status,
+        };
+      }
+    );
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const values = filteredRows.flatMap((r: any) => [
@@ -298,15 +318,17 @@ export async function SyncExpirationsFromLuarmor(step: number, authbypass?: stri
     r.discord_id,
     r.expires_at,
     r.is_banned,
-    r.user_status
+    r.user_status,
   ]);
 
   const placeholders = filteredRows
     .map((_: unknown, i: number) => {
       const baseIndex = i * 5;
-      return `($${baseIndex + 1}, $${baseIndex + 2}, $${baseIndex + 3}, $${baseIndex + 4}, $${baseIndex + 5})`;
+      return `($${baseIndex + 1}, $${baseIndex + 2}, $${baseIndex + 3}, $${
+        baseIndex + 4
+      }, $${baseIndex + 5})`;
     })
-  .join(', ');
+    .join(", ");
 
   // Bulk INSERT … ON CONFLICT … DO UPDATE
   if (filteredRows.length > 0) {
@@ -337,36 +359,43 @@ export async function SyncExpirationsFromLuarmor(step: number, authbypass?: stri
     return {
       status: 206,
       total_updated: totalUpdated,
-      total_users: totalUsers
-    };      
+      total_users: totalUsers,
+    };
   }
 
   //Finally update the syncronization time for all users
   try {
     const currentUnixtime = Date.now();
-    await sql`UPDATE mspaint_users SET last_sync = ${currentUnixtime}`
+    await sql`UPDATE mspaint_users SET last_sync = ${currentUnixtime}`;
   } catch (error) {
     return {
       status: 200,
       total_updated: totalUpdated,
       total_users: totalUsers,
-      warning: "Unable to update syncronization status."
+      warning: "Unable to update syncronization status.",
     };
   }
 
   return {
     status: 200,
     total_updated: totalUpdated,
-    total_users: totalUsers,    
+    total_users: totalUsers,
   };
 }
 
-export async function ResetHardwareIDWithLuarmor(lrm_serial: string, force: boolean = false) {  
-  
-  const response = await RequestLuarmorUsersEndpoint(HTTP_METHOD.POST, "", {
-    user_key: lrm_serial,
-    force
-  }, "/resethwid");
+export async function ResetHardwareIDWithLuarmor(
+  lrm_serial: string,
+  force: boolean = false
+) {
+  const response = await RequestLuarmorUsersEndpoint(
+    HTTP_METHOD.POST,
+    "",
+    {
+      user_key: lrm_serial,
+      force,
+    },
+    "/resethwid"
+  );
 
   if (!response.ok) {
     return {
@@ -383,5 +412,5 @@ export async function ResetHardwareIDWithLuarmor(lrm_serial: string, force: bool
     };
   }
 
-  return { status: 200, success: "Your HWID has been successfully reset."};
+  return { status: 200, success: "Your HWID has been successfully reset." };
 }
