@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "./ui/button";
 import { useRouter } from "next/navigation";
 import { LockKeyholeIcon, LockKeyholeOpenIcon, PackageIcon } from "lucide-react";
@@ -29,9 +29,11 @@ import {
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 
-import { cn } from "@/lib/utils";
+import { cn, getTimeAgoFromUnix } from "@/lib/utils";
 import React from "react";
 import { Badge } from "./ui/badge";
+import { InfoCircledIcon } from "@radix-ui/react-icons";
+import { ShineBorder } from "./magicui/shine-border";
 
 interface MiniDashboardCardProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -61,6 +63,7 @@ export default function MiniDashboardCard({
   const isMember = subscription != null;
   const isLifetime = subscription?.expires_at == -1;
   const expirationDate = subscription?.expires_at ?? 0;
+  const lastSyncTime = getTimeAgoFromUnix(subscription?.last_sync);
   const isExpired = expirationDate - Date.now() <= 0;
 
   const isActive = (subscription?.expires_at != null && !isExpired) || isLifetime;
@@ -72,7 +75,23 @@ export default function MiniDashboardCard({
 
   return (
     <div className="w-full max-w-md mx-auto sm:mx-0 mt-6">
-      <Card>
+      <Card className="relative rounded-lg z-10 border-transparent">
+        {(isMember && !isBanned && isActive) && (
+          <ShineBorder
+            shineColor={["#0f87ff", "#001933", "#1aafff"]}
+            className="absolute inset-0  pointer-events-none z-20"
+          />
+        )}
+        <div className="relative -top-3 right-3 z-30">
+          <Badge 
+            variant={"secondary"} 
+            className="px-2 py-1 text-xs outline-2 cursor-pointer" 
+            onClick={() => toast.info("This dashboard still in development and issues may occur.\nIf you find any issues contact https://mspaint.cc/support")}
+          >
+          <InfoCircledIcon className="stroke-[2] mr-1"/>
+            BETA
+          </Badge>
+        </div>        
         <CardContent className="p-4 sm:p-6">
           <div className="flex flex-col sm:flex-row sm:items-start gap-4 sm:gap-6">
             <div className="flex-shrink-0 mx-auto sm:mx-0">
@@ -90,10 +109,10 @@ export default function MiniDashboardCard({
 
             <div className="flex-1">
               <div className="mb-4">
-                <h3 className="text-xs sm:text-sm font-medium uppercase tracking-wider ">
+                <h3 className="text-xs sm:text-sm font-medium uppercase tracking-wider text-center sm:text-left">
                   Discord Account
                 </h3>
-                <p className="text-lg sm:text-xl font-semibold text-white">
+                <p className="text-lg sm:text-xl font-semibold text-white text-center sm:text-left">
                   {session.user.name}
                 </p>
               </div>
@@ -101,73 +120,78 @@ export default function MiniDashboardCard({
               <div className="mb-4">
                 {isMember ? (
                   <>
-                    <div className="flex justify-left items-left space-x-2 mt-2">
-                      <h3 className="text-xs sm:text-sm font-medium uppercase tracking-wider">
-                        Subscription Status
-                      </h3>
-                      <Badge
-                        className="font-bold"
-                        variant={isBanned ? "destructive" : "default"}
-                      >
-                        {userStatus.toUpperCase()}
-                      </Badge>
+                    <div className="w-full flex justify-center sm:justify-start mt-2">
+                      <div className="flex items-center space-x-2 text-center sm:text-left">
+                        <h3 className="text-xs sm:text-sm font-medium uppercase tracking-wider">
+                          Subscription Status
+                        </h3>
+                        <Badge
+                          className="font-bold"
+                          variant={isBanned ? "destructive" : "default"}
+                        >
+                          {userStatus.toUpperCase()}
+                        </Badge>
+                      </div>
                     </div>
-                    <div>
-                      {isBanned ? (
-                        <p className="text-base text-red-400 mt-2">
-                          User is banned, access restricted.
-                        </p>
-                      ) : (
-                        <>
-                          {isActive && !isLifetime && (
-                            !isExpired ? (
-                              <TimeUpdater
-                                initialTimeLeft={timeLeftMs}
-                                freezeAfterTimeout={true}
-                              />
-                            ) : (
-                              <p className="text-base text-red-400 mt-2">
-                                Expired - Renew Now!
-                              </p>
-                            )
-                          )}
+                    <div className="w-full flex justify-center sm:justify-start mt-2">
+                      <div className="text-center sm:text-left">
+                        {isBanned ? (
+                          <p className="text-base text-red-400 mt-2">
+                            User is banned, access restricted.
+                          </p>
+                        ) : (
+                          <>
+                            {!isLifetime && (
+                              !isExpired ? (
+                                <TimeUpdater
+                                  initialTimeLeft={timeLeftMs}
+                                  freezeAfterTimeout={true}
+                                />
+                              ) : (
+                                <p className="text-base text-red-400 mt-2">
+                                  Expired - Renew Now!
+                                </p>
+                              )
+                            )}
 
-                          {isLifetime && (
-                            <p className="text-base text-green-400 mt-2">
-                              Lifetime access ★
-                            </p>
-                          )}
-                        </>
-                      )}
+                            {isLifetime && (
+                              <p className="text-base text-green-400 mt-2">
+                                Lifetime access ★
+                              </p>
+                            )}
+                          </>
+                        )}
+                      </div>
                     </div>
 
                     <div className="grid grid-cols-2 gap-3 mt-6">
                       {/* honestly, idc... */}
 
                       {!isBanned && (
-                        isLifetime ? (
-                          <RainbowButton disabled className="w-full">
-                            {isExpired ? "Buy" : "Extend"} Subscription
-                          </RainbowButton>
-                        ) : (
-                          <Link href="/shop" className="w-full">
-                            <RainbowButton className="w-full">
+                        <>
+                          {isLifetime ? (
+                            <RainbowButton disabled className="w-full">
                               {isExpired ? "Buy" : "Extend"} Subscription
                             </RainbowButton>
-                          </Link>
-                        )
+                          ) : (
+                            <Link href="/shop" className="w-full">
+                              <RainbowButton className="w-full">
+                                {isExpired ? "Buy" : "Extend"} Subscription
+                              </RainbowButton>
+                            </Link>
+                          )}
+                        <Button
+                          variant="destructive"
+                          className="w-full bg-red-600 hover:bg-red-700 cursor-pointer"
+                          onClick={signout}
+                        >
+                          Sign Out
+                        </Button>
+                        </>
                       )}
-
-                      <Button
-                        variant="destructive"
-                        className="w-full bg-red-600 hover:bg-red-700 cursor-pointer"
-                        onClick={signout}
-                      >
-                        Sign Out
-                      </Button>
                     </div>
 
-                    {!isBanned && (
+                    {!isBanned ? (
                       <>
                         <Button
                           className={cn(
@@ -303,14 +327,31 @@ export default function MiniDashboardCard({
                             </Sheet>
                           </div>
                         )}
-
                       </>
+                    ) : (
+                      <div className="w-full flex justify-center">
+                        <Button
+                          variant="destructive"
+                          className={cn("w-full max-w-xs bg-red-600 hover:bg-red-700 cursor-pointer")}
+                          onClick={signout}
+                        >
+                          Sign Out
+                        </Button>
+                      </div>
                     )}
+                    <CardFooter className="w-full flex items-center justify-center text-muted-foreground text-xs font-medium mt-2 -mb-14">
+                      User updated {lastSyncTime}
+                    </CardFooter>                      
                   </>
                 ) : (
-                  <h3 className="text-xs sm:text-sm font-medium uppercase tracking-wider mt-2">
-                    You&apos;re not a registered member.                  
-                  </h3>
+                  <>
+                    <h3 className="text-xs sm:text-sm font-medium uppercase tracking-wider mt-2">
+                      You&apos;re not a registered member.                  
+                    </h3>
+                    <CardFooter className="text-center text-muted-foreground text-xs font-medium mt-2">
+                      User updated {lastSyncTime}
+                    </CardFooter>       
+                  </>
                 )}
               </div>
             </div>
