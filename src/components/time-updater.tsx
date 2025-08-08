@@ -1,15 +1,16 @@
 "use client"
 
 import React, { useState, useEffect, useRef } from 'react';
-import { calculateTimeStringRemaining, calculateTimeStringRemainingFormated } from '@/lib/utils';
+import { calculateTimeStringRemaining, calculateTimeStringRemainingFormated, cn } from '@/lib/utils';
 import { LoaderIcon } from 'lucide-react';
 
 interface TimeUpdaterProps {
   initialTimeLeft: number;
   freezeAfterTimeout?: boolean;
+  className?: string;
 }
 
-export function TimeUpdater({ initialTimeLeft, freezeAfterTimeout = false }: TimeUpdaterProps) {
+export function TimeUpdater({ initialTimeLeft, freezeAfterTimeout = false, className = '' }: TimeUpdaterProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [timeLeftText, setTimeLeftText] = useState("");
   const [timeLeftColor, setTimeLeftColor] = useState("");
@@ -61,7 +62,7 @@ export function TimeUpdater({ initialTimeLeft, freezeAfterTimeout = false }: Tim
   }
 
   return (
-    <span className={timeLeftColor}>
+    <span className={cn(className, timeLeftColor)}>
       {timeLeftText}
     </span>
   );

@@ -109,11 +109,11 @@ export function calculateTimeStringRemainingFormated(timeLeftMs: number): [strin
   if (timeLeftMs > 0) {
     timeLeftText = `${daysLeft > 0 ? `${daysLeft}d ` : ''}${hoursLeft}h ${minsLeft}m remaining`;
     
-    if (daysLeft > 7) {
+    if (daysLeft >= 14) {
       timeLeftColor = 'text-green-500';
-    } else if (daysLeft > 1) {
+    } else if (daysLeft >= 7) {
       timeLeftColor = 'text-blue-500';
-    } else if (daysLeft > 0) {
+    } else if (daysLeft >= 4) {
       timeLeftColor = 'text-yellow-500';
     } else {
       timeLeftColor = 'text-orange-500';

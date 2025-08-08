@@ -35,15 +35,17 @@ export default function CopyButton({text}: {text: string}) {
   ), [copied, text]);
 }
 
-export function CopyButtonWithText({text}: {text: string}) {
+export function CopyButtonWithText({text, customOnClick}: {text: string, customOnClick?: () => void}) {
   const [copied, setCopied] = useState(false);
 
   return useMemo(() => (
     <div className="flex justify-center w-full mt-2">
       <Button
         variant="outline"
-        className="flex items-center gap-2 px-4 py-2 rounded-md"
+        className="flex items-center gap-2 px-4 py-2 rounded-md cursor-pointer"
         onClick={() => {
+          if (customOnClick) customOnClick();
+          
           navigator.clipboard.writeText(text);
           setCopied(true);
           setTimeout(() => setCopied(false), 2000);
@@ -68,5 +70,6 @@ export function CopyButtonWithText({text}: {text: string}) {
         </div>
       </Button>
     </div>
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   ), [copied, text]);
 }
