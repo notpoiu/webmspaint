@@ -40,7 +40,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { CalendarIcon, LoaderIcon, MoreHorizontal } from "lucide-react";
-import { calculateTimeStringRemainingFormated, cn } from "@/lib/utils";
+import {
+  calculateTimeStringRemainingFormated,
+  cn,
+  normalizeEpochMs,
+} from "@/lib/utils";
 import { toast } from "sonner";
 import {
   Dialog,
@@ -70,13 +74,17 @@ export default function UsersDataTable({ data }: DataTableProps<UserDef>) {
   const [time, setTime] = React.useState(Date.now());
   const [syncingRows, setSyncingRows] = React.useState<Set<string>>(new Set());
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
-  const [purchaseHistory, setPurchaseHistory] = React.useState<TimelineElement[]>([]);
+  const [purchaseHistory, setPurchaseHistory] = React.useState<
+    TimelineElement[]
+  >([]);
   const [isLoadingHistory, setIsLoadingHistory] = React.useState(false);
   const [historyError, setHistoryError] = React.useState<string | null>(null);
-  const [sortOrder, setSortOrder] = React.useState<'oldest' | 'newest'>('oldest');
-  
+  const [sortOrder, setSortOrder] = React.useState<"oldest" | "newest">(
+    "oldest"
+  );
+
   const toggleSortOrder = () => {
-    setSortOrder(prev => prev === 'oldest' ? 'newest' : 'oldest');
+    setSortOrder((prev) => (prev === "oldest" ? "newest" : "oldest"));
   };
 
   const fetchPurchaseHistory = async () => {
@@ -147,7 +155,7 @@ export default function UsersDataTable({ data }: DataTableProps<UserDef>) {
     if (isDialogOpen && selectedUser) {
       fetchPurchaseHistory();
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isDialogOpen, selectedUser]);
 
   React.useEffect(() => {
@@ -163,9 +171,10 @@ export default function UsersDataTable({ data }: DataTableProps<UserDef>) {
 
   useEffect(() => {
     GetAllUserData().then((data) => {
-      const sortedData = sortOrder === 'oldest' 
-        ? data as UserDef[]
-        : [...(data as UserDef[])].reverse();
+      const sortedData =
+        sortOrder === "oldest"
+          ? (data as UserDef[])
+          : [...(data as UserDef[])].reverse();
       setUserData(sortedData);
     });
   }, [userRefreshKey, sortOrder]);
@@ -176,12 +185,12 @@ export default function UsersDataTable({ data }: DataTableProps<UserDef>) {
       header: "Status",
       cell: ({ row }) => {
         const status: string = row.getValue("user_status");
-        return (         
+        return (
           <div className="flex">
             <Badge variant={"outline"}>{status.toUpperCase()}</Badge>
           </div>
-        )
-      }
+        );
+      },
     },
     {
       accessorKey: "discord_id",
@@ -200,13 +209,14 @@ export default function UsersDataTable({ data }: DataTableProps<UserDef>) {
           );
         }
 
-        const expires_at: number | null = row.original.expires_at;
+        const expires_at_raw: number | null = row.original.expires_at;
+        const expires_at: number | null = normalizeEpochMs(expires_at_raw);
 
         if (!expires_at) {
           return <span className={cn("text-muted-foreground")}>- -</span>;
         }
 
-        if (expires_at == -1) {
+        if (expires_at === -1) {
           return (
             <div className="flex">
               <Badge variant={"outline"}>Lifetime</Badge>
@@ -262,7 +272,10 @@ export default function UsersDataTable({ data }: DataTableProps<UserDef>) {
               <Button
                 variant="ghost"
                 className="h-8 w-8 p-0"
-                onClick={(e) => {e.stopPropagation(); setIsDialogOpen(false)}}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsDialogOpen(false);
+                }}
               >
                 <span className="sr-only">Open menu</span>
                 <MoreHorizontal className="h-4 w-4" />
@@ -307,10 +320,10 @@ export default function UsersDataTable({ data }: DataTableProps<UserDef>) {
                       const response = await fetch("/api/sync-user", {
                         method: "POST",
                         headers: {
-                          "Content-Type": "application/json"
-                        }
+                          "Content-Type": "application/json",
+                        },
                       });
-                  
+
                       const result = await response.json();
 
                       if (result.status === 200) {
@@ -338,7 +351,7 @@ export default function UsersDataTable({ data }: DataTableProps<UserDef>) {
                   )}
                 </div>
               </DropdownMenuItem>
-              
+
               <DropdownMenuSeparator />
 
               <DropdownMenuItem
@@ -346,23 +359,26 @@ export default function UsersDataTable({ data }: DataTableProps<UserDef>) {
                 onClick={() => {
                   toast.promise(
                     (async () => {
-                      if (row.original.is_banned) throw new Error("Unable to HWID Reset a banned user.");
+                      if (row.original.is_banned)
+                        throw new Error("Unable to HWID Reset a banned user.");
 
                       const response = await fetch("/api/reset-hwid", {
                         method: "POST",
                         headers: {
-                          "Content-Type": "application/json"
+                          "Content-Type": "application/json",
                         },
                         body: JSON.stringify({
-                          lrm_serial: row.original.lrm_serial
-                        })
+                          lrm_serial: row.original.lrm_serial,
+                        }),
                       });
-                    
+
                       if (!response.ok) {
                         const errorData = await response.json();
-                        throw new Error(errorData.error || "HWID reset failed.");
+                        throw new Error(
+                          errorData.error || "HWID reset failed."
+                        );
                       }
-                      
+
                       return await response.json();
                     })(),
                     {
@@ -373,14 +389,13 @@ export default function UsersDataTable({ data }: DataTableProps<UserDef>) {
                       },
                       error: (error) => {
                         return error.message;
-                      }
+                      },
                     }
                   );
                 }}
               >
                 HWID Reset
               </DropdownMenuItem>
-
             </DropdownMenuContent>
           </DropdownMenu>
         );
@@ -459,13 +474,9 @@ export default function UsersDataTable({ data }: DataTableProps<UserDef>) {
             <SelectItem value="lrm_serial">Luarmor Key</SelectItem>
           </SelectContent>
         </Select>
-        <Button 
-          onClick={toggleSortOrder} 
-          variant="outline" 
-          className="ml-2"
-        >
-          {sortOrder !== 'oldest' ? 'Sort by newest' : 'Sort by oldest'}
-        </Button>        
+        <Button onClick={toggleSortOrder} variant="outline" className="ml-2">
+          {sortOrder !== "oldest" ? "Sort by newest" : "Sort by oldest"}
+        </Button>
       </div>
       <div className="rounded-md border">
         <Table>
@@ -498,7 +509,10 @@ export default function UsersDataTable({ data }: DataTableProps<UserDef>) {
                   {row.getVisibleCells().map((cell) => {
                     if (cell.column.id === "actions") {
                       return (
-                        <TableCell key={cell.id} onClick={e => e.stopPropagation()}>
+                        <TableCell
+                          key={cell.id}
+                          onClick={(e) => e.stopPropagation()}
+                        >
                           {flexRender(
                             cell.column.columnDef.cell,
                             cell.getContext()
@@ -507,8 +521,8 @@ export default function UsersDataTable({ data }: DataTableProps<UserDef>) {
                       );
                     }
                     return (
-                      <TableCell 
-                        key={cell.id} 
+                      <TableCell
+                        key={cell.id}
                         onClick={() => {
                           setSelectedUser(row.original);
                           setIsDialogOpen(true);

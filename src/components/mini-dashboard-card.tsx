@@ -4,7 +4,11 @@ import Link from "next/link";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "./ui/button";
 import { useRouter } from "next/navigation";
-import { LockKeyholeIcon, LockKeyholeOpenIcon, PackageIcon } from "lucide-react";
+import {
+  LockKeyholeIcon,
+  LockKeyholeOpenIcon,
+  PackageIcon,
+} from "lucide-react";
 import { RainbowButton } from "./magicui/rainbow-button";
 import { TimeUpdater } from "./time-updater";
 import { QueryResultRow } from "@vercel/postgres";
@@ -29,7 +33,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 
-import { cn, getTimeAgoFromUnix } from "@/lib/utils";
+import { cn, getTimeAgoFromUnix, normalizeEpochMs } from "@/lib/utils";
 import React from "react";
 import { Badge } from "./ui/badge";
 import { InfoCircledIcon } from "@radix-ui/react-icons";
@@ -63,43 +67,52 @@ export default function MiniDashboardCard({
     return null;
   }
 
-  const expirationDate = subscription?.expires_at ?? 0;
-  const userStatus: string = subscription ? subscription.user_status : 'unknown'
-  const userLuarmorKey = subscription?.lrm_serial ?? 'unknown'
+  const expirationDateRaw = subscription?.expires_at ?? 0;
+  const expirationDate = normalizeEpochMs(expirationDateRaw) ?? 0;
+  const userStatus: string = subscription
+    ? subscription.user_status
+    : "unknown";
+  const userLuarmorKey = subscription?.lrm_serial ?? "unknown";
 
   // Determine subscription status
   const isMember = subscription != null;
-  const isLifetime = subscription?.expires_at == -1;
+  const isLifetime = (normalizeEpochMs(subscription?.expires_at) ?? 0) == -1;
   const isExpired = !isLifetime && expirationDate - Date.now() <= 0;
-  const isActive = (subscription?.expires_at != null && !isExpired) || isLifetime;
-  const isResetState = userStatus === 'reset';
-  const isBanned = userStatus === 'banned' || subscription?.is_banned;
-  
+  const isActive =
+    (subscription?.expires_at != null && !isExpired) || isLifetime;
+  const isResetState = userStatus === "reset";
+  const isBanned = userStatus === "banned" || subscription?.is_banned;
+
   const lastSyncTime = getTimeAgoFromUnix(subscription?.last_sync);
   const timeLeftMs = expirationDate - Date.now();
 
-  const discordName = session?.user?.name ?? '';
-  const displayName = discordName.length > 16 ? discordName.slice(0, 13) + '...' : discordName;
+  const discordName = session?.user?.name ?? "";
+  const displayName =
+    discordName.length > 16 ? discordName.slice(0, 13) + "..." : discordName;
 
   return (
     <div className="w-full max-w-md mx-auto sm:mx-0 mt-6">
       <Card className="relative rounded-lg z-10 border-transparent">
-        {(isMember && !isBanned && isActive) && (
+        {isMember && !isBanned && isActive && (
           <ShineBorder
             shineColor={["#0f87ff", "#001933", "#1aafff"]}
             className="absolute inset-0  pointer-events-none z-20"
           />
         )}
         <div className="relative -top-3 right-3 z-30">
-          <Badge 
-            variant={"secondary"} 
-            className="px-2 py-1 text-xs outline-2 outline-accent-background cursor-pointer" 
-            onClick={() => toast.info("This dashboard still in development and issues may occur.\nIf you find any issues contact https://mspaint.cc/support")}
+          <Badge
+            variant={"secondary"}
+            className="px-2 py-1 text-xs outline-2 outline-accent-background cursor-pointer"
+            onClick={() =>
+              toast.info(
+                "This dashboard still in development and issues may occur.\nIf you find any issues contact https://mspaint.cc/support"
+              )
+            }
           >
-          <InfoCircledIcon className="stroke-[2] mr-1"/>
+            <InfoCircledIcon className="stroke-[2] mr-1" />
             BETA
           </Badge>
-        </div>        
+        </div>
         <CardContent className="p-4 sm:p-6">
           <div className="flex flex-col sm:flex-row sm:items-start gap-4 sm:gap-6">
             <div className="flex-shrink-0 mx-auto sm:mx-0">
@@ -151,94 +164,116 @@ export default function MiniDashboardCard({
                           <p className="text-base text-red-400 mt-2">
                             User is banned, access restricted.
                           </p>
-                        ) : (
-                          !isExpired ? (
-                            <div className="flex items-center justify-between w-full -mb-2">
+                        ) : !isExpired ? (
+                          <div className="flex items-center justify-between w-full -mb-2">
+                            {isLifetime ? (
+                              <p className="text-base text-green-400 mt-2">
+                                Lifetime access ★
+                              </p>
+                            ) : (
+                              <TimeUpdater
+                                initialTimeLeft={timeLeftMs}
+                                freezeAfterTimeout={true}
+                              />
+                            )}
 
-                              {isLifetime ? (
-                                <p className="text-base text-green-400 mt-2">
-                                  Lifetime access ★
-                                </p>
-                              ): (
-                                <TimeUpdater
-                                  initialTimeLeft={timeLeftMs}
-                                  freezeAfterTimeout={true}
-                                />
-                              )}
+                            <Button
+                              variant={"outline"}
+                              className="w-20 h-8 p-0 text-xs font-bold flex items-center justify-left"
+                              onClick={() => setGetScriptDialog(true)}
+                            >
+                              Get Script
+                            </Button>
 
-                              <Button
-                                variant={"outline"}
-                                className="w-20 h-8 p-0 text-xs font-bold flex items-center justify-left"
-                                onClick={() => setGetScriptDialog(true)}
-                              >
-                                Get Script 
-                              </Button>
+                            <AlertDialog
+                              open={getScriptDialog}
+                              onOpenChange={setGetScriptDialog}
+                            >
+                              <AlertDialogContent className="max-w-xl">
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>
+                                    Here is your mspaint script
+                                  </AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                    Just click the copy button and paste it in
+                                    your script executor.
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
 
-                              <AlertDialog open={getScriptDialog} onOpenChange={setGetScriptDialog}>
-                                <AlertDialogContent className="max-w-xl">
-                                  <AlertDialogHeader>
-                                    <AlertDialogTitle>Here is your mspaint script</AlertDialogTitle>
-                                    <AlertDialogDescription>
-                                      Just click the copy button and paste it in your script executor.
-                                    </AlertDialogDescription>
-                                  </AlertDialogHeader>
-
-                                  <div className="overflow-y-auto max-h-[400px] -mb-">
-                                    <ClientCodeBlock
-                                      serial={userLuarmorKey}
-                                      disableCopyButton={true}
-                                      classNameBlock="flex flex-col max-h-full border-[5px] border-border/40 rounded-md"
-                                    />
-                                  </div>
-                                  <CopyButtonWithText 
-                                    text={getScriptCode(userLuarmorKey)}
-                                    customOnClick={() => {
-                                      toast.success("Script copied to clipboard.")
-                                      setGetScriptDialog(false);
-                                    }}
+                                <div className="overflow-y-auto max-h-[400px] -mb-">
+                                  <ClientCodeBlock
+                                    serial={userLuarmorKey}
+                                    disableCopyButton={true}
+                                    classNameBlock="flex flex-col max-h-full border-[5px] border-border/40 rounded-md"
                                   />
+                                </div>
+                                <CopyButtonWithText
+                                  text={getScriptCode(userLuarmorKey)}
+                                  customOnClick={() => {
+                                    toast.success(
+                                      "Script copied to clipboard."
+                                    );
+                                    setGetScriptDialog(false);
+                                  }}
+                                />
 
-                                  <AlertDialogFooter>
-                                    <AlertDialogCancel>Done</AlertDialogCancel>
-                                  </AlertDialogFooter>
-                                </AlertDialogContent>
-                              </AlertDialog>
-
-                            </div>
-                          ) : (
-                            <p className="text-base text-red-400 mt-2">
-                              Expired - Renew Now!
-                            </p>
-                          )
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel>Done</AlertDialogCancel>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
+                          </div>
+                        ) : (
+                          <p className="text-base text-red-400 mt-2">
+                            Expired - Renew Now!
+                          </p>
                         )}
                       </div>
                     </div>
 
-                    <Separator orientation="horizontal" className="bg-border mx-full h-[2px] mt-4" />
+                    <Separator
+                      orientation="horizontal"
+                      className="bg-border mx-full h-[2px] mt-4"
+                    />
 
                     {!isBanned ? (
                       <>
                         <Button
                           className={cn(
                             "border shadow-xs hover:bg-accent",
-                            isResetState ? "text-white/40 hover:text-accent-foreground dark:bg-input/60 dark:border-input" :
-                            "text-white/80 hover:text-accent-foreground dark:bg-red-200/20 dark:border-input dark:hover:bg-red-400/50 cursor-pointer",
+                            isResetState
+                              ? "text-white/40 hover:text-accent-foreground dark:bg-input/60 dark:border-input"
+                              : "text-white/80 hover:text-accent-foreground dark:bg-red-200/20 dark:border-input dark:hover:bg-red-400/50 cursor-pointer",
                             "w-full flex items-center justify-center py-2 mt-2"
-                          )} onClick={() => setHardwareIdDialog(true)}
+                          )}
+                          onClick={() => setHardwareIdDialog(true)}
                           disabled={isResetState}
                         >
-                          {isResetState ? <LockKeyholeOpenIcon /> : <LockKeyholeIcon />}
+                          {isResetState ? (
+                            <LockKeyholeOpenIcon />
+                          ) : (
+                            <LockKeyholeIcon />
+                          )}
                           <span className={"text-xs sm:text-sm"}>
-                            {isResetState ? "HWID already reset" : "Reset Hardware ID"}
+                            {isResetState
+                              ? "HWID already reset"
+                              : "Reset Hardware ID"}
                           </span>
                         </Button>
 
-                        <AlertDialog open={hardwareIdDialog} onOpenChange={setHardwareIdDialog}>
+                        <AlertDialog
+                          open={hardwareIdDialog}
+                          onOpenChange={setHardwareIdDialog}
+                        >
                           <AlertDialogContent>
                             <AlertDialogHeader>
-                              <AlertDialogTitle>Confirm HWID reset?</AlertDialogTitle>
+                              <AlertDialogTitle>
+                                Confirm HWID reset?
+                              </AlertDialogTitle>
                               <AlertDialogDescription>
-                                Once you reset your HWID, you&apos;ll have to wait before doing it again. Make sure it&apos;s really an invalid HWID issue before proceeding.                      
+                                Once you reset your HWID, you&apos;ll have to
+                                wait before doing it again. Make sure it&apos;s
+                                really an invalid HWID issue before proceeding.
                               </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
@@ -255,38 +290,47 @@ export default function MiniDashboardCard({
 
                                   toast.promise(
                                     (async () => {
-                                      const response = await fetch("/api/reset-hwid", {
-                                        method: "POST",
-                                        headers: {
-                                          "Content-Type": "application/json"
-                                        },
-                                        body: JSON.stringify({
-                                          lrm_serial: subscription?.lrm_serial
-                                        })
-                                      });
-                                    
+                                      const response = await fetch(
+                                        "/api/reset-hwid",
+                                        {
+                                          method: "POST",
+                                          headers: {
+                                            "Content-Type": "application/json",
+                                          },
+                                          body: JSON.stringify({
+                                            lrm_serial:
+                                              subscription?.lrm_serial,
+                                          }),
+                                        }
+                                      );
+
                                       if (!response.ok) {
                                         const errorData = await response.json();
-                                        throw new Error(errorData.error || "HWID reset failed.");
+                                        throw new Error(
+                                          errorData.error ||
+                                            "HWID reset failed."
+                                        );
                                       }
-                                      
+
                                       return await response.json();
                                     })(),
                                     {
                                       loading: "Resetting your HWID...",
                                       success: (data) => {
                                         setHardwareIdDialog(false);
-                                        return data.success || "HWID reset successful!";
+                                        return (
+                                          data.success ||
+                                          "HWID reset successful!"
+                                        );
                                       },
                                       error: (error) => {
                                         setHardwareIdDialog(false);
                                         return error.message;
-                                      }
+                                      },
                                     }
                                   );
                                   router.refresh();
-                                }
-                              }
+                                }}
                               >
                                 Continue
                               </Button>
@@ -314,8 +358,8 @@ export default function MiniDashboardCard({
                                 <SheetHeader>
                                   <SheetTitle>Purchase History</SheetTitle>
                                   <SheetDescription>
-                                    Here you can view your past purchases and subscription
-                                    history.
+                                    Here you can view your past purchases and
+                                    subscription history.
                                   </SheetDescription>
                                 </SheetHeader>
                                 <div className="flex flex-col space-y-2 px-2 w-full justify-center">
@@ -343,7 +387,9 @@ export default function MiniDashboardCard({
                                             </p>
                                           </>
                                         ) : (
-                                          <p className="text-xs">Duration: Lifetime</p>
+                                          <p className="text-xs">
+                                            Duration: Lifetime
+                                          </p>
                                         )}
                                       </div>
                                     </div>
@@ -358,7 +404,9 @@ export default function MiniDashboardCard({
                       <div className="w-full flex justify-center mt-6">
                         <Button
                           variant="destructive"
-                          className={cn("w-full max-w-xs bg-red-600 hover:bg-red-700 cursor-pointer")}
+                          className={cn(
+                            "w-full max-w-xs bg-red-600 hover:bg-red-700 cursor-pointer"
+                          )}
                           onClick={signout}
                         >
                           Sign Out
@@ -382,25 +430,25 @@ export default function MiniDashboardCard({
                               </RainbowButton>
                             </Link>
                           )}
-                        <Button
-                          variant="destructive"
-                          className="w-full bg-red-600 hover:bg-red-700 cursor-pointer"
-                          onClick={signout}
-                        >
-                          Sign Out
-                        </Button>
+                          <Button
+                            variant="destructive"
+                            className="w-full bg-red-600 hover:bg-red-700 cursor-pointer"
+                            onClick={signout}
+                          >
+                            Sign Out
+                          </Button>
                         </>
                       )}
                     </div>
 
                     <CardFooter className="w-full flex items-center justify-center text-muted-foreground text-xs font-medium mt-2 -mb-14">
                       User updated {lastSyncTime}
-                    </CardFooter>                      
+                    </CardFooter>
                   </>
                 ) : (
                   <>
                     <h3 className="text-xs sm:text-sm font-medium uppercase tracking-wider mt-2">
-                      You&apos;re not a registered member.                  
+                      You&apos;re not a registered member.
                     </h3>
                     <Link href="/shop" className="w-full">
                       <RainbowButton className="w-full font-bold mt-2">
