@@ -244,9 +244,12 @@ export async function SyncSingleLuarmorUser(discord_id: string) {
   }
 }
 
-export async function SyncExpirationsFromLuarmor(step: number) {
-  const allowed = await isUserAllowedOnDashboard();
-  if (!allowed) return { status: 403, error: "Permission denied" };
+export async function SyncExpirationsFromLuarmor(step: number, authbypass?: string) {
+
+  if (!authbypass || authbypass !== `Bearer ${process.env.CRON_SECRET}`) {
+    const allowed = await isUserAllowedOnDashboard();
+    if (!allowed) return { status: 403, error: "Permission denied" };
+  }
 
   const batchSize = 1500;
   let totalUpdated = 0;
