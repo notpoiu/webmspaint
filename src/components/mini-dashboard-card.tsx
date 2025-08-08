@@ -70,7 +70,7 @@ export default function MiniDashboardCard({
   // Determine subscription status
   const isMember = subscription != null;
   const isLifetime = subscription?.expires_at == -1;
-  const isExpired = expirationDate - Date.now() <= 0;
+  const isExpired = !isLifetime && expirationDate - Date.now() <= 0;
   const isActive = (subscription?.expires_at != null && !isExpired) || isLifetime;
   const isResetState = userStatus === 'reset';
   const isBanned = userStatus === 'banned' || subscription?.is_banned;
