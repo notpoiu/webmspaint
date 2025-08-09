@@ -255,7 +255,7 @@ export async function SyncExpirationsFromLuarmor(
   step: number,
   authbypass?: string
 ) {
-  if (!authbypass || authbypass !== `Bearer ${process.env.CRON_SECRET}`) {
+  if (!authbypass || authbypass !== `Bearer ${process.env.LRM_PROXY_API_KEY}`) {
     const allowed = await isUserAllowedOnDashboard();
     if (!allowed) return { status: 403, error: "Permission denied" };
   }
