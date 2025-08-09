@@ -33,7 +33,7 @@ export async function GET(request: Request) {
 
         console.log(FriendyCronName, `Partial update step ${currentStep}`);
         // Wait 30 seconds before next batch
-        await new Promise((resolve) => setTimeout(resolve, 30000));
+        //await new Promise((resolve) => setTimeout(resolve, 30000));
         continue;
       }
 
