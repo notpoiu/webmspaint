@@ -67,33 +67,31 @@ export default function MiniDashboardCard({
     return null;
   }
 
-  const expirationDateRaw = subscription?.expires_at ?? 0;
-  const expirationDate = normalizeEpochMs(expirationDateRaw) ?? 0;
-  const userStatus: string = subscription
-    ? subscription.user_status
-    : "unknown";
-  const userLuarmorKey = subscription?.lrm_serial ?? "unknown";
+
+  const expirationDate = normalizeEpochMs(subscription?.expires_at) ?? 0;
+  const userStatus: string = subscription ? subscription.user_status: "unlink";
+  const userLuarmorKey = subscription?.lrm_serial ?? "unlink";
 
   // Determine subscription status
   const isMember = subscription != null;
-  const isLifetime = (normalizeEpochMs(subscription?.expires_at) ?? 0) == -1;
+  const isLifetime = expirationDate == -1;
   const isExpired = !isLifetime && expirationDate - Date.now() <= 0;
-  const isActive =
-    (subscription?.expires_at != null && !isExpired) || isLifetime;
+
+  const isUnlink = userStatus === "unlink";
   const isResetState = userStatus === "reset";
   const isBanned = userStatus === "banned" || subscription?.is_banned;
+  const isSubscriptionActive = (!isBanned && isMember) && (userStatus === "active" || isResetState || isLifetime);
 
-  const lastSyncTime = getTimeAgoFromUnix(subscription?.last_sync);
+  const lastSyncTimeText = getTimeAgoFromUnix(subscription?.last_sync);
   const timeLeftMs = expirationDate - Date.now();
 
   const discordName = session?.user?.name ?? "";
-  const displayName =
-    discordName.length > 16 ? discordName.slice(0, 13) + "..." : discordName;
+  const displayName = discordName.length > 16 ? discordName.slice(0, 13) + "..." : discordName;
 
   return (
     <div className="w-full max-w-md mx-auto sm:mx-0 mt-6">
       <Card className="relative rounded-lg z-10 border-transparent">
-        {isMember && !isBanned && isActive && (
+        {!isUnlink && isSubscriptionActive && (
           <ShineBorder
             shineColor={["#0f87ff", "#001933", "#1aafff"]}
             className="absolute inset-0  pointer-events-none z-20"
@@ -149,7 +147,7 @@ export default function MiniDashboardCard({
                       <div className="flex items-center space-x-2 text-center sm:text-left">
                         <Badge
                           className="font-bold pointer-events-none"
-                          variant={isBanned ? "destructive" : "default"}
+                          variant={(isBanned || isUnlink) ? "destructive" : "default"}
                         >
                           {userStatus.toUpperCase()}
                         </Badge>
@@ -160,9 +158,13 @@ export default function MiniDashboardCard({
                     </div>
                     <div className="w-full flex justify-center sm:justify-start mt-2">
                       <div className="w-full text-center sm:text-left">
-                        {isBanned ? (
+                        {isBanned || isUnlink ? (
                           <p className="text-base text-red-400 mt-2">
-                            User is banned, access restricted.
+                            {isBanned ? 
+                              "User is banned, access restricted." 
+                              : isUnlink && "User not found on Luarmor. Please try again later or contact support."
+                            }
+                            
                           </p>
                         ) : !isExpired ? (
                           <div className="flex items-center justify-between w-full -mb-2">
@@ -236,7 +238,7 @@ export default function MiniDashboardCard({
                       className="bg-border mx-full h-[2px] mt-4"
                     />
 
-                    {!isBanned ? (
+                    {(!isBanned && !isUnlink) ? (
                       <>
                         <Button
                           className={cn(
@@ -282,7 +284,7 @@ export default function MiniDashboardCard({
                                 variant={"destructive"}
                                 className="cursor-pointer"
                                 onClick={() => {
-                                  if (isBanned) return;
+                                  if (isBanned || isUnlink) return;
                                   if (isResetState) {
                                     toast.error("Your HWID is already reset.");
                                     return;
@@ -401,7 +403,7 @@ export default function MiniDashboardCard({
                         )}
                       </>
                     ) : (
-                      <div className="w-full flex justify-center mt-6">
+                      <div className="w-full grid grid-cols-2 gap-2 justify-center items-center mt-4">
                         <Button
                           variant="destructive"
                           className={cn(
@@ -411,13 +413,23 @@ export default function MiniDashboardCard({
                         >
                           Sign Out
                         </Button>
+                        <Link href="/support">
+                          <Button
+                            variant="default"
+                            className={cn(
+                              "w-full max-w-x items-center cursor-pointer"
+                            )}
+                          >
+                            Contact Support
+                          </Button>
+                        </Link>                
                       </div>
                     )}
 
                     <div className="grid grid-cols-2 gap-3 mt-3">
                       {/* honestly, idc... */}
 
-                      {!isBanned && (
+                      {(!isBanned && !isUnlink) && (
                         <>
                           {isLifetime ? (
                             <RainbowButton disabled className="w-full">
@@ -442,7 +454,7 @@ export default function MiniDashboardCard({
                     </div>
 
                     <CardFooter className="w-full flex items-center justify-center text-muted-foreground text-xs font-medium mt-2 -mb-14">
-                      User updated {lastSyncTime}
+                      User updated {lastSyncTimeText}
                     </CardFooter>
                   </>
                 ) : (

@@ -54,7 +54,7 @@ import {
 } from "@/components/ui/dialog";
 import { TimelineElement } from "@/types";
 import { TimelineLayout } from "@/components/ui/timeline-layout";
-import { GetAllUserData, GetUserPurchaseHistory } from "@/server/dashutils";
+import { GetAllUserData, GetUserPurchaseHistory, SyncSingleLuarmorUser } from "@/server/dashutils";
 
 interface DataTableProps<TData> {
   data: TData[];
@@ -317,14 +317,7 @@ export default function UsersDataTable({ data }: DataTableProps<UserDef>) {
                         return;
                       }
 
-                      const response = await fetch("/api/sync-user", {
-                        method: "POST",
-                        headers: {
-                          "Content-Type": "application/json",
-                        },
-                      });
-
-                      const result = await response.json();
+                      const result = await SyncSingleLuarmorUser(row.original.discord_id, true);
 
                       if (result.status === 200) {
                         toast.success(result.success);

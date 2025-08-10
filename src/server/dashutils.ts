@@ -342,15 +342,33 @@ export async function SyncExpirationsFromLuarmor(
         is_banned = EXCLUDED.is_banned,
         user_status = EXCLUDED.user_status
       WHERE
-        mspaint_users.lrm_serial IS DISTINCT FROM EXCLUDED.lrm_serial
-        OR mspaint_users.expires_at IS DISTINCT FROM EXCLUDED.expires_at
-        OR mspaint_users.is_banned IS DISTINCT FROM EXCLUDED.is_banned
-        OR mspaint_users.user_status IS DISTINCT FROM EXCLUDED.user_status;
+        mspaint_users IS DISTINCT FROM EXCLUDED;
     `;
 
     const insertResult = await sql.query(query, values);
     totalUpdated = insertResult.rowCount ?? 0;
   }
+
+  const discordIds = values.filter((_: unknown, i: number) => i % 5 === 1);
+
+  const updateUnknownQuery = `
+    WITH input_discords AS (
+      SELECT unnest($1::text[]) AS discord_id
+    )
+    UPDATE mspaint_users
+    SET user_status = 'unlink'
+    FROM input_discords
+    WHERE
+      mspaint_users.discord_id = input_discords.discord_id
+      AND NOT EXISTS (
+        SELECT 1 FROM mspaint_users 
+        WHERE discord_id = input_discords.discord_id
+      )
+      AND user_status IS DISTINCT FROM 'unlink';
+`;
+
+  const updateResult = await sql.query(updateUnknownQuery, [discordIds]);
+  totalUpdated += updateResult.rowCount ?? 0;
 
   // Check if we should fetch next batch
   const hasMore = users.length > 0;
