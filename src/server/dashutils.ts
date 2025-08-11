@@ -96,7 +96,7 @@ export async function GenerateSerial(
       crypto.randomUUID()
     );
 
-    const validFor = createInterval(durationMinutes);
+    const validFor = durationMinutes == 0 ? "1 second" : createInterval(durationMinutes);
 
     await sql`INSERT INTO mspaint_keys_new (serial, order_id, claimed_at, key_duration, linked_to) VALUES (${serial}, ${invoiceIDToInsert}, NULL, ${validFor}, NULL)`;
     serials.push(serial);

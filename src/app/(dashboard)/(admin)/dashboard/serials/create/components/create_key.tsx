@@ -43,12 +43,13 @@ export default function CreateSerialKey() {
   enum ExpirationType {
     LIFETIME = "LIFETIME",
     THIRTY_DAYS = "THIRTY_DAYS",
+    ONE_SECOND = "ONE_SECOND_KEY",
     CUSTOM = "CUSTOM"
   }
   const [expirationType, setExpirationType] = useState<ExpirationType>(ExpirationType.LIFETIME);
   const [expireDays, setExpireDays] = useState<number>(0);
   const [expireHours, setExpireHours] = useState<number>(0);
-  const [expireMinutes, setExpireMinutes] = useState<number>(0);
+  const [expireMinutes, setExpireMinutes] = useState<number>(1);
   const [time, setTime] = useState(Date.now());
 
   React.useEffect(() => {
@@ -159,6 +160,25 @@ export default function CreateSerialKey() {
                   />
                   <label htmlFor="30days" className="text-sm">
                     30 Days
+                  </label>
+                </div>
+
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="radio"
+                    id="onesecond"
+                    name="expiration"
+                    checked={expirationType === ExpirationType.ONE_SECOND}
+                    onChange={() => {
+                      setExpirationType(ExpirationType.ONE_SECOND);
+                      setExpireDays(0);
+                      setExpireHours(0);
+                      setExpireMinutes(0);
+                    }}
+                    className="h-4 w-4"
+                  />
+                  <label htmlFor="onesecond" className="text-sm">
+                    1 Second
                   </label>
                 </div>
 
@@ -363,6 +383,8 @@ export default function CreateSerialKey() {
                   let durationMinutes = null; // Lifetime case
                   if (expirationType === ExpirationType.THIRTY_DAYS) {
                     durationMinutes = 31 * 24 * 60; // 30 + 1 days in minutes
+                  } else if (expirationType === ExpirationType.ONE_SECOND) {
+                    durationMinutes = 0; //moneybag
                   } else if (expirationType === ExpirationType.CUSTOM) {
                     durationMinutes = (expireDays * 24 * 60) + (expireHours * 60) + expireMinutes;
                   }
