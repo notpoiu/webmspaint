@@ -95,26 +95,25 @@ export default function ReviewMarquee() {
           continue;
         }
 
-        const path =
-          "https://raw.githubusercontent.com/mspaint-cc/assets/main/" +
-          user_folder.path +
-          "/";
-        const req = await fetch(path + "data.json");
-        const data = await req.json();
+        try {
+          const path = "https://raw.githubusercontent.com/mspaint-cc/assets/main/" + user_folder.path + "/";
+          const req = await fetch(path + "data.json", { cache: 'force-cache', next: { revalidate: 300 } });
+          const data = await req.json();
 
-        if (data.banned === true) {
-          continue;
-        }
+          if (data.banned === true) {
+            continue;
+          }
 
-        reviews.push({
-          name: data.name,
-          username: data.username,
-          body: data.content,
-          img: path + "pfp.png",
-          stars: data.stars,
-        } as Review);
+          reviews.push({
+            name: data.name,
+            username: data.username,
+            body: data.content,
+            img: path + "pfp.png",
+            stars: data.stars,
+          } as Review);
 
-        totalStars += data.stars;
+          totalStars += data.stars;
+        } catch { } // we dont care about the error
       }
 
       setFirstRow(reviews.slice(0, reviews.length / 2));

@@ -35,12 +35,9 @@ export default async function Home() {
   const noAccount = !session || !session.user || !session.user.id;
 
   // discord
-  let languageData, guildData;
+  let gamesStatusData, languageData, guildData;
   try {
-    const guildResponse = await fetch(
-      "https://discord.com/api/v9/invites/mspaint?with_counts=true&with_expiration=true",
-      { next: { revalidate: 60 } }
-    );
+    const guildResponse = await fetch("https://discord.com/api/v9/invites/mspaint?with_counts=true&with_expiration=true", { cache: 'force-cache', next: { revalidate: 300 } }); // 5 minutes
     guildData = await guildResponse.json();
   } catch {
     guildData = { approximate_member_count: 20000 };
@@ -48,14 +45,17 @@ export default async function Home() {
 
   // languages
   try {
-    const response = await fetch(
-      "https://raw.githubusercontent.com/mspaint-cc/translations/refs/heads/main/Languages.json",
-      { next: { revalidate: 20 } }
-    );
+    const response = await fetch("https://raw.githubusercontent.com/mspaint-cc/translations/refs/heads/main/Languages.json", { cache: 'force-cache', next: { revalidate: 300 } }); // 5 minutes
     languageData = await response.json();
   } catch {
     languageData = { ["en"]: {} };
   }
+
+  // games data
+  try {
+    const response = await fetch("https://raw.githubusercontent.com/mspaint-cc/assets/refs/heads/main/status.json", { cache: 'force-cache', next: { revalidate: 60 } }); // 1 minute
+    gamesStatusData = await response.json();
+  } catch { gamesStatusData = {}; }
 
   return (
     <>
@@ -264,112 +264,98 @@ export default async function Home() {
               title={"DOORS"}
               id={6516141723}
               image={`https://q2p0njok3b.ufs.sh/f/Z155p1jPvLAsJ2hyPErBlZ5kfsQT24O8oeiR73u9rdc6zgm1`}
-              status={true}
-              issues={false}
+              gamesStatusData={gamesStatusData}
             />
 
             <GameCard
               title={"Dead Rails"}
               id={116495829188952}
               image={`https://q2p0njok3b.ufs.sh/f/Z155p1jPvLAs9AEEhFodlyrJ6uEv40SUmQtNBXAzhP87IaKM`}
-              status={true}
-              issues={false}
+              gamesStatusData={gamesStatusData}
             />
 
             <GameCard
               title={"Forsaken"}
               id={18687417158}
               image={`https://ob4fgkbb3w.ufs.sh/f/q5sBExIITNsABgYQjlAKU9TJFX7q3z8ExZVAWyQeLOfamDgu`}
-              status={true}
-              issues={false}
+              gamesStatusData={gamesStatusData}
             />
 
             <GameCard
               title={"Fisch"}
               id={16732694052}
               image={`https://q2p0njok3b.ufs.sh/f/Z155p1jPvLAsncwz3g7ulbhtMx156dQV3GozKUs08gOmX9jv`}
-              status={true}
-              issues={false}
+              gamesStatusData={gamesStatusData}
             />
 
             <GameCard
               title={"Grow A Garden"}
               id={126884695634066}
               image={`https://q2p0njok3b.ufs.sh/f/Z155p1jPvLAsHV5ApBayj1tLCfgrzV73ZonhEDeNGAiRdxQ0`}
-              status={true}
-              issues={false}
+              gamesStatusData={gamesStatusData}
             />
 
             <GameCard
               title={"Bubble Gum Simulator Infinity"}
               id={85896571713843}
               image={`https://q2p0njok3b.ufs.sh/f/Z155p1jPvLAsKDiSPErg4CbGHLXhvIFxQV5pY6qirBw2Ju7n`}
-              status={true}
-              issues={false}
+              gamesStatusData={gamesStatusData}
             />
 
             <GameCard
               title={"Pressure"}
               id={12411473842}
               image={`https://q2p0njok3b.ufs.sh/f/Z155p1jPvLAsH0LmZ6Layj1tLCfgrzV73ZonhEDeNGAiRdxQ`}
-              status={true}
-              issues={false}
+              gamesStatusData={gamesStatusData}
             />
 
             <GameCard
               title={"3008"}
               id={2768379856}
               image={`https://q2p0njok3b.ufs.sh/f/Z155p1jPvLAsw0tQCS53yIYB4kajObRWsGN6r8uJDg2QVmKc`}
-              status={true}
-              issues={false}
+              gamesStatusData={gamesStatusData}
             />
 
             <GameCard
               title={"Rooms & Doors"}
               id={5865058321}
               image={`https://q2p0njok3b.ufs.sh/f/Z155p1jPvLAsbnS21bRQaNIsxXOcZmM8nAt4WkiC0HGreJvP`}
-              status={true}
-              issues={false}
+              gamesStatusData={gamesStatusData}
             />
 
             <GameCard
               title={"Build A Boat For Treasure"}
               id={537413528}
               image={`https://q2p0njok3b.ufs.sh/f/Z155p1jPvLAs98wtNJodlyrJ6uEv40SUmQtNBXAzhP87IaKM`}
-              status={true}
-              issues={false}
+              gamesStatusData={gamesStatusData}
             />
 
             <GameCard
               title={"Grace"}
               id={138837502355157}
               image={`https://q2p0njok3b.ufs.sh/f/Z155p1jPvLAs57LO68MxTny6kRILmGKFZcwpAtJ8zEgP1fNh`}
-              status={true}
-              issues={false}
+              gamesStatusData={gamesStatusData}
             />
 
             <GameCard
               title={"Murder Mystery 2"}
               id={142823291}
               image={`https://q2p0njok3b.ufs.sh/f/Z155p1jPvLAsBsdLSiOKJxivCc6LDnOGta3RYUHkWNMdS51o`}
-              status={true}
-              issues={false}
+              gamesStatusData={gamesStatusData}
             />
 
             <GameCard
               title={"Word Bomb"}
               id={2653064683}
               image={`https://q2p0njok3b.ufs.sh/f/Z155p1jPvLAsJ2uVLQbBlZ5kfsQT24O8oeiR73u9rdc6zgm1`}
-              status={true}
-              issues={false}
+              gamesStatusData={gamesStatusData}
             />
 
             <GameCard
               title={"Notoriety"}
               id={21532277}
               image={`https://q2p0njok3b.ufs.sh/f/Z155p1jPvLAskzKaZ1yN8Yh20HbLkz1KupR6QJWqIBGA9FOj`}
-              status={true}
-              issues={false}
+              gamesStatusData={gamesStatusData}
             />
           </BlurFade>
         </div>
