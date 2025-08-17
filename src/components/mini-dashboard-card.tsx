@@ -69,7 +69,7 @@ export default function MiniDashboardCard({
 
 
   const expirationDate = normalizeEpochMs(subscription?.expires_at) ?? 0;
-  const userStatus: string = subscription ? subscription.user_status: "unlink";
+  const userStatus: string = subscription ? subscription.user_status : "unlink";
   const userLuarmorKey = subscription?.lrm_serial ?? "unlink";
 
   // Determine subscription status
@@ -158,13 +158,9 @@ export default function MiniDashboardCard({
                     </div>
                     <div className="w-full flex justify-center sm:justify-start mt-2">
                       <div className="w-full text-center sm:text-left">
-                        {isBanned || isUnlink ? (
+                        {isBanned ? (
                           <p className="text-base text-red-400 mt-2">
-                            {isBanned ? 
-                              "User is banned, access restricted." 
-                              : isUnlink && "User not found on Luarmor. Please try again later or contact support."
-                            }
-                            
+                            User is banned, access restricted.
                           </p>
                         ) : !isExpired ? (
                           <div className="flex items-center justify-between w-full -mb-2">
@@ -238,107 +234,111 @@ export default function MiniDashboardCard({
                       className="bg-border mx-full h-[2px] mt-4"
                     />
 
-                    {(!isBanned && !isUnlink) ? (
+                    {(!isBanned) ? (
                       <>
-                        <Button
-                          className={cn(
-                            "border shadow-xs hover:bg-accent",
-                            isResetState
-                              ? "text-white/40 hover:text-accent-foreground dark:bg-input/60 dark:border-input"
-                              : "text-white/80 hover:text-accent-foreground dark:bg-red-200/20 dark:border-input dark:hover:bg-red-400/50 cursor-pointer",
-                            "w-full flex items-center justify-center py-2 mt-2"
-                          )}
-                          onClick={() => setHardwareIdDialog(true)}
-                          disabled={isResetState}
-                        >
-                          {isResetState ? (
-                            <LockKeyholeOpenIcon />
-                          ) : (
-                            <LockKeyholeIcon />
-                          )}
-                          <span className={"text-xs sm:text-sm"}>
-                            {isResetState
-                              ? "HWID already reset"
-                              : "Reset Hardware ID"}
-                          </span>
-                        </Button>
+                        {!isExpired && (
+                          <>
+                            <Button
+                              className={cn(
+                                "border shadow-xs hover:bg-accent",
+                                isResetState
+                                  ? "text-white/40 hover:text-accent-foreground dark:bg-input/60 dark:border-input"
+                                  : "text-white/80 hover:text-accent-foreground dark:bg-red-200/20 dark:border-input dark:hover:bg-red-400/50 cursor-pointer",
+                                "w-full flex items-center justify-center py-2 mt-2"
+                              )}
+                              onClick={() => setHardwareIdDialog(true)}
+                              disabled={isResetState}
+                            >
+                              {isResetState ? (
+                                <LockKeyholeOpenIcon />
+                              ) : (
+                                <LockKeyholeIcon />
+                              )}
+                              <span className={"text-xs sm:text-sm"}>
+                                {isResetState
+                                  ? "HWID already reset"
+                                  : "Reset Hardware ID"}
+                              </span>
+                            </Button>
 
-                        <AlertDialog
-                          open={hardwareIdDialog}
-                          onOpenChange={setHardwareIdDialog}
-                        >
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>
-                                Confirm HWID reset?
-                              </AlertDialogTitle>
-                              <AlertDialogDescription>
-                                Once you reset your HWID, you&apos;ll have to
-                                wait before doing it again. Make sure it&apos;s
-                                really an invalid HWID issue before proceeding.
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>Cancel</AlertDialogCancel>
-                              <Button
-                                variant={"destructive"}
-                                className="cursor-pointer"
-                                onClick={() => {
-                                  if (isBanned || isUnlink) return;
-                                  if (isResetState) {
-                                    toast.error("Your HWID is already reset.");
-                                    return;
-                                  }
-
-                                  toast.promise(
-                                    (async () => {
-                                      const response = await fetch(
-                                        "/api/reset-hwid",
-                                        {
-                                          method: "POST",
-                                          headers: {
-                                            "Content-Type": "application/json",
-                                          },
-                                          body: JSON.stringify({
-                                            lrm_serial:
-                                              subscription?.lrm_serial,
-                                          }),
-                                        }
-                                      );
-
-                                      if (!response.ok) {
-                                        const errorData = await response.json();
-                                        throw new Error(
-                                          errorData.error ||
-                                            "HWID reset failed."
-                                        );
+                            <AlertDialog
+                              open={hardwareIdDialog}
+                              onOpenChange={setHardwareIdDialog}
+                            >
+                              <AlertDialogContent>
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>
+                                    Confirm HWID reset?
+                                  </AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                    Once you reset your HWID, you&apos;ll have to
+                                    wait before doing it again. Make sure it&apos;s
+                                    really an invalid HWID issue before proceeding.
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                  <Button
+                                    variant={"destructive"}
+                                    className="cursor-pointer"
+                                    onClick={() => {
+                                      if (isBanned || isUnlink) return;
+                                      if (isResetState) {
+                                        toast.error("Your HWID is already reset.");
+                                        return;
                                       }
 
-                                      return await response.json();
-                                    })(),
-                                    {
-                                      loading: "Resetting your HWID...",
-                                      success: (data) => {
-                                        setHardwareIdDialog(false);
-                                        return (
-                                          data.success ||
-                                          "HWID reset successful!"
-                                        );
-                                      },
-                                      error: (error) => {
-                                        setHardwareIdDialog(false);
-                                        return error.message;
-                                      },
-                                    }
-                                  );
-                                  router.refresh();
-                                }}
-                              >
-                                Continue
-                              </Button>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
+                                      toast.promise(
+                                        (async () => {
+                                          const response = await fetch(
+                                            "/api/reset-hwid",
+                                            {
+                                              method: "POST",
+                                              headers: {
+                                                "Content-Type": "application/json",
+                                              },
+                                              body: JSON.stringify({
+                                                lrm_serial:
+                                                  subscription?.lrm_serial,
+                                              }),
+                                            }
+                                          );
+
+                                          if (!response.ok) {
+                                            const errorData = await response.json();
+                                            throw new Error(
+                                              errorData.error ||
+                                                "HWID reset failed."
+                                            );
+                                          }
+
+                                          return await response.json();
+                                        })(),
+                                        {
+                                          loading: "Resetting your HWID...",
+                                          success: (data) => {
+                                            setHardwareIdDialog(false);
+                                            return (
+                                              data.success ||
+                                              "HWID reset successful!"
+                                            );
+                                          },
+                                          error: (error) => {
+                                            setHardwareIdDialog(false);
+                                            return error.message;
+                                          },
+                                        }
+                                      );
+                                      router.refresh();
+                                    }}
+                                  >
+                                    Continue
+                                  </Button>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
+                          </>
+                        )}
 
                         {purchaseHistory.length > 0 && (
                           <div className="mt-2">
@@ -364,7 +364,7 @@ export default function MiniDashboardCard({
                                     subscription history.
                                   </SheetDescription>
                                 </SheetHeader>
-                                <div className="flex flex-col space-y-2 px-2 w-full justify-center">
+                                <div className="flex flex-col max-h-[1000px] overflow-y-auto space-y-2 px-2 w-full">
                                   {purchaseHistory.map((purchase, index) => (
                                     <div
                                       key={index}
@@ -429,7 +429,7 @@ export default function MiniDashboardCard({
                     <div className="grid grid-cols-2 gap-3 mt-3">
                       {/* honestly, idc... */}
 
-                      {(!isBanned && !isUnlink) && (
+                      {(!isBanned) && (
                         <>
                           {isLifetime ? (
                             <RainbowButton disabled className="w-full">
@@ -475,7 +475,7 @@ export default function MiniDashboardCard({
         </CardContent>
       </Card>
 
-      {!isExpired && (
+      {!isUnlink && isSubscriptionActive && (
         <p className="fixed left-0 bottom-0 mb-2 text-center w-full text-xs text-muted-foreground font-medium mt-1">
           Thank you for supporting mspaint ❤️
         </p>

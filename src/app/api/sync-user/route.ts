@@ -2,7 +2,7 @@ import { auth } from "@/auth";
 import { NextRequest, NextResponse } from "next/server";
 import { rateLimitService } from "@/server/ratelimit";
 import { isUserAllowedOnDashboard } from "@/server/authutils";
-import { SyncSingleLuarmorUser } from "@/server/dashutils";
+import { SyncSingleLuarmorUserByDiscord } from "@/server/dashutils";
 
 export async function POST(request: NextRequest) {
   const session = await auth();
@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
 
     await rateLimitService.trackRequest("syncuser", discordId);
 
-    const result = await SyncSingleLuarmorUser(discordId);
+    const result = await SyncSingleLuarmorUserByDiscord(discordId);
 
     if (result.status !== 200) {
       return NextResponse.json({ error: result.error }, { status: result.status });

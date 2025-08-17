@@ -23,12 +23,14 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function parseIntervalToMs(interval: string): number {
+export function parseIntervalToSec(interval: string | null): number {
+  if (!interval) return -1;
+  
   const m: { [k: string]: number } = {
-    year: 365 * 24 * 60 * 60 * 1000,
-    day: 24 * 60 * 60 * 1000,
-    hour: 60 * 60 * 1000,
-    minute: 60 * 1000,
+    year: 365 * 24 * 60 * 60,
+    day: 24 * 60 * 60,
+    hour: 60 * 60,
+    minute: 60,
   };
 
   return [
@@ -59,7 +61,7 @@ export function createInterval(durationInMinutes: number | null) {
     const strMinutes =
       minutes == 0 ? "" : `${minutes} minute${minutes > 1 ? "s" : ""}`;
 
-    inverval = `${strYears} ${strDays} ${strHours} ${strMinutes}`;
+    inverval = `${strYears} ${strDays} ${strHours} ${strMinutes}`.trim();
   }
 
   return inverval;

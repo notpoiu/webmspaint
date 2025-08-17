@@ -54,7 +54,7 @@ import {
 } from "@/components/ui/dialog";
 import { TimelineElement } from "@/types";
 import { TimelineLayout } from "@/components/ui/timeline-layout";
-import { GetAllUserData, GetUserPurchaseHistory, SyncSingleLuarmorUser } from "@/server/dashutils";
+import { GetAllUserData, GetUserPurchaseHistory, SyncSingleLuarmorUserByDiscord, SyncSingleLuarmorUserByLRMSerial } from "@/server/dashutils";
 
 interface DataTableProps<TData> {
   data: TData[];
@@ -187,7 +187,7 @@ export default function UsersDataTable({ data }: DataTableProps<UserDef>) {
         const status: string = row.getValue("user_status");
         return (
           <div className="flex">
-            <Badge variant={"outline"}>{status.toUpperCase()}</Badge>
+            <Badge variant={status == 'unlink' ? "default" : "outline"}>{status.toUpperCase()}</Badge>
           </div>
         );
       },
@@ -312,20 +312,31 @@ export default function UsersDataTable({ data }: DataTableProps<UserDef>) {
                     );
 
                     try {
-                      if (!row.original.discord_id) {
+                      const { lrm_serial, discord_id } = row.original;
+
+                      if (!discord_id) {
                         toast.error("Discord ID is missing");
                         return;
                       }
 
-                      const result = await SyncSingleLuarmorUser(row.original.discord_id, true);
+                      let result;
+
+                      if (lrm_serial) {
+                        result = await SyncSingleLuarmorUserByLRMSerial(lrm_serial);
+                      }
+
+                      if (!result || result.status !== 200) {
+                        result = await SyncSingleLuarmorUserByDiscord(discord_id);
+                      }
 
                       if (result.status === 200) {
                         toast.success(result.success);
-                        refreshData();
                       } else {
                         toast.error(result.error || "Sync failed");
                       }
+                      
                     } finally {
+                      refreshData();
                       setSyncingRows((prev) => {
                         const newSet = new Set(prev);
                         newSet.delete(row.original.discord_id);

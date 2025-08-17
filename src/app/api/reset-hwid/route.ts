@@ -1,4 +1,4 @@
-import { ResetHardwareIDWithLuarmor } from "@/server/dashutils";
+import { ResetHardwareIDWithLuarmor, SyncSingleLuarmorUserByDiscord, SyncSingleLuarmorUserByLRMSerial } from "@/server/dashutils";
 import { auth } from "@/auth";
 import { NextRequest, NextResponse } from "next/server";
 import { rateLimitService } from "@/server/ratelimit";
@@ -40,25 +40,17 @@ export async function POST(request: NextRequest) {
     }
 
     try {
-
-      const baseUrl = new URL(request.url).origin;
-      const syncResponse = await fetch(`${baseUrl}/api/sync-user`, {
-        method: "POST",
-        headers: {
-          Cookie: request.headers.get("cookie") || "",          
-          "Content-Type": "application/json",
+      const resultSync = await SyncSingleLuarmorUserByLRMSerial(lrm_serial);
+      if (resultSync.status === 200) {
+        return NextResponse.json({ success: result.success });
+      } else {
+        const resultSync = await SyncSingleLuarmorUserByDiscord(discordId);
+        if (resultSync.status === 200) {
+          return NextResponse.json({ success: result.success });
         }
-      });
-      
-      if (!syncResponse.ok) {
-        const errorData = await syncResponse.json();
-        throw new Error(errorData.error || "Sync failed");
+        throw Error(result.error || "Sync failed")
       }
-      
-      const syncResult = await syncResponse.json();
-      if (syncResult.status !== 200) {
-        throw new Error(syncResult.error || "Sync failed");
-      }
+
     } catch (error) {
       const message = error instanceof Error ? error.message : "Sync failed";
       result.success += `\nWarning: ${message}`;

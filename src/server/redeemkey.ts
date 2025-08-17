@@ -2,11 +2,10 @@
 
 import { sql } from "@vercel/postgres";
 import { RESELLER_DATA } from "@/data/resellers";
-import { HTTP_METHOD, parseIntervalToMs } from "@/lib/utils";
+import { HTTP_METHOD, parseIntervalToSec } from "@/lib/utils";
 import {
   RequestLuarmorUsersEndpoint,
-  GetUserSubscription,
-  SyncSingleLuarmorUser,
+  SyncSingleLuarmorUserByLRMSerial,
 } from "./dashutils";
 import { rateLimitService } from "./ratelimit";
 
@@ -17,94 +16,153 @@ export async function RedeemKey(serial: string, user_id: string) {
       error: "user_id is invalid",
     };
   }
+  
+  const limiter = rateLimitService.getLimiter("redeemkey");
+  const { success } = await limiter.limit(user_id);
+  if (!success) {
+    return {
+      status: 429,
+      error: "Rate limit reached: Please wait a few minutes before trying again.",
+    };
+  }
 
-  const { rows } =
-    await sql`SELECT * FROM mspaint_keys_new WHERE serial = ${serial}`;
+  
+  const claimedAtUnixtimestamp = Math.floor(Date.now() / 1000); //key being claimed at this exact second
+  const reservedMaxTimeout = claimedAtUnixtimestamp + 5; // Five seconds timeout
+  
+  /**
+   * Atomic query where it will always give the data of the row using the serial (if exist)
+   * It will update reserved_to if it's NULL meaning the key wasn't claimed at first and not it is
+   * the reserved_to is a precaution if "luarmor API"/"redeem function" fails, the user can still retrive their purchase.
+   * finally, this also is race condition safe for giveaways.
+  */
+  const { rows } = await sql`
+    WITH update_attempt AS (
+      UPDATE mspaint_keys_new
+      SET reserved_to = ${user_id},
+      reserved_until = ${reservedMaxTimeout}
+      WHERE serial = ${serial}
+        AND claimed_at IS NULL
+        AND (reserved_to IS NULL OR reserved_to = ${user_id})
+        AND (reserved_until IS NULL OR reserved_until < EXTRACT(EPOCH FROM NOW()))
+      RETURNING *
+    )
+    SELECT * FROM update_attempt
+    UNION ALL
+    SELECT * FROM mspaint_keys_new
+    WHERE serial = ${serial}
+      AND NOT EXISTS (SELECT 1 FROM update_attempt)
+  `;
 
-  if (rows.length === 0 || rows[0].claimed === true) {
+  if (rows.length === 0) {
     return {
       status: 404,
-      error: "key not found",
+      error: "Key not found or already claimed.",
     };
-  }
-
-  if (rows.length > 1) {
-    return {
-      status: 500,
-      error: "Serial key must be unique. Contact support.",
-    };
-  }
+  };
 
   const serialKeyData = rows[0];
-  if (serialKeyData.claimed_at !== null) {
+
+  if (serialKeyData.linked_to || serialKeyData.claimed_at !== null) {
     return {
-      status: 403,
-      error: "Serial key already redeemed.",
-    };
+      status: 404,
+      error: "Serial key already claimed.",
+    };    
   }
 
-  const checkpointKeyResponse = await RequestLuarmorUsersEndpoint(
+  if (serialKeyData.reserved_to !== user_id) {
+    return {
+      status: 404,
+      error: "Serial key already redeemed.",
+    };    
+  }
+
+  if (serialKeyData.reserved_until != reservedMaxTimeout) {
+    return {
+      status: 404,
+      error: `Serial key is being claimed, try again later.`,
+    };    
+  }  
+
+  //This can only return 1 or 0 users. (luarmor doesn't allow the same discord ID for different keys)
+  const getLuarmorUser = await RequestLuarmorUsersEndpoint(
     HTTP_METHOD.GET,
     `discord_id=${user_id}`
   );
 
-  if (checkpointKeyResponse.status !== 200) {
+  if (getLuarmorUser.status !== 200) {
     return {
       status: 500,
       error:
         "internal luarmor api error, returned status code " +
-        checkpointKeyResponse.status +
-        ", please wait a few minutes and try again",
+        getLuarmorUser.status +
+        ", please wait a few minutes and try again.",
     };
   }
 
-  const checkpointKey = await checkpointKeyResponse.json();
-  let does_user_have_checkpoint_key = false;
-  if (checkpointKey.users.length !== 0) {
-    if (checkpointKey.users[0].note === "Ad Reward") {
-      does_user_have_checkpoint_key = true;
+  const lrmUserData = await getLuarmorUser.json();
+  if (!lrmUserData.success) {
+    return {
+      status: 500,
+      error: `Luarmor error: ${lrmUserData.message}`
+    };    
+  }
+
+  const lrmUserFound = lrmUserData.users.length !== 0;
+  
+  let isCheckpointKey = false;
+  if (lrmUserFound) {
+    if (lrmUserData.note === "Ad Reward") {
+      isCheckpointKey = true;
     }
 
-    if (!does_user_have_checkpoint_key) {
-      if (checkpointKey.users[0].auth_expire == -1) {
+    if (!isCheckpointKey) {
+      if (lrmUserData.users[0].auth_expire == -1) {
         return {
           status: 403,
-          error: "user already has a permanent key",
+          error: "You already have a lifetime key!",
         };
       }
     }
   }
 
-  if (does_user_have_checkpoint_key) {
+  if (isCheckpointKey) {
     await RequestLuarmorUsersEndpoint(
       HTTP_METHOD.DELETE,
-      `user_key=${checkpointKey.users[0].user_key}`
+      `user_key=${lrmUserData.users[0].user_key}`
     );
   }
 
   const validFor: string | null = serialKeyData.key_duration; //null for lifetime
-  let keyExpirationDate = -1;
+  const lifetimeDate = -1;
 
-  const getExistingUser = await GetUserSubscription(user_id);
+  let luarmorSerialKey = '';
 
-  let keyCreation;
-  const claimedAtDate = Date.now(); //key is being claimed at this exact second
-  const unixtimeStamp = Math.floor(claimedAtDate / 1000);
+  if (lrmUserFound) {
+    luarmorSerialKey = lrmUserData.users[0].user_key
 
-  if (!getExistingUser) {
-    if (validFor) {
-      // Calculate expiration time
-      const durationMs = parseIntervalToMs(validFor);
-      keyExpirationDate = Math.floor(
-        new Date(claimedAtDate + durationMs).getTime() / 1000
-      ); //must be in seconds
+    //Updating an existing user
+    const addSubscriptionTime = validFor ? (lrmUserData.users[0].auth_expire + parseIntervalToSec(validFor)) : lifetimeDate
+    const response = await RequestLuarmorUsersEndpoint(HTTP_METHOD.PATCH, "", {
+      user_key: luarmorSerialKey,
+      auth_expire: addSubscriptionTime,
+    });
+
+    if (!response.ok) {
+      return {
+        status: 500,
+        error: `Luarmor API error: ${response.status}`,
+      };
     }
 
+  } else { 
+
     //Creating a new user
+    const createSubscriptionTime = validFor ? (claimedAtUnixtimestamp + parseIntervalToSec(validFor)) : lifetimeDate
     const response = await RequestLuarmorUsersEndpoint(HTTP_METHOD.POST, "", {
       discord_id: user_id,
       note: (serialKeyData.order_id ?? "Generic ID") + " - " + serial,
-      auth_expire: keyExpirationDate,
+      auth_expire: createSubscriptionTime,
     });
 
     if (!response.ok) {
@@ -114,68 +172,15 @@ export async function RedeemKey(serial: string, user_id: string) {
       };
     }
 
-    keyCreation = await response.json();
-
-    if (!keyCreation.success) {
-      return {
-        status: 500,
-        error: `Luarmor API error: ${keyCreation.message}`,
-      };
-    }
-
-    // Calculate the actual expires_at value for database insertion
-    const dbExpiresAt =
-      keyExpirationDate === -1
-        ? -1
-        : new Date(keyExpirationDate * 1000).getTime();
-
-    await sql`INSERT INTO mspaint_users (lrm_serial, discord_id, expires_at) VALUES (${keyCreation.user_key}, ${user_id}, ${dbExpiresAt})`;
-  } else {
-    // Update user expiration + other info first
-    await rateLimitService.trackRequest("syncuser", user_id);
-
-    const result = await SyncSingleLuarmorUser(user_id, false);
-    if (result.status !== 200) {
-      throw Error(`Luarmor sync error: ${result.error}`);
-    }
-
-    //we should only check if the user is not going to a lifetime state
-    if (validFor) {
-      //this must be valid since we already checked before
-      const getUpdatedExistingUser = await GetUserSubscription(user_id);
-
-      // Calculate expiration time
-      const expireLuarmorDate = new Date(
-        Number(getUpdatedExistingUser.expires_at)
-      );
-      const durationMs = parseIntervalToMs(validFor);
-      keyExpirationDate = Math.floor(
-        new Date(expireLuarmorDate.getTime() + durationMs).getTime() / 1000
-      ); //must be in seconds
-    }
-
-    //Updating an existing user
-    const response = await RequestLuarmorUsersEndpoint(HTTP_METHOD.PATCH, "", {
-      user_key: getExistingUser.lrm_serial,
-      auth_expire: keyExpirationDate,
-    });
-
-    if (!response.ok) {
-      return {
-        status: 500,
-        error: `Luarmor API error: ${response.status}`,
-      };
-    }
-
-    //Make a final syncronization with updated expiration date
-    await rateLimitService.trackRequest("syncuser", user_id);
-    await SyncSingleLuarmorUser(user_id);
+    const lrmCreatedUserData = await response.json();
+    luarmorSerialKey = lrmCreatedUserData.user_key
   }
 
-  const luarmorSerial = !getExistingUser
-    ? keyCreation.user_key
-    : getExistingUser.lrm_serial;
+  //Sync with updated expiration date (system rate limit just to track the amount of requests)
+  await rateLimitService.trackRequest("syncuser");
+  await SyncSingleLuarmorUserByLRMSerial(luarmorSerialKey);
 
+  //Actually claim the key
   await sql`UPDATE mspaint_keys_new
     SET claimed_at = NOW(),
       linked_to = ${user_id}
@@ -215,7 +220,7 @@ export async function RedeemKey(serial: string, user_id: string) {
                 },
                 {
                   name: "Luarmor Serial",
-                  value: `||${keyCreation.user_key}||`,
+                  value: `||${luarmorSerialKey}||`,
                   inline: true,
                 },
               ],
@@ -258,12 +263,12 @@ export async function RedeemKey(serial: string, user_id: string) {
               },
               {
                 name: "Luarmor Serial",
-                value: `||${luarmorSerial}||`,
+                value: `||${luarmorSerialKey}||`,
                 inline: true,
               },
               {
                 name: `Key duration: ${validFor ?? "Lifetime"}`,
-                value: `Claimed at: <t:${unixtimeStamp}:d><t:${unixtimeStamp}:T>`,
+                value: `Claimed at: <t:${claimedAtUnixtimestamp}:d><t:${claimedAtUnixtimestamp}:T>`,
                 inline: true,
               },
             ],
@@ -278,6 +283,7 @@ export async function RedeemKey(serial: string, user_id: string) {
   return {
     status: 200,
     success: "key redeemed successfully",
-    user_key: luarmorSerial,
+    user_key: luarmorSerialKey,
   };
+
 }

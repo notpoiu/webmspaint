@@ -29,8 +29,15 @@ export class RateLimitService {
     this.createLimiter("syncuser", {
       analytics: true,
       prefix: "ratelimit:syncuser",
-      limiter: Ratelimit.slidingWindow(1, "5m"),
+      limiter: Ratelimit.slidingWindow(2, "5m"),
     }, 5 * 60 * 1000); // 5 minutes in ms
+
+    this.createLimiter("redeemkey", {
+      analytics: true,
+      prefix: "ratelimit:redeemkey",
+      limiter: Ratelimit.slidingWindow(10, "2m"),
+    }, 2 * 60 * 1000); // 2 minutes in ms
+
   }
 
   public static getInstance(): RateLimitService {

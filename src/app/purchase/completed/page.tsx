@@ -110,8 +110,7 @@ export default async function Page(props: {
   if (serials.length === 1) {
     const serial = serials[0];
 
-    let { rows } =
-      await sql`SELECT * FROM mspaint_keys_new WHERE serial = ${serial}`;
+    let { rows } = await sql`SELECT * FROM mspaint_keys_new WHERE serial = ${serial}`;
 
     if (rows.length === 0) {
       return (
@@ -143,102 +142,105 @@ export default async function Page(props: {
     }
 
     if (rows[0].claimed_at) {
+
       ({ rows } = await sql`
-                SELECT *
-                FROM public.mspaint_keys_new AS k
-                JOIN public.mspaint_users AS u
-                ON k.linked_to = u.discord_id WHERE k.serial = ${serial};`);
-
-      const lrm_serial = rows[0].lrm_serial;
-
-      if (
-        session &&
-        session.user &&
-        rows[0].linked_to == session.user.id &&
-        lrm_serial
-      ) {
-        return (
-          <main className="flex justify-center items-center flex-col min-h-screen relative p-4">
-            <FileTextIcon className="h-0 w-0 sm:h-32 sm:w-32 text-blue-500 mb-2" />
-            <div className="relative z-10 w-full max-w-[475px]">
-              <Card className="w-full">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-2xl">mspaint key claimed successfully!</CardTitle>
-                  <CardDescription>
-                    Thank you for your support! without you we wouldn&apos;t be
-                    able to keep mspaint running.
-                    <br />
-                    <br />
-                    You may also use the discord{" "}
-                    <Link
-                      href="https://discord.com/channels/1282361102935658777/1282373591652110417/1304067150171865131"
-                      target="_blank"
-                      className="text-blue-400 underline break-all"
-                    >
-                      script panel
-                    </Link>{" "}
-                    to get your script or to reset your HWID.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex justify-center">
-                    <RedeemComponent
-                      serial={null}
-                      username={displayName ?? "unknown"}
-                      user_id={session.user.id || "skibidiSigma"}
-                    />
-                  </div>
-                  {/* <div className="flex flex-col gap-2 items-center w-full mt-5"> */}
-                    <ClientCodeBlock classNameBlock={"border-[5px] border-border/40 rounded-md"} serial={lrm_serial} />
-                  {/* </div> */}
-
-                  <Separator className="mt-2 mb-3" />
-                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                    <div className="flex flex-col">
-                      <p className="text-sm sm:text-base">
-                        Logged in as {displayName}
-                      </p>
-                      <p className="text-muted-foreground text-xs sm:text-sm">
-                        Not you? Sign out.
-                      </p>
-                    </div>
-
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4">
-                      <Link href="/subscription-dashboard" className="w-full">
-                        <Button
-                          variant="default"
-                          size="sm"
-                          className="cursor-pointer w-full sm:w-auto mb-2 sm:mb-0"
-                        >
-                          Go to Dashboard
-                        </Button>
-                      </Link>
-
-                      <form
-                        action={async () => {
-                          "use server";
-                          await signOut();
-                        }}
+        SELECT *
+        FROM public.mspaint_keys_new AS k
+        JOIN public.mspaint_users AS u
+        ON k.linked_to = u.discord_id WHERE k.serial = ${serial};`
+      );
+      
+      if (rows.length > 0) {
+        const lrm_serial = rows[0].lrm_serial;
+        if (
+          session &&
+          session.user &&
+          rows[0].linked_to == session.user.id &&
+          lrm_serial
+        ) {
+          return (
+            <main className="flex justify-center items-center flex-col min-h-screen relative p-4">
+              <FileTextIcon className="h-0 w-0 sm:h-32 sm:w-32 text-blue-500 mb-2" />
+              <div className="relative z-10 w-full max-w-[475px]">
+                <Card className="w-full">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-2xl">mspaint key claimed successfully!</CardTitle>
+                    <CardDescription>
+                      Thank you for your support! without you we wouldn&apos;t be
+                      able to keep mspaint running.
+                      <br />
+                      <br />
+                      You may also use the discord{" "}
+                      <Link
+                        href="https://discord.com/channels/1282361102935658777/1282373591652110417/1304067150171865131"
+                        target="_blank"
+                        className="text-blue-400 underline break-all"
                       >
-                        <Button
-                          variant="destructive"
-                          size="sm"
-                          className="w-full sm:w-auto"
-                        >
-                          Sign Out
-                        </Button>
-                      </form>
+                        script panel
+                      </Link>{" "}
+                      to get your script or to reset your HWID.
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex justify-center">
+                      <RedeemComponent
+                        serial={null}
+                        username={displayName ?? "unknown"}
+                        user_id={session.user.id || "skibidiSigma"}
+                      />
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-            <p className="text-xs sm:text-sm mt-2 text-center px-4">
-              <span className="text-muted-foreground">Order ID:</span>{" "}
-              <span className="break-all">{rows[0].order_id}</span>
-            </p>
-          </main>
-        );
+                    {/* <div className="flex flex-col gap-2 items-center w-full mt-5"> */}
+                      <ClientCodeBlock classNameBlock={"border-[5px] border-border/40 rounded-md"} serial={lrm_serial} />
+                    {/* </div> */}
+
+                    <Separator className="mt-2 mb-3" />
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                      <div className="flex flex-col">
+                        <p className="text-sm sm:text-base">
+                          Logged in as {displayName}
+                        </p>
+                        <p className="text-muted-foreground text-xs sm:text-sm">
+                          Not you? Sign out.
+                        </p>
+                      </div>
+
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4">
+                        <Link href="/subscription-dashboard" className="w-full">
+                          <Button
+                            variant="default"
+                            size="sm"
+                            className="cursor-pointer w-full sm:w-auto mb-2 sm:mb-0"
+                          >
+                            Go to Dashboard
+                          </Button>
+                        </Link>
+
+                        <form
+                          action={async () => {
+                            "use server";
+                            await signOut();
+                          }}
+                        >
+                          <Button
+                            variant="destructive"
+                            size="sm"
+                            className="w-full sm:w-auto"
+                          >
+                            Sign Out
+                          </Button>
+                        </form>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+              <p className="text-xs sm:text-sm mt-2 text-center px-4">
+                <span className="text-muted-foreground">Order ID:</span>{" "}
+                <span className="break-all">{rows[0].order_id}</span>
+              </p>
+            </main>
+          );
+        }
       }
 
       return (
@@ -278,7 +280,7 @@ export default async function Page(props: {
             <CardFooter className="flex flex-col gap-2">
               {(() => {
                 const matchingResellers = Object.entries(RESELLER_DATA).filter(
-                  ([key]) => rows[0].order_id?.toLowerCase().includes(key)
+                  ([key]) => rows[0]?.order_id?.toLowerCase().includes(key)
                 );
 
                 if (matchingResellers.length > 0) {

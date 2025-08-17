@@ -55,11 +55,10 @@ import {
 import { LoaderIcon, MoreHorizontal } from "lucide-react";
 import {
   calculateTimeStringRemainingFormated,
-  cn,
-  parseIntervalToMs,
+  cn
 } from "@/lib/utils";
 import { toast } from "sonner";
-import { DeleteSerial, GetAllSerialData } from "@/server/dashutils";
+import { DeleteSerial, GetAllSerialData, SyncSingleLuarmorUserByDiscord, SyncSingleLuarmorUserByLRMSerial } from "@/server/dashutils";
 interface DataTableProps<TData> {
   data: TData[];
 }
@@ -310,26 +309,29 @@ export function SerialDataTable({ data }: DataTableProps<SerialDef>) {
                     );
 
                     try {
-                      if (!row.original.discord_id) {
+                      const { lrm_serial, discord_id } = row.original;
+
+                      if (!discord_id) {
                         toast.error("Discord ID is missing");
                         return;
                       }
 
-                      const response = await fetch("/api/sync-user", {
-                        method: "POST",
-                        headers: {
-                          "Content-Type": "application/json"
-                        }
-                      });
+                      let result;
 
-                      const result = await response.json();
+                      if (lrm_serial) {
+                        result = await SyncSingleLuarmorUserByLRMSerial(lrm_serial);
+                      }
+
+                      if (!result || result.status !== 200) {
+                        result = await SyncSingleLuarmorUserByDiscord(discord_id);
+                      }
 
                       if (result.status === 200) {
                         toast.success(result.success);
-                        refreshData();
                       } else {
-                        toast.error( result.error || "Sync failed" );
+                        toast.error(result.error || "Sync failed");
                       }
+                      
                     } finally {
                       setSyncingRows((prev) => {
                         const newSet = new Set(prev);
