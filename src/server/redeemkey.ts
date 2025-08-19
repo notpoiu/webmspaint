@@ -57,7 +57,7 @@ export async function RedeemKey(serial: string, user_id: string) {
   if (rows.length === 0) {
     return {
       status: 404,
-      error: "Key not found or already claimed.",
+      error: "Key not found.",
     };
   };
 
@@ -176,16 +176,17 @@ export async function RedeemKey(serial: string, user_id: string) {
     luarmorSerialKey = lrmCreatedUserData.user_key
   }
 
-  //Sync with updated expiration date (system rate limit just to track the amount of requests)
-  await rateLimitService.trackRequest("syncuser");
-  await SyncSingleLuarmorUserByLRMSerial(luarmorSerialKey);
-
   //Actually claim the key
   await sql`UPDATE mspaint_keys_new
     SET claimed_at = NOW(),
       linked_to = ${user_id}
     WHERE serial = ${serial}
   `;
+  
+  //Sync with updated expiration date (system rate limit just to track the amount of requests)
+  await rateLimitService.trackRequest("syncuser");
+  await SyncSingleLuarmorUserByLRMSerial(luarmorSerialKey);
+
 
   const order_id = (serialKeyData.order_id as string).toLowerCase();
   for (const [key, data] of Object.entries(RESELLER_DATA)) {
