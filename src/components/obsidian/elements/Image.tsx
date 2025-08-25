@@ -1,0 +1,1 @@
+// text={element.text} value={element.value} min={element.properties.min} max={element.properties.max} compact={element.properties.compact} rounding={element.properties.rounding} prefix={element.properties.prefix} suffix={element.properties.suffix}
