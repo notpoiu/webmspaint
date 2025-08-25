@@ -1,8 +1,8 @@
 /* eslint-disable @next/next/no-img-element */
-export const LatestBuild = "0.2.0.3";
-
-import { ObsidianGroupboxSection } from "@/components/obsidian/GroupboxSection";
 import { BoxesIcon, BugIcon, EarthIcon, EllipsisIcon, FilesIcon, HouseIcon, LinkIcon, MapPinnedIcon, MessageSquareShareIcon, ScanEyeIcon, SettingsIcon, SparklesIcon, UserRoundIcon, WrenchIcon } from "lucide-react";
+import { ObsidianGroupboxSection } from "@/components/obsidian/obsidian";
+
+export const LatestBuild = "0.2.0.3";
 
 const ObsidianTabContainer = ({ left, right, header }: { left?: string, right?: string, header?: string }) => {
     return (
@@ -48,6 +48,8 @@ const IncludedTabs = [
             />
     }
 ]
+
+
 
 export const MenuMapping = {
     "DOORS": {
