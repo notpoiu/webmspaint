@@ -1,6 +1,5 @@
 "use client";
 import { ChevronsUpDown } from "lucide-react";
-import { Obsidian } from "./obsidian/obsidian";
 import WordFadeIn from "./ui/word-fade-in";
 import { BlurFade } from "./magicui/blur-fade";
 
@@ -24,6 +23,7 @@ import {
 import { LatestBuild, MenuMapping } from "../../features.config";
 
 import type { JSX } from "react";
+import { Obsidian } from "./obsidian/obsidian";
 
 export function GameSelection({ onValueChange }: { onValueChange: (value: string) => void }) {
     const [open, setOpen] = React.useState(false)
@@ -85,20 +85,14 @@ export function GameSelection({ onValueChange }: { onValueChange: (value: string
 export function Features() {
     const [game, setGame] = React.useState("DOORS - The Hotel");
     const [footerGame, setFooterGame] = React.useState("DOORS");
-    const [tabs, setTabs] = React.useState<{
-        title: string;
-        icon: React.ComponentType;
-        tabContent: JSX.Element;
-    }[]>(MenuMapping["DOORS"]["The Hotel"]["Tabs"]);
-
+    
     const memoizedObsidian = React.useMemo(() => (
         <Obsidian
             title={"mspaint v4"}
             icon={"/icon.png"}
             footer={`Game: ${footerGame} | Build: ${LatestBuild}`}
-            tabs={tabs}
         />
-    ), [footerGame, tabs]);
+    ), [footerGame]);
 
     return (
         <div id="features" className="flex flex-col items-center text-center py-28 z-10">
@@ -118,8 +112,6 @@ export function Features() {
 
                     // @ts-expect-error erm
                     setFooterGame(gameData.Game);
-                    // @ts-expect-error erm
-                    setTabs(gameData.Tabs);
                 }} />
                 <p className="hidden" key={game}>bruh</p>
             </BlurFade>
