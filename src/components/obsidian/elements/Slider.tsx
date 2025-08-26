@@ -184,10 +184,10 @@ export default function Slider({
           <span
             className="text-center text-white text-sm select-none"
             style={{
-              WebkitTextStroke: "0.6px #000",
+              WebkitTextStroke: "0.1px #000",
               WebkitTextFillColor: "white",
               textShadow:
-                "0 0.1px 0 #000, 0.1px 0 0 #000, 0 -0.1px 0 #000, -0.1px 0 0 #000",
+                "0 1px 0 #000, 1px 0 0 #000, 0 -1px 0 #000, -1px 0 0 #000",
             }}
           >
             {formatValue(displayValue as number)}/
