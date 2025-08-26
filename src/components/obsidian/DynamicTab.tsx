@@ -10,6 +10,7 @@ import { Tabbox } from "./elements/TabBox";
 import Dropdown from "./elements/Dropdown";
 import Input from "./elements/Input";
 import { TabData, UIElement } from "./element.types";
+import Slider from "./elements/Slider";
 
 // Parsers //
 export const ElementParser: React.FC<{ element: UIElement }> = ({
@@ -42,9 +43,20 @@ export const ElementParser: React.FC<{ element: UIElement }> = ({
         />
       );
 
-    /*    case 'Slider':
-            return <Slider text={element.text} value={element.value} min={element.properties.min} max={element.properties.max} compact={element.properties.compact} rounding={element.properties.rounding} prefix={element.properties.prefix} suffix={element.properties.suffix} />;
-      */
+    case "Slider":
+      return (
+        <Slider
+          text={element.text}
+          value={element.value}
+          min={element.properties.min}
+          max={element.properties.max}
+          compact={element.properties.compact}
+          rounding={element.properties.rounding}
+          prefix={element.properties.prefix}
+          suffix={element.properties.suffix}
+        />
+      );
+
     case "Input":
       return (
         <Input

@@ -46,7 +46,7 @@ export default function Dropdown({
                 ? typeof selected === "string"
                   ? selected
                   : Object.keys(selected).join(", ")
-                : ""
+                : "---"
             }
             className="text-left text-white opacity-100 m-1 text-xs"
             containerClassName="justify-start flex relative"

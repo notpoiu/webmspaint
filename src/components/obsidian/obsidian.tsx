@@ -33,7 +33,7 @@ export function Obsidian({ title, icon, footer }: ObsidianProps) {
         {/* Title */}
         <div className="flex flex-row items-center justify-center w-[30%] h-full gap-[3px] border-b-[rgb(40,40,40)] border-b">
           {icon && <Image src={icon} width={30} height={30} alt="logo" />}
-          <span className="text-white text-sm mt-[5px]">{title}</span>
+          <span className="text-white text-sm ml-1">{title}</span>
         </div>
 
         <div className="w-[70%] h-full flex flex-row items-center gap-[3px] border-l-[rgb(40,40,40)] border-l border-b-[rgb(40,40,40)] border-b">
