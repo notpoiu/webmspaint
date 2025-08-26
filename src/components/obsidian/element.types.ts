@@ -83,27 +83,25 @@ info.properties = {
 export interface ImageElement {
   index: number;
   type: "Image";
-  properties:
-    | {
-        image: string;
-        color: {
-          r: number;
-          g: number;
-          b: number;
-        };
-        rectOffset: {
-          x: number;
-          y: number;
-        };
-        rectSize: {
-          x: number;
-          y: number;
-        };
-        height: number;
-        scaleType: string;
-        transparency: number;
-      }
-    | [];
+  properties: {
+    image: string;
+    color: {
+      r: number;
+      g: number;
+      b: number;
+    };
+    rectOffset: {
+      x: number;
+      y: number;
+    };
+    rectSize: {
+      x: number;
+      y: number;
+    };
+    height: number;
+    scaleType: string;
+    transparency: number;
+  };
   visible?: boolean;
 }
 

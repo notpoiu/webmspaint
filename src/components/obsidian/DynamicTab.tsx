@@ -5,6 +5,7 @@ import { TabContainer, TabLeft, TabRight } from "./elements/Tab";
 import Divider from "./elements/Divider";
 import Toggle from "./elements/Toggle";
 import Button from "./elements/Button";
+import Image from "./elements/Image";
 import Label from "./elements/Label";
 import { Tabbox } from "./elements/TabBox";
 import Dropdown from "./elements/Dropdown";
@@ -69,11 +70,25 @@ export const ElementParser: React.FC<{ element: UIElement }> = ({
     case "Divider":
       return <Divider />;
 
+    case "Image":
+      return (
+        <Image
+          image={element.properties.image}
+          transparency={element.properties.transparency}
+          scaleType={element.properties.scaleType}
+          color={element.properties.color}
+          rectOffset={element.properties.rectOffset}
+          height={element.properties.height}
+          rectSize={element.properties.rectSize}
+        />
+      );
+
     default:
       // const exhaustiveCheck: never = element;
       return (
         <div className="text-red-400 text-left">
-          Unknown element type: {element.type}
+          Unknown element type:{" "}
+          {(element as { type: string }).type || "Unknown"}
         </div>
       );
   }
