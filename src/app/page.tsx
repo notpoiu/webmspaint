@@ -33,6 +33,7 @@ import {
   ScrollVelocityContainer,
   ScrollVelocityRow,
 } from "@/components/magicui/scroll-based-velocity";
+import { UIStateProvider } from "@/components/obsidian/uiState";
 
 export default async function Home() {
   const session = await auth();
@@ -375,7 +376,9 @@ export default async function Home() {
           </BlurFade>
         </div>
 
-        <Features />
+        <UIStateProvider>
+          <Features />
+        </UIStateProvider>
 
         <div className="flex flex-col items-center text-center py-28">
           <WordFadeIn

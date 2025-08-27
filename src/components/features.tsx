@@ -24,6 +24,7 @@ import { LatestBuild, MenuMapping } from "../../features.config";
 
 import { Obsidian } from "./obsidian/obsidian";
 import { set } from "zod";
+import { useResetUIState } from "./obsidian/uiState";
 
 export function GameSelection({
   onValueChange,
@@ -93,6 +94,8 @@ export function Features() {
   const [footerGame, setFooterGame] = React.useState("DOORS");
   const [uiData, setUIData] = React.useState(undefined);
 
+  const refresh = useResetUIState();
+
   const memoizedObsidian = React.useMemo(() => {
     return (
       <Obsidian
@@ -115,16 +118,16 @@ export function Features() {
     setGame(game);
 
     const dataURL = (gameData as { DataURL: string }).DataURL;
-    if (dataURL) {
-      fetch(dataURL)
-        .then((res) => res.json())
-        .then((data) => {
-          setUIData(data);
-        });
-    }
+    if (!dataURL) return;
 
-    // @ts-expect-error erm
-    setFooterGame(gameData.Game);
+    fetch(dataURL)
+      .then((res) => res.json())
+      .then((data) => {
+        setUIData(data);
+        // @ts-expect-error erm
+        setFooterGame(gameData.Game);
+        refresh();
+      });
   }, []);
 
   return (
@@ -155,16 +158,16 @@ export function Features() {
             setGame(game);
 
             const dataURL = (gameData as { DataURL: string }).DataURL;
-            if (dataURL) {
-              fetch(dataURL)
-                .then((res) => res.json())
-                .then((data) => {
-                  setUIData(data);
-                });
-            }
+            if (!dataURL) return;
 
-            // @ts-expect-error erm
-            setFooterGame(gameData.Game);
+            fetch(dataURL)
+              .then((res) => res.json())
+              .then((data) => {
+                setUIData(data);
+                // @ts-expect-error erm
+                setFooterGame(gameData.Game);
+                refresh();
+              });
           }}
         />
       </BlurFade>
