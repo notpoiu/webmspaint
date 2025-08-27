@@ -137,7 +137,7 @@ export async function RedeemKey(serial: string, user_id: string) {
   const lifetimeDate = -1;
 
   let luarmorSerialKey = "";
-
+  let timeToBeAdded = claimedAtUnixtimestamp;
   if (lrmUserFound) {
     luarmorSerialKey = lrmUserData.users[0].user_key;
 
@@ -149,6 +149,8 @@ export async function RedeemKey(serial: string, user_id: string) {
       user_key: luarmorSerialKey,
       auth_expire: addSubscriptionTime,
     });
+
+    timeToBeAdded = addSubscriptionTime
 
     if (!response.ok) {
       return {
@@ -166,6 +168,8 @@ export async function RedeemKey(serial: string, user_id: string) {
       note: (serialKeyData.order_id ?? "Generic ID") + " - " + serial,
       auth_expire: createSubscriptionTime,
     });
+
+    timeToBeAdded = createSubscriptionTime
 
     if (!response.ok) {
       return {
@@ -188,7 +192,21 @@ export async function RedeemKey(serial: string, user_id: string) {
   //Sync with updated expiration date (system rate limit just to track the amount of requests)
   await rateLimitService.trackRequest("syncuser");
 
-  await SyncSingleLuarmorUserByLRMSerial(luarmorSerialKey, false);
+  //in case we wanna handle multiple users one day
+  const user_data = {
+    users: 
+    [
+      {
+        auth_expire: timeToBeAdded.toString(),
+        discord_id: user_id,
+        status: lrmUserFound ? lrmUserData.users[0].status : "reset",
+        banned: lrmUserFound ? lrmUserData.users[0].banned : 0
+      }
+    ]
+  }
+
+  //This will not use luarmor to syncronize since we're passing the essential data directly
+  const sync_result = await SyncSingleLuarmorUserByLRMSerial(luarmorSerialKey, false, user_data);
 
   const order_id = (serialKeyData.order_id as string).toLowerCase();
   for (const [key, data] of Object.entries(RESELLER_DATA)) {
@@ -283,9 +301,12 @@ export async function RedeemKey(serial: string, user_id: string) {
     break;
   }
 
+  const operation = lrmUserFound ? "updated" : "created"
+  const SyncText = sync_result.status == 200 ? `User ${operation}` : "Warning: Unable to syncronize with luarmor."
+
   return {
     status: 200,
-    success: "key redeemed successfully",
+    success: "key redeemed successfully!" + SyncText,
     user_key: luarmorSerialKey,
   };
 }

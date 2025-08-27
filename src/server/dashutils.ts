@@ -217,25 +217,38 @@ export async function GetAllUserData() {
  * @param from_dashboard 
  * @returns 
 */
-export async function SyncSingleLuarmorUserByLRMSerial(lrm_serial: string, from_dashboard: boolean = true) {
+
+export async function SyncSingleLuarmorUserByLRMSerial(lrm_serial: string, from_dashboard: boolean = true, 
+  override_data?: {
+    users: {
+      auth_expire: string;
+      discord_id: string;
+      banned: number;
+      status: string;
+    }[]
+  }) {
   const allowed = await isUserAllowedOnDashboard();
   if (!allowed && from_dashboard)
     return { status: 403, error: "Permission denied" };
 
-  const response = await RequestLuarmorUsersEndpoint(
-    HTTP_METHOD.GET,
-    `user_key=${lrm_serial}`
-  );
+  let data = null;
+  if (!override_data) {
+    const response = await RequestLuarmorUsersEndpoint(
+      HTTP_METHOD.GET,
+      `user_key=${lrm_serial}`
+    );
 
-  if (!response.ok) {
-    return {
-      status: 500,
-      error: `Luarmor API error: ${response.status}`,
-    };
+    if (!response.ok) {
+      return {
+        status: 500,
+        error: `Luarmor API error: ${response.status}`,
+      };
+    }
+
+    data = await response.json();
   }
-
-  const data = await response.json();
-  const user = data.users?.[0];
+  
+  const user = data ? data.users[0] : override_data?.users[0];
 
   if (!user) {
     await sql`UPDATE mspaint_users
