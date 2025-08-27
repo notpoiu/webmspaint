@@ -152,10 +152,6 @@ export default function Dropdown({
           </ButtonBase>
         </DropdownMenuTrigger>
         <DropdownMenuContent
-          onOpenAutoFocus={(e) => {
-            // Prevent auto-focus from scrolling the page to the top/left
-            e.preventDefault();
-          }}
           onCloseAutoFocus={(e) => {
             // Prevent returning focus from causing scroll jumps
             e.preventDefault();
