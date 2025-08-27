@@ -405,7 +405,7 @@ export default async function Home() {
                 const labels: string[] = [];
                 const data = languageData || {};
                 Object.keys(data).forEach((code) => {
-                  const entry: any = (data as any)[code];
+                  const entry = data[code];
                   if (!entry) return;
                   if (
                     code === "zh" &&
@@ -414,7 +414,11 @@ export default async function Home() {
                   ) {
                     Object.keys(entry).forEach((variant) => {
                       if (variant.toLowerCase() === "default") return;
-                      const v = entry[variant];
+                      const v = entry[variant as keyof typeof entry] as {
+                        NativeName: string;
+                        EnglishName: string;
+                      };
+
                       if (v && (v.NativeName || v.EnglishName)) {
                         labels.push(v.NativeName || v.EnglishName);
                       }

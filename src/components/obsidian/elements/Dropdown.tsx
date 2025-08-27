@@ -37,12 +37,19 @@ export default function Dropdown({
   const [isOpen, setIsOpen] = React.useState(false);
   const { state, setState } = useUIState();
 
-  const initial = React.useMemo(() => stateKey && state[stateKey], [stateKey, state]);
+  const initial = React.useMemo(
+    () => stateKey && state[stateKey],
+    [stateKey, state]
+  );
 
-  const normalizeInitial = React.useCallback((): string | { [key: string]: boolean } => {
+  const normalizeInitial = React.useCallback(():
+    | string
+    | { [key: string]: boolean } => {
     if (multi) {
       if (initial !== undefined) {
-        if (typeof initial === "object" && !Array.isArray(initial)) return initial as any;
+        if (typeof initial === "object" && !Array.isArray(initial))
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          return initial as any;
         if (Array.isArray(initial))
           return (initial as string[]).reduce(
             (acc, k) => ({ ...acc, [k]: true }),
@@ -55,7 +62,10 @@ export default function Dropdown({
           (acc, k) => ({ ...acc, [k]: true }),
           {} as Record<string, boolean>
         );
-      if (typeof value === "object" && value !== null && !Array.isArray(value)) return value as any;
+
+      if (typeof value === "object" && value !== null && !Array.isArray(value))
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        return value as any;
       if (typeof value === "string") return { [value]: true };
       return {};
     }
@@ -63,24 +73,33 @@ export default function Dropdown({
       if (typeof initial === "string") return initial as string;
       if (Array.isArray(initial)) return (initial as string[])[0] ?? "";
       if (typeof initial === "object" && initial !== null) {
-        const k = Object.keys(initial as any).find((kk) => (initial as any)[kk]);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const k = Object.keys(initial as any).find(
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (kk) => (initial as any)[kk]
+        );
         return k ?? "";
       }
     }
     if (typeof value === "string") return value as string;
     if (Array.isArray(value)) return (value as string[])[0] ?? "";
     if (typeof value === "object" && value !== null) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const k = Object.keys(value as any).find((kk) => (value as any)[kk]);
       return k ?? "";
     }
     return "";
   }, [initial, multi, value]);
 
-  const [local, setLocal] = React.useState<string | { [key: string]: boolean }>(normalizeInitial);
+  const [local, setLocal] = React.useState<string | { [key: string]: boolean }>(
+    normalizeInitial
+  );
 
   React.useEffect(() => {
     if (stateKey) {
       const cur = state[stateKey];
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       if (cur !== undefined) setLocal(cur as any);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -107,6 +126,7 @@ export default function Dropdown({
                   !Array.isArray(selected)
                 ) {
                   const keys = Object.keys(selected).filter(
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     (k) => (selected as any)[k]
                   );
                   return keys.length ? keys.join(", ") : "---";
@@ -153,14 +173,16 @@ export default function Dropdown({
               className={cn(
                 "py-0 gap-1 px-1",
                 IBMMono.className,
-                disabledValues.includes(option) && "opacity-40 cursor-not-allowed"
+                disabledValues.includes(option) &&
+                  "opacity-40 cursor-not-allowed"
               )}
               onClick={(e) => {
                 if (disabledValues.includes(option)) return;
                 if (multi) {
                   const selMap: Record<string, boolean> =
                     typeof selected === "object" && !Array.isArray(selected)
-                      ? (selected as any)
+                      ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        (selected as any)
                       : {};
                   const isSelected = !!selMap[option];
                   updateSelected({ ...selMap, [option]: !isSelected });
