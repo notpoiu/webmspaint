@@ -188,9 +188,6 @@ export async function RedeemKey(serial: string, user_id: string) {
   //Sync with updated expiration date (system rate limit just to track the amount of requests)
   await rateLimitService.trackRequest("syncuser");
 
-  // This sync is triggered by an end-user redeem action, not from dashboard.
-  // Pass `from_dashboard=false` to bypass dashboard auth checks so the
-  // mspaint_users row is updated and the success UI can render immediately.
   await SyncSingleLuarmorUserByLRMSerial(luarmorSerialKey, false);
 
   const order_id = (serialKeyData.order_id as string).toLowerCase();
