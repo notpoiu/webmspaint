@@ -7,7 +7,7 @@ import { Metadata, Viewport } from "next";
 import { notFound, redirect } from "next/navigation";
 
 const description =
-  "mspaint is the best free roblox script hub supporting games such as doors, 3008, room & doors, pressure, fisch and build a boat for treasure";
+  "mspaint is the best premium roblox script hub supporting games such as doors, 3008, room & doors, pressure, fisch and build a boat for treasure";
 
 export const metadata: Metadata = {
   title: {

@@ -146,6 +146,9 @@ importers:
       recharts:
         specifier: ^2.15.4
         version: 2.15.4(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+      rough-notation:
+        specifier: ^0.5.1
+        version: 0.5.1
       sonner:
         specifier: ^2.0.6
         version: 2.0.6(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
@@ -3942,6 +3945,9 @@ packages:
     resolution: {integrity: sha512-fS6iqSPZDs3dr/y7Od6y5nha8dW1YnbgtsyotCVvoFGKbERG++CVRFv1meyGDE1SNItQA8BrnCw7ScdAhRJ3XQ==}
     engines: {node: '>=10.0.0'}
     hasBin: true
+
+  rough-notation@0.5.1:
+    resolution: {integrity: sha512-ITHofTzm13cWFVfoGsh/4c/k2Mg8geKgBCwex71UZLnNuw403tCRjYPQ68jSAd37DMbZIePXPjDgY0XdZi9HPw==}
 
   run-parallel@1.2.0:
     resolution: {integrity: sha512-5l4VyZR86LZ/lDxZTR6jqL8AFE2S0IFLMP26AbjsLVADxHdhB/c0GUsH+y39UfCi3dzz8OlQuPmnaJOMoDHQBA==}
@@ -8526,6 +8532,8 @@ snapshots:
   rollup@2.79.2:
     optionalDependencies:
       fsevents: 2.3.3
+
+  rough-notation@0.5.1: {}
 
   run-parallel@1.2.0:
     dependencies:

@@ -71,55 +71,25 @@ export default function ReviewMarquee() {
 
   useEffect(() => {
     async function fetchData() {
-      const response = await fetch(
-        "https://api.github.com/repos/mspaint-cc/assets/contents/reviews",
-        {
-          next: { revalidate: 300 },
-          method: "GET",
-        }
-      );
+      try {
+        // Hit our cached server endpoint instead of GitHub directly
+        const response = await fetch("/api/reviews", { method: "GET" });
+        const payload = await response.json();
+        const reviews = (payload?.reviews || []) as Review[];
+        const avg = typeof payload?.average === "number" ? payload.average : 0;
 
-      const reviewsData = await response.json();
-      const randomReviews = reviewsData.filter((review: unknown) => {
-        const githubItem = review as GithubContent;
-        if (githubItem.type === "file") return false;
-        return Math.random() < 0.5;
-      });
-
-      const slicedReviews = randomReviews.slice(0, 17);
-      const reviews: Review[] = [];
-      let totalStars = 0;
-
-      for (const user_folder of slicedReviews) {
-        if (user_folder.type !== "dir") {
-          continue;
-        }
-
-        try {
-          const path = "https://raw.githubusercontent.com/mspaint-cc/assets/main/" + user_folder.path + "/";
-          const req = await fetch(path + "data.json", { cache: 'force-cache', next: { revalidate: 300 } });
-          const data = await req.json();
-
-          if (data.banned === true) {
-            continue;
-          }
-
-          reviews.push({
-            name: data.name,
-            username: data.username,
-            body: data.content,
-            img: path + "pfp.png",
-            stars: data.stars,
-          } as Review);
-
-          totalStars += data.stars;
-        } catch { } // we dont care about the error
+        const mid = Math.floor(reviews.length / 2);
+        setFirstRow(reviews.slice(0, mid));
+        setSecondRow(reviews.slice(mid));
+        setAverage(avg);
+      } catch {
+        // swallow and show empty state
+        setFirstRow([]);
+        setSecondRow([]);
+        setAverage(0);
+      } finally {
+        setIsLoading(false);
       }
-
-      setFirstRow(reviews.slice(0, reviews.length / 2));
-      setSecondRow(reviews.slice(reviews.length / 2));
-      setAverage(totalStars / reviews.length);
-      setIsLoading(false);
     }
 
     fetchData();
@@ -127,7 +97,7 @@ export default function ReviewMarquee() {
 
   const memoizedFirstMarquee = useMemo(
     () => (
-      <Marquee className="[--duration:60s]">
+      <Marquee className="[--duration:500s]">
         {firstRow.map((review) => (
           <ReviewCard key={review.username} {...review} />
         ))}
@@ -138,7 +108,7 @@ export default function ReviewMarquee() {
 
   const memoizedSecondMarquee = useMemo(
     () => (
-      <Marquee reverse className="[--duration:60s]">
+      <Marquee reverse className="[--duration:500s]">
         {secondRow.map((review) => (
           <ReviewCard key={review.username} {...review} />
         ))}
