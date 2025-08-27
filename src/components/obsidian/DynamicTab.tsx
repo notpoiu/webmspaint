@@ -47,7 +47,8 @@ export const ElementParser: React.FC<{ element: UIElement; stateKeyPrefix?: stri
           text={element.text}
           value={element.value}
           options={element.properties.values}
-          multi={element.multi}
+          multi={(element as any).multi ?? (element as any).properties?.multi}
+          disabledValues={(element as any).properties?.disabledValues || []}
           stateKey={`${stateKeyPrefix || "global"}:el:Dropdown:${element.index}`}
         />
       );

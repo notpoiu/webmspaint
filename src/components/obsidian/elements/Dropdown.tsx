@@ -24,21 +24,59 @@ export default function Dropdown({
   value,
   options,
   multi,
+  disabledValues = [],
   stateKey,
 }: {
   text: string;
-  value: string | { [key: string]: boolean };
+  value: string | string[] | { [key: string]: boolean };
   options: string[];
   multi: boolean | undefined;
+  disabledValues?: string[];
   stateKey?: string;
 }) {
   const [isOpen, setIsOpen] = React.useState(false);
   const { state, setState } = useUIState();
 
   const initial = React.useMemo(() => stateKey && state[stateKey], [stateKey, state]);
-  const [local, setLocal] = React.useState<string | { [key: string]: boolean }>(
-    (initial as any) ?? value
-  );
+
+  const normalizeInitial = React.useCallback((): string | { [key: string]: boolean } => {
+    if (multi) {
+      if (initial !== undefined) {
+        if (typeof initial === "object" && !Array.isArray(initial)) return initial as any;
+        if (Array.isArray(initial))
+          return (initial as string[]).reduce(
+            (acc, k) => ({ ...acc, [k]: true }),
+            {} as Record<string, boolean>
+          );
+        if (typeof initial === "string") return { [initial]: true };
+      }
+      if (Array.isArray(value))
+        return (value as string[]).reduce(
+          (acc, k) => ({ ...acc, [k]: true }),
+          {} as Record<string, boolean>
+        );
+      if (typeof value === "object" && value !== null && !Array.isArray(value)) return value as any;
+      if (typeof value === "string") return { [value]: true };
+      return {};
+    }
+    if (initial !== undefined) {
+      if (typeof initial === "string") return initial as string;
+      if (Array.isArray(initial)) return (initial as string[])[0] ?? "";
+      if (typeof initial === "object" && initial !== null) {
+        const k = Object.keys(initial as any).find((kk) => (initial as any)[kk]);
+        return k ?? "";
+      }
+    }
+    if (typeof value === "string") return value as string;
+    if (Array.isArray(value)) return (value as string[])[0] ?? "";
+    if (typeof value === "object" && value !== null) {
+      const k = Object.keys(value as any).find((kk) => (value as any)[kk]);
+      return k ?? "";
+    }
+    return "";
+  }, [initial, multi, value]);
+
+  const [local, setLocal] = React.useState<string | { [key: string]: boolean }>(normalizeInitial);
 
   React.useEffect(() => {
     if (stateKey) {
@@ -61,13 +99,26 @@ export default function Dropdown({
       <DropdownMenu onOpenChange={setIsOpen}>
         <DropdownMenuTrigger>
           <ButtonBase
-            text={
-              selected !== undefined
-                ? typeof selected === "string"
+            text={(() => {
+              if (multi) {
+                if (
+                  selected &&
+                  typeof selected === "object" &&
+                  !Array.isArray(selected)
+                ) {
+                  const keys = Object.keys(selected).filter(
+                    (k) => (selected as any)[k]
+                  );
+                  return keys.length ? keys.join(", ") : "---";
+                }
+                return "---";
+              }
+              const s =
+                typeof selected === "string" && selected.trim().length
                   ? selected
-                  : Object.keys(selected).filter((k) => (selected as any)[k]).join(", ")
-                : "---"
-            }
+                  : "---";
+              return s;
+            })()}
             className="text-left text-white opacity-100 m-1 text-xs"
             containerClassName="justify-start flex relative"
           >
@@ -91,12 +142,20 @@ export default function Dropdown({
           {options.map((option, index) => (
             <DropdownMenuItem
               key={index}
-              className={cn("py-0 gap-1 px-1", IBMMono.className)}
-              onClick={() => {
-                if (multi && typeof selected === "object") {
-                  // if multi is true, we need to toggle the selected value
-                  const isSelected = !!(selected as any)[option];
-                  updateSelected({ ...selected, [option]: !isSelected });
+              className={cn(
+                "py-0 gap-1 px-1",
+                IBMMono.className,
+                disabledValues.includes(option) && "opacity-40 cursor-not-allowed"
+              )}
+              onClick={(e) => {
+                if (disabledValues.includes(option)) return;
+                if (multi) {
+                  const selMap: Record<string, boolean> =
+                    typeof selected === "object" && !Array.isArray(selected)
+                      ? (selected as any)
+                      : {};
+                  const isSelected = !!selMap[option];
+                  updateSelected({ ...selMap, [option]: !isSelected });
                 } else {
                   updateSelected(option);
                 }
