@@ -10,6 +10,9 @@
 !.yarn/releases
 !.yarn/versions
 
+# we use pnpm boi
+package-lock.json
+
 # testing
 /coverage
 
