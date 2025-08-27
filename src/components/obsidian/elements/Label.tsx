@@ -54,13 +54,13 @@ function robloxRichTextToHtml(input: string): string {
 
 	const placeholders: string[] = [];
 	const replacements: string[] = [];
+	const tokenSeed = `__RTX_${Date.now()}_${Math.random().toString(36).slice(2)}__`;
 	const makePh = (html: string) => {
-		const token = `__ROBLOX_RTX_${placeholders.length}__`;
+		const token = `${tokenSeed}${placeholders.length}__`;
 		placeholders.push(token);
 		replacements.push(html);
 		return token;
 	};
-
 	let s = String(input);
 	s = s.replace(/<\s*b\s*>/gi, () => makePh("<b>"));
 	s = s.replace(/<\s*\/\s*b\s*>/gi, () => makePh("</b>"));
