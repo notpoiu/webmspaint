@@ -1,3 +1,4 @@
+// TO-DO: implement isnormal, title, text, locksize, visible
 export default function ObsidianWarningBox({ text }: { text: string }) {
     return (
         <div className="w-full flex justify-center bg-transparent">

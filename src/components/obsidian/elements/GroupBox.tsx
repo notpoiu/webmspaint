@@ -2,7 +2,7 @@ export function Groupbox({ icon: Icon, title, children }: { icon?: React.Element
     return (
         <div className="mt-1 ml-2 mb-3 rounded-[3px] bg-[rgb(15,15,15)] border border-[rgb(40,40,40)] relative font-normal">
             {/* Top Bar */}
-            <div className="w-full h-[38px] flex flex-row bg-[rgba(13,13,13,1)]">
+            <div className="w-full h-[38px] flex flex-row bg-[rgb(15,15,15)]">
                 {/* Title */}
                 <div className="flex flex-row items-center w-full border-b border-b-[rgb(40,40,40)]">
                     {Icon && (<Icon className="text-[rgb(125,85,255)] h-[calc(100%)] ml-2 mr-[-5px]" />)}
