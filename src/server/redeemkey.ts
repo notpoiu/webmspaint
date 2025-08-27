@@ -16,26 +16,26 @@ export async function RedeemKey(serial: string, user_id: string) {
       error: "user_id is invalid",
     };
   }
-  
+
   const limiter = rateLimitService.getLimiter("redeemkey");
   const { success } = await limiter.limit(user_id);
   if (!success) {
     return {
       status: 429,
-      error: "Rate limit reached: Please wait a few minutes before trying again.",
+      error:
+        "Rate limit reached: Please wait a few minutes before trying again.",
     };
   }
 
-  
   const claimedAtUnixtimestamp = Math.floor(Date.now() / 1000); //key being claimed at this exact second
   const reservedMaxTimeout = claimedAtUnixtimestamp + 5; // Five seconds timeout
-  
+
   /**
    * Atomic query where it will always give the data of the row using the serial (if exist)
    * It will update reserved_to if it's NULL meaning the key wasn't claimed at first and not it is
    * the reserved_to is a precaution if "luarmor API"/"redeem function" fails, the user can still retrive their purchase.
    * finally, this also is race condition safe for giveaways.
-  */
+   */
   const { rows } = await sql`
     WITH update_attempt AS (
       UPDATE mspaint_keys_new
@@ -59,7 +59,7 @@ export async function RedeemKey(serial: string, user_id: string) {
       status: 404,
       error: "Key not found.",
     };
-  };
+  }
 
   const serialKeyData = rows[0];
 
@@ -67,22 +67,22 @@ export async function RedeemKey(serial: string, user_id: string) {
     return {
       status: 404,
       error: "Serial key already claimed.",
-    };    
+    };
   }
 
   if (serialKeyData.reserved_to !== user_id) {
     return {
       status: 404,
       error: "Serial key already redeemed.",
-    };    
+    };
   }
 
   if (serialKeyData.reserved_until != reservedMaxTimeout) {
     return {
       status: 404,
       error: `Serial key is being claimed, try again later.`,
-    };    
-  }  
+    };
+  }
 
   //This can only return 1 or 0 users. (luarmor doesn't allow the same discord ID for different keys)
   const getLuarmorUser = await RequestLuarmorUsersEndpoint(
@@ -104,12 +104,12 @@ export async function RedeemKey(serial: string, user_id: string) {
   if (!lrmUserData.success) {
     return {
       status: 500,
-      error: `Luarmor error: ${lrmUserData.message}`
-    };    
+      error: `Luarmor error: ${lrmUserData.message}`,
+    };
   }
 
   const lrmUserFound = lrmUserData.users.length !== 0;
-  
+
   let isCheckpointKey = false;
   if (lrmUserFound) {
     if (lrmUserData.note === "Ad Reward") {
@@ -136,13 +136,15 @@ export async function RedeemKey(serial: string, user_id: string) {
   const validFor: string | null = serialKeyData.key_duration; //null for lifetime
   const lifetimeDate = -1;
 
-  let luarmorSerialKey = '';
+  let luarmorSerialKey = "";
 
   if (lrmUserFound) {
-    luarmorSerialKey = lrmUserData.users[0].user_key
+    luarmorSerialKey = lrmUserData.users[0].user_key;
 
     //Updating an existing user
-    const addSubscriptionTime = validFor ? (lrmUserData.users[0].auth_expire + parseIntervalToSec(validFor)) : lifetimeDate
+    const addSubscriptionTime = validFor
+      ? lrmUserData.users[0].auth_expire + parseIntervalToSec(validFor)
+      : lifetimeDate;
     const response = await RequestLuarmorUsersEndpoint(HTTP_METHOD.PATCH, "", {
       user_key: luarmorSerialKey,
       auth_expire: addSubscriptionTime,
@@ -154,11 +156,11 @@ export async function RedeemKey(serial: string, user_id: string) {
         error: `Luarmor API error: ${response.status}`,
       };
     }
-
-  } else { 
-
+  } else {
     //Creating a new user
-    const createSubscriptionTime = validFor ? (claimedAtUnixtimestamp + parseIntervalToSec(validFor)) : lifetimeDate
+    const createSubscriptionTime = validFor
+      ? claimedAtUnixtimestamp + parseIntervalToSec(validFor)
+      : lifetimeDate;
     const response = await RequestLuarmorUsersEndpoint(HTTP_METHOD.POST, "", {
       discord_id: user_id,
       note: (serialKeyData.order_id ?? "Generic ID") + " - " + serial,
@@ -173,7 +175,7 @@ export async function RedeemKey(serial: string, user_id: string) {
     }
 
     const lrmCreatedUserData = await response.json();
-    luarmorSerialKey = lrmCreatedUserData.user_key
+    luarmorSerialKey = lrmCreatedUserData.user_key;
   }
 
   //Actually claim the key
@@ -182,11 +184,14 @@ export async function RedeemKey(serial: string, user_id: string) {
       linked_to = ${user_id}
     WHERE serial = ${serial}
   `;
-  
+
   //Sync with updated expiration date (system rate limit just to track the amount of requests)
   await rateLimitService.trackRequest("syncuser");
-  await SyncSingleLuarmorUserByLRMSerial(luarmorSerialKey);
 
+  // This sync is triggered by an end-user redeem action, not from dashboard.
+  // Pass `from_dashboard=false` to bypass dashboard auth checks so the
+  // mspaint_users row is updated and the success UI can render immediately.
+  await SyncSingleLuarmorUserByLRMSerial(luarmorSerialKey, false);
 
   const order_id = (serialKeyData.order_id as string).toLowerCase();
   for (const [key, data] of Object.entries(RESELLER_DATA)) {
@@ -286,5 +291,4 @@ export async function RedeemKey(serial: string, user_id: string) {
     success: "key redeemed successfully",
     user_key: luarmorSerialKey,
   };
-
 }
