@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import DOMPurify from "isomorphic-dompurify";
 
 function escapeHtml(input: string) {
 	return input
@@ -127,15 +128,14 @@ export default function Label({
 		"text-left block text-white text-sm",
 		className
 	);
-
+	
 	if (typeof children === "string") {
-		const html = robloxRichTextToHtml(children);
-		return (
-			<span
-				className={finalClassName}
-				dangerouslySetInnerHTML={{ __html: html }}
-			/>
-		);
+	    const htmlUnsafe = robloxRichTextToHtml(children);
+	    const html = DOMPurify.sanitize(htmlUnsafe, {
+			ALLOWED_TAGS: ["b", "i", "u", "s", "br", "span"],
+			ALLOWED_ATTR: ["style"],
+	    });
+	    return <span className={finalClassName} dangerouslySetInnerHTML={{ __html: html }} />;
 	}
 
 	return <span className={finalClassName}>{children}</span>;

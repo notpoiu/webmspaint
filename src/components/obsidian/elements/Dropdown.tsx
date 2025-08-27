@@ -46,16 +46,20 @@ export default function Dropdown({
 	const normalizeInitial = React.useCallback((): | string | { [key: string]: boolean } => {
 		if (multi) {
 			if (initial !== undefined) {
-				if (typeof initial === "object" && !Array.isArray(initial))
+				if (initial !== null && typeof initial === "object" && !Array.isArray(initial))
 					// eslint-disable-next-line @typescript-eslint/no-explicit-any
 					return initial as any;
+				
 				if (Array.isArray(initial))
 					return (initial as string[]).reduce(
 						(acc, k) => ({ ...acc, [k]: true }),
 						{} as Record<string, boolean>
 					);
-				if (typeof initial === "string") return { [initial]: true };
+				
+				if (typeof initial === "string") 
+					return { [initial]: true };
 			}
+
 			if (Array.isArray(value))
 				return (value as string[]).reduce(
 					(acc, k) => ({ ...acc, [k]: true }),
@@ -65,12 +69,19 @@ export default function Dropdown({
 			if (typeof value === "object" && value !== null && !Array.isArray(value))
 				// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				return value as any;
-			if (typeof value === "string") return { [value]: true };
+			
+			if (typeof value === "string") 
+				return { [value]: true };
+			
 			return {};
 		}
 		if (initial !== undefined) {
-			if (typeof initial === "string") return initial as string;
-			if (Array.isArray(initial)) return (initial as string[])[0] ?? "";
+			if (typeof initial === "string") 
+				return initial as string;
+
+			if (Array.isArray(initial)) 
+				return (initial as string[])[0] ?? "";
+
 			if (typeof initial === "object" && initial !== null) {
 				// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				const k = Object.keys(initial as any).find(
@@ -80,13 +91,19 @@ export default function Dropdown({
 				return k ?? "";
 			}
 		}
-		if (typeof value === "string") return value as string;
-		if (Array.isArray(value)) return (value as string[])[0] ?? "";
+
+		if (typeof value === "string") 
+			return value as string;
+
+		if (Array.isArray(value)) 
+			return (value as string[])[0] ?? "";
+
 		if (typeof value === "object" && value !== null) {
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			const k = Object.keys(value as any).find((kk) => (value as any)[kk]);
 			return k ?? "";
 		}
+		
 		return "";
 	}, [initial, multi, value]);
 
@@ -163,6 +180,7 @@ export default function Dropdown({
 		}
 	}, [disabledValues, multi, selected, updateSelected]);
 
+	const listboxId = React.useId();
 	return (
 		<div className="flex flex-col gap-1">
 			<Label className="text-white opacity-100">{text}</Label>
@@ -170,9 +188,12 @@ export default function Dropdown({
 			<div className="relative" ref={rootRef as unknown as React.RefObject<HTMLDivElement>}>
 				<ButtonBase
 					text={displayText}
-					className="absolute w-[calc(100%-35px)] text-left text-white opacity-100 m-1 text-xs"
+					className="absolute w-[calc(100% - 35px)] text-left text-white opacity-100 m-1 text-xs"
 					containerClassName="justify-start flex relative"
 					onClick={() => setIsOpen((v) => !v)}
+					aria-haspopup="listbox"
+          			aria-expanded={isOpen}
+          			aria-controls={listboxId}
 				>
 					<div className="absolute right-0 top-0 h-full opacity-50">
 						<ChevronUp
@@ -183,6 +204,9 @@ export default function Dropdown({
 
 				{isOpen && (
 					<div
+						role="listbox"
+			            id={listboxId}
+			            aria-multiselectable={!!multi}
 						className={cn(
 							NoAnimationClassName,
 							"absolute left-0 right-0 z-50 max-h-[168px]",
@@ -197,7 +221,7 @@ export default function Dropdown({
 							<div
 								key={startIndex + i}
 								className={cn(
-									"py-0 gap-1 px-1 flex items-center",
+									"py-0 gap-1 px-1 flex items-center cursor-pointer",
 									(() => {
 										const isSelected = multi
 											? (typeof selected === "object" && selected !== null && !Array.isArray(selected) && (selected as Record<string, boolean>)[option] === true)
@@ -207,6 +231,12 @@ export default function Dropdown({
 									disabledValues.includes(option) && "bg-[rgb(0,0,0)] opacity-40 cursor-not-allowed",
 									IBMMono.className,
 								)}
+								role="option"
+								aria-selected={
+									multi
+										? !!(typeof selected === "object" && selected && !Array.isArray(selected) && (selected as Record<string, boolean>)[option])
+										: selected === option
+								}
 								onClick={() => onSelectOption(option)}
 								style={{ height: `${ITEM_HEIGHT}px` }}
 							>

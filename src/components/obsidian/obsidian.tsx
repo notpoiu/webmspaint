@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { MoveDiagonal2, MoveIcon, SearchIcon } from "lucide-react";
+import { MoveDiagonal2, Move, Search } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import React from "react";
 import * as LucideIcons from "lucide-react";
@@ -37,7 +37,7 @@ export function Obsidian({ title, icon, footer, uiData }: ObsidianProps) {
 					<div className="absolute mt-0 left-[214px] w-[505px] h-[49px] flex items-center">
 						{/* Searchbox */}
 						<div className="flex items-center w-[449px] h-[34px] ml-[8px] mt-[1px] bg-[#191919] border border-[#272727] rounded px-2">
-							<SearchIcon className="text-[#5f5f5f] mr-2" />
+							<Search className="text-[#5f5f5f] mr-2" />
 							<input
 								type="text"
 								placeholder="Search"
@@ -46,7 +46,7 @@ export function Obsidian({ title, icon, footer, uiData }: ObsidianProps) {
 						</div>
 
 						{/* Move Icon */}
-						<MoveIcon className="text-[rgb(40,40,40)] ml-auto mr-auto" />
+						<Move className="text-[rgb(40,40,40)] ml-auto mr-auto" />
 					</div>
 				</div>
 			</div>

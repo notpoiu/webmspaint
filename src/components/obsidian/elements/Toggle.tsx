@@ -38,7 +38,7 @@ export default function Toggle({
 			<div className="absolute w-[22px] h-[22px] rounded-[3px] bg-[rgb(25,25,25)] hover:bg-[rgb(35,35,35)] border-[rgb(40,40,40)] border">
 				<CheckIcon
 					className={`w-[16px] h-[16px] m-[2px] transition-opacity`}
-					style={{ opacity: isChecked ? 1 : 0 }}
+					style={{ opacity: isChecked == true ? 1 : 0 }}
 				/>
 			</div>
 
