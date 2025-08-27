@@ -3,6 +3,7 @@
 import { cn } from "@/lib/utils";
 import { motion, MotionProps, type animations } from "motion/react";
 import React from "react";
+import type { ReactNode } from "react";
 
 const animationProps = {
   initial: { "--x": "100%", scale: 0.8 },
@@ -28,7 +29,7 @@ const animationProps = {
 interface ShinyButtonProps
   extends Omit<React.HTMLAttributes<HTMLElement>, keyof MotionProps>,
     MotionProps {
-  children: React.ReactNode;
+  children: ReactNode;
   className?: string;
 }
 

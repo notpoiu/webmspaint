@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils";
 import DOMPurify from "isomorphic-dompurify";
+import type { ReactNode } from "react";
 
 function escapeHtml(input: string) {
 	return input
@@ -121,7 +122,7 @@ export default function Label({
 	children,
 	className,
 }: {
-	children: React.ReactNode;
+	children: ReactNode;
 	className?: string;
 }) {
 	const finalClassName = cn(

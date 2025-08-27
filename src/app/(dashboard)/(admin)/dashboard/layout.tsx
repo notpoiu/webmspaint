@@ -5,6 +5,7 @@ import { isUserAllowedOnDashboard } from "@/server/authutils";
 import { maskEmail } from "@/server/stringutil";
 import { Metadata, Viewport } from "next";
 import { notFound, redirect } from "next/navigation";
+import type { ReactNode } from "react";
 
 const description =
   "mspaint is the best premium roblox script hub supporting games such as doors, 3008, room & doors, pressure, fisch and build a boat for treasure";
@@ -46,7 +47,7 @@ export const viewport: Viewport = {
 export default async function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: ReactNode;
 }>) {
   const session = await auth();
 

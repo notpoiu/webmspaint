@@ -6,6 +6,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { motion, HTMLMotionProps } from "framer-motion";
 import { AlertCircle, Loader2 } from "lucide-react";
 import type { TimelineColor } from "@/types";
+import type { ReactNode } from "react";
 
 const timelineVariants = cva("flex flex-col relative", {
   variants: {
@@ -87,9 +88,9 @@ interface TimelineItemProps extends Omit<HTMLMotionProps<"li">, "ref"> {
   /** Title of the timeline item */
   title?: string;
   /** Description text */
-  description?: React.ReactNode;
+  description?: ReactNode;
   /** Custom icon element */
-  icon?: React.ReactNode;
+  icon?: ReactNode;
   /** Color theme for the icon */
   iconColor?: TimelineColor;
   /** Current status of the item */
@@ -389,7 +390,7 @@ const TimelineIcon = ({
   status = "completed",
   iconSize = "md",
 }: {
-  icon?: React.ReactNode;
+  icon?: ReactNode;
   color?: "primary" | "secondary" | "muted" | "accent" | "destructive";
   status?: "completed" | "in-progress" | "pending" | "error";
   iconSize?: "sm" | "md" | "lg";

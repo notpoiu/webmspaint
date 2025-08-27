@@ -12,10 +12,11 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { cn } from "@/lib/utils";
 
+import type { ReactNode } from "react";
 interface ItemInterface {
   name: string;
   value: string;
-  icon?: React.ReactNode;
+  icon?: ReactNode;
 }
 
 export default function CopyDropdown({items, size, className}: { items: ItemInterface[], size?: "default" | "sm" | "lg" | "icon", className?: string }) {

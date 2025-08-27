@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { useInView } from "motion/react";
 import { annotate } from "rough-notation";
 import type React from "react";
+import type { ReactNode } from "react";
 
 type AnnotationAction =
   | "highlight"
@@ -15,7 +16,7 @@ type AnnotationAction =
   | "bracket";
 
 interface HighlighterProps {
-  children: React.ReactNode;
+  children: ReactNode;
   action?: AnnotationAction;
   color?: string;
   strokeWidth?: number;

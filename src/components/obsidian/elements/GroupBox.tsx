@@ -1,4 +1,6 @@
-export function Groupbox({ icon: Icon, title, children }: { icon?: React.ElementType, title: string, children: React.ReactNode }) {
+import type { ReactNode } from "react";
+
+export function Groupbox({ icon: Icon, title, children }: { icon?: React.ElementType, title: string, children: ReactNode }) {
     return (
         <div className="mt-1 ml-2 mb-3 rounded-[3px] bg-[rgb(15,15,15)] border border-[rgb(40,40,40)] relative font-normal">
             {/* Top Bar */}

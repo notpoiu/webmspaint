@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import {
   motion,
   useAnimationFrame,
@@ -15,7 +16,7 @@ import type { MotionValue } from "motion/react";
 import { cn } from "@/lib/utils";
 
 interface ScrollVelocityRowProps extends React.HTMLAttributes<HTMLDivElement> {
-  children: React.ReactNode;
+  children: ReactNode;
   baseVelocity?: number;
   direction?: 1 | -1;
 }

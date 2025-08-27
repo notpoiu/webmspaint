@@ -1,13 +1,14 @@
 import { cn } from "@/lib/utils";
 import * as React from "react";
+import type { ReactNode } from "react";
 
 export const ButtonBase = React.forwardRef<
 	HTMLButtonElement,
 	{
-		text: string | React.ReactNode;
+		text: string | ReactNode;
 		containerClassName?: string;
 		className?: string;
-		children?: React.ReactNode;
+		children?: ReactNode;
 		replacedText?: boolean;
 	} & React.ButtonHTMLAttributes<HTMLButtonElement>
 >(({

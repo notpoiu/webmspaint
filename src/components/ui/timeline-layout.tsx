@@ -5,12 +5,13 @@ import { Timeline, TimelineItem } from './timeline';
 import { motion } from 'framer-motion';
 import type { TimelineElement } from '@/types';
 import { cn } from '@/lib/utils';
+import type { ReactNode } from "react";
 
 interface TimelineLayoutProps {
   items: TimelineElement[];
   size?: 'sm' | 'md' | 'lg';
   iconColor?: 'primary' | 'secondary' | 'muted' | 'accent';
-  customIcon?: React.ReactNode;
+  customIcon?: ReactNode;
   animate?: boolean;
   connectorColor?: 'primary' | 'secondary' | 'muted' | 'accent';
   className?: string;

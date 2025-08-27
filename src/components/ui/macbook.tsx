@@ -25,6 +25,7 @@ import { IconCaretLeftFilled } from "@tabler/icons-react";
 import { IconCaretDownFilled } from "@tabler/icons-react";
 import Image from "next/image";
 import { BlurFade } from "../magicui/blur-fade";
+import type { ReactNode } from "react";
 
 export const MacbookComponent = ({
   src,
@@ -36,10 +37,10 @@ export const MacbookComponent = ({
 }: {
   src?: string;
   showGradient?: boolean;
-  title?: string | React.ReactNode;
-  outro?: string | React.ReactNode;
-  lid?: string | React.ReactNode;
-  badge?: React.ReactNode;
+  title?: string | ReactNode;
+  outro?: string | ReactNode;
+  lid?: string | ReactNode;
+  badge?: ReactNode;
 }) => {
   return (
     <div
@@ -126,7 +127,7 @@ export const Lid = memo(({
   rotate: number;
   translate: number;
   src?: string;
-  lid?: string | React.ReactNode;
+  lid?: string | ReactNode;
 }) => {
   const memoizedImage = useMemo(() => (
     <Image
@@ -633,7 +634,7 @@ export const KBtn = memo(({
   backlit = true,
 }: {
   className?: string;
-  children?: React.ReactNode;
+  children?: ReactNode;
   childrenClassName?: string;
   backlit?: boolean;
 }) => {
@@ -669,7 +670,7 @@ export const KBtn = memo(({
 });
 KBtn.displayName = "KBtnMac";
 
-export const Row = memo(({ children }: { children: React.ReactNode }) => {
+export const Row = memo(({ children }: { children: ReactNode }) => {
   return (
     <div className="flex gap-[2px] mb-[2px] w-full flex-shrink-0">
       {children}

@@ -1,5 +1,6 @@
 "use client";
 import React from "react";
+import type { ReactNode } from "react";
 
 type UIState = Record<string, unknown>;
 
@@ -12,7 +13,7 @@ type UIStateContextType = {
 
 const UIStateContext = React.createContext<UIStateContextType | null>(null);
 
-export function UIStateProvider({ children }: { children: React.ReactNode }) {
+export function UIStateProvider({ children }: { children: ReactNode }) {
 	const [state, setStateMap] = React.useState<UIState>({});
 	const stateRef = React.useRef<UIState>({});
 	React.useEffect(() => {

@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 interface RobloxGameResponse {
   data: {
     id: number;
@@ -126,7 +127,7 @@ const GameCacheContext = createContext<GameCacheContextType>({
 });
 
 // Game Cache Provider component
-function GameCacheProvider({ children }: { children: React.ReactNode }) {
+function GameCacheProvider({ children }: { children: ReactNode }) {
   const [gameData, setGameData] = useState<Record<number, GameData>>({});
   const [isLoading, setIsLoading] = useState<Record<number, boolean>>({});
 
