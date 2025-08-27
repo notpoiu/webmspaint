@@ -23,6 +23,7 @@ import {
 import { LatestBuild, MenuMapping } from "../../features.config";
 
 import { Obsidian } from "./obsidian/obsidian";
+import { set } from "zod";
 
 export function GameSelection({
   onValueChange,
@@ -90,17 +91,41 @@ export function GameSelection({
 export function Features() {
   const [game, setGame] = React.useState("DOORS - The Hotel");
   const [footerGame, setFooterGame] = React.useState("DOORS");
+  const [uiData, setUIData] = React.useState(undefined);
 
-  const memoizedObsidian = React.useMemo(
-    () => (
+  const memoizedObsidian = React.useMemo(() => {
+    return (
       <Obsidian
         title={"mspaint v4"}
         icon={"/icon.png"}
         footer={`Game: ${footerGame} | Build: ${LatestBuild}`}
+        uiData={uiData}
       />
-    ),
-    [footerGame]
-  );
+    );
+  }, [uiData, footerGame]);
+
+  React.useEffect(() => {
+    const category = game.split(" - ")[0] as keyof typeof MenuMapping;
+    const gameName = game.split(" - ")[1];
+    const gameData =
+      MenuMapping[category][
+        gameName as keyof (typeof MenuMapping)[typeof category]
+      ];
+
+    setGame(game);
+
+    const dataURL = (gameData as { DataURL: string }).DataURL;
+    if (dataURL) {
+      fetch(dataURL)
+        .then((res) => res.json())
+        .then((data) => {
+          setUIData(data);
+        });
+    }
+
+    // @ts-expect-error erm
+    setFooterGame(gameData.Game);
+  }, []);
 
   return (
     <div
@@ -129,13 +154,19 @@ export function Features() {
 
             setGame(game);
 
+            const dataURL = (gameData as { DataURL: string }).DataURL;
+            if (dataURL) {
+              fetch(dataURL)
+                .then((res) => res.json())
+                .then((data) => {
+                  setUIData(data);
+                });
+            }
+
             // @ts-expect-error erm
             setFooterGame(gameData.Game);
           }}
         />
-        <p className="hidden" key={game}>
-          bruh
-        </p>
       </BlurFade>
     </div>
   );
