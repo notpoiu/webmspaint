@@ -4,17 +4,11 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import React from "react";
 import * as LucideIcons from "lucide-react";
 
-import { IBM_Plex_Mono } from "next/font/google";
 import { cn } from "@/lib/utils";
 import { TabParser } from "./DynamicTab";
 import { UIStateProvider } from "./uiState";
 import { UIData } from "./element.types";
-
-export const IBMMono = IBM_Plex_Mono({
-  weight: ["400"],
-  subsets: ["latin"],
-  variable: "--font",
-});
+import { IBMMono } from "./fonts";
 
 interface ObsidianProps {
   title: string;

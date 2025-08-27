@@ -13,7 +13,7 @@ import { ButtonBase } from "./Button";
 import Label from "./Label";
 import React from "react";
 import { cn } from "@/lib/utils";
-import { IBMMono } from "../obsidian";
+import { IBMMono } from "../fonts";
 import { useUIState } from "../uiState";
 
 const NoAnimationClassName =
@@ -97,7 +97,7 @@ export default function Dropdown({
       <Label className="text-white opacity-100">{text}</Label>
 
       <DropdownMenu onOpenChange={setIsOpen}>
-        <DropdownMenuTrigger>
+        <DropdownMenuTrigger asChild>
           <ButtonBase
             text={(() => {
               if (multi) {
@@ -132,6 +132,14 @@ export default function Dropdown({
           </ButtonBase>
         </DropdownMenuTrigger>
         <DropdownMenuContent
+          onOpenAutoFocus={(e) => {
+            // Prevent auto-focus from scrolling the page to the top/left
+            e.preventDefault();
+          }}
+          onCloseAutoFocus={(e) => {
+            // Prevent returning focus from causing scroll jumps
+            e.preventDefault();
+          }}
           className={cn(
             NoAnimationClassName,
             "w-[var(--radix-dropdown-menu-trigger-width)] max-h-[168px]",

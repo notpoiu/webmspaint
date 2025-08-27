@@ -108,7 +108,7 @@ export default async function Home() {
         </NavbarContent>
       </Navbar>
 
-      <main className="overflow-x-hidden">
+      <main className="overflow-x-hidden group">
         <DotPattern
           width={20}
           height={20}
@@ -116,7 +116,8 @@ export default async function Home() {
           cy={1}
           cr={1}
           className={cn(
-            "[mask-image:linear-gradient(to_bottom_right,white,transparent,transparent)] -z-50"
+            "[mask-image:linear-gradient(to_bottom_right,white,transparent,transparent)] -z-50",
+            "group-aria-hidden:hidden"
           )}
         />
 

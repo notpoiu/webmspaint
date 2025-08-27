@@ -1,12 +1,12 @@
 /* eslint-disable @next/next/no-img-element */
-export const LatestBuild = "0.2.0.3";
+export const LatestBuild = "0.2.9.9";
 
 export const MenuMapping = {
   DOORS: {
     "The Hotel": {
       Game: "DOORS",
       DataURL:
-        "https://raw.githubusercontent.com/mspaint-cc/assets/refs/heads/main/uidata/Universal.json",
+        "https://raw.githubusercontent.com/mspaint-cc/assets/refs/heads/main/uidata/doors/hotel.json",
     },
 
     Backdoor: {
@@ -18,7 +18,7 @@ export const MenuMapping = {
     "The Mines": {
       Game: "DOORS",
       DataURL:
-        "https://raw.githubusercontent.com/mspaint-cc/assets/refs/heads/main/uidata/Universal.json",
+        "https://raw.githubusercontent.com/mspaint-cc/assets/refs/heads/main/uidata/doors/mines.json",
     },
 
     "The Rooms": {
