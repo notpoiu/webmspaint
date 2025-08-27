@@ -14,6 +14,7 @@ import Label from "./Label";
 import React from "react";
 import { cn } from "@/lib/utils";
 import { IBMMono } from "../obsidian";
+import { useUIState } from "../uiState";
 
 const NoAnimationClassName =
   "data-[state=open]:animate-none data-[state=closed]:animate-none data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0";
@@ -23,16 +24,35 @@ export default function Dropdown({
   value,
   options,
   multi,
+  stateKey,
 }: {
   text: string;
   value: string | { [key: string]: boolean };
   options: string[];
   multi: boolean | undefined;
+  stateKey?: string;
 }) {
   const [isOpen, setIsOpen] = React.useState(false);
-  const [selected, setSelected] = React.useState<
-    string | { [key: string]: boolean }
-  >(value);
+  const { state, setState } = useUIState();
+
+  const initial = React.useMemo(() => stateKey && state[stateKey], [stateKey, state]);
+  const [local, setLocal] = React.useState<string | { [key: string]: boolean }>(
+    (initial as any) ?? value
+  );
+
+  React.useEffect(() => {
+    if (stateKey) {
+      const cur = state[stateKey];
+      if (cur !== undefined) setLocal(cur as any);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stateKey]);
+
+  const selected = local;
+  const updateSelected = (newVal: string | { [key: string]: boolean }) => {
+    setLocal(newVal);
+    if (stateKey) setState(stateKey, newVal);
+  };
 
   return (
     <div className="flex flex-col gap-1">
@@ -45,7 +65,7 @@ export default function Dropdown({
               selected !== undefined
                 ? typeof selected === "string"
                   ? selected
-                  : Object.keys(selected).join(", ")
+                  : Object.keys(selected).filter((k) => (selected as any)[k]).join(", ")
                 : "---"
             }
             className="text-left text-white opacity-100 m-1 text-xs"
@@ -75,14 +95,10 @@ export default function Dropdown({
               onClick={() => {
                 if (multi && typeof selected === "object") {
                   // if multi is true, we need to toggle the selected value
-                  const isSelected = Object.keys(selected).includes(option);
-                  if (isSelected) {
-                    setSelected({ ...selected, [option]: false });
-                  } else {
-                    setSelected({ ...selected, [option]: true });
-                  }
+                  const isSelected = !!(selected as any)[option];
+                  updateSelected({ ...selected, [option]: !isSelected });
                 } else {
-                  setSelected(option);
+                  updateSelected(option);
                 }
               }}
             >

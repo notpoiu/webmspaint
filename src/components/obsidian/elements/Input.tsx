@@ -1,27 +1,29 @@
 import React from "react";
 import { ButtonBase } from "./Button";
 import Label from "./Label";
+import { useUIState } from "../uiState";
 
 export default function Input({
   text,
   value,
   placeholder,
+  stateKey,
 }: {
   text: string;
   value: string;
   placeholder: string;
+  stateKey?: string;
 }) {
-  const inputRef = React.useRef<HTMLInputElement>(null);
-  const [initialized, setInitialized] = React.useState(false);
+  const { state, setState } = useUIState();
+  const [local, setLocal] = React.useState<string>(
+    (stateKey ? (state[stateKey] as string | undefined) : undefined) ?? value
+  );
 
   React.useEffect(() => {
-    if (inputRef && inputRef.current && !initialized) {
-      setInitialized(true);
-
-      inputRef.current.value = value;
-      inputRef.current.placeholder = placeholder;
-    }
-  }, [inputRef]);
+    if (!stateKey) return;
+    const v = state[stateKey];
+    if (typeof v === "string") setLocal(v);
+  }, [state, stateKey]);
 
   return (
     <div className="flex flex-col gap-1">
@@ -32,8 +34,14 @@ export default function Input({
           <input
             name="input"
             type="text"
-            className="w-full h-full text-white opacity-100 ml-1 text-xs select-none"
-            ref={inputRef}
+            className="w-full h-full text-white opacity-100 ml-1 text-xs select-none bg-transparent outline-none"
+            value={local}
+            placeholder={placeholder}
+            onChange={(e) => {
+              const next = e.target.value;
+              setLocal(next);
+              if (stateKey) setState(stateKey, next);
+            }}
           />
         }
         className="text-left text-white opacity-100 m-1 text-xs"

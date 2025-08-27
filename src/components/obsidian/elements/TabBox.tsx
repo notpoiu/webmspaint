@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { ElementParser, TabboxTab } from "../DynamicTab";
 
-export function Tabbox({ tabs }: { tabs: {[key: string]: TabboxTab} }) {
+export function Tabbox({ tabs, scope }: { tabs: {[key: string]: TabboxTab}, scope: string }) {
     const tabNames = Object.keys(tabs);
     const [activeTab, setActiveTab] = useState(tabNames[0]);
 
@@ -28,7 +28,13 @@ export function Tabbox({ tabs }: { tabs: {[key: string]: TabboxTab} }) {
 
             {/* Content */}
             <div className="flex flex-col right p-2 gap-2">
-                {activeTabData.elements.map(el => <ElementParser key={el.index} element={el} />)}
+                {activeTabData.elements.map(el => (
+                    <ElementParser
+                        key={`${activeTab}-${el.index}`}
+                        element={el}
+                        stateKeyPrefix={`${scope}:tab:${activeTab}`}
+                    />
+                ))}
             </div>
         </div>
     )

@@ -7,6 +7,7 @@ import * as LucideIcons from "lucide-react";
 import { IBM_Plex_Mono } from "next/font/google";
 import { cn } from "@/lib/utils";
 import { TabParser } from "./DynamicTab";
+import { UIStateProvider } from "./uiState";
 import { uiData } from "@/data/uiData";
 
 export const IBMMono = IBM_Plex_Mono({
@@ -29,6 +30,7 @@ export function Obsidian({ title, icon, footer }: ObsidianProps) {
         IBMMono.className
       )}
     >
+      <UIStateProvider>
       <div className="w-full h-[48px] flex flex-row px-0 bg-[rbga(13,13,13,255)]">
         {/* Title */}
         <div className="flex flex-row items-center justify-center w-[30%] h-full gap-[3px] border-b-[rgb(40,40,40)] border-b">
@@ -98,6 +100,7 @@ export function Obsidian({ title, icon, footer }: ObsidianProps) {
 
         <MoveDiagonal2 className="text-white opacity-50 w-[16px] h-[16px] absolute right-0 mr-[2px] pointer-events-none" />
       </div>
+      </UIStateProvider>
     </div>
   );
 }

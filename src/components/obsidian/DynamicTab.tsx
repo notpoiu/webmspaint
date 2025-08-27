@@ -14,14 +14,21 @@ import { TabData, UIElement } from "./element.types";
 import Slider from "./elements/Slider";
 
 // Parsers //
-export const ElementParser: React.FC<{ element: UIElement }> = ({
+export const ElementParser: React.FC<{ element: UIElement; stateKeyPrefix?: string }> = ({
   element,
+  stateKeyPrefix,
 }) => {
   if ("visible" in element && !element.visible) return null;
 
   switch (element.type) {
     case "Toggle":
-      return <Toggle text={element.text} checked={element.value} />;
+      return (
+        <Toggle
+          text={element.text}
+          checked={element.value}
+          stateKey={`${stateKeyPrefix || "global"}:el:Toggle:${element.index}`}
+        />
+      );
 
     case "Label":
       return <Label>{element.text}</Label>;
@@ -41,6 +48,7 @@ export const ElementParser: React.FC<{ element: UIElement }> = ({
           value={element.value}
           options={element.properties.values}
           multi={element.multi}
+          stateKey={`${stateKeyPrefix || "global"}:el:Dropdown:${element.index}`}
         />
       );
 
@@ -55,6 +63,7 @@ export const ElementParser: React.FC<{ element: UIElement }> = ({
           rounding={element.properties.rounding}
           prefix={element.properties.prefix}
           suffix={element.properties.suffix}
+          stateKey={`${stateKeyPrefix || "global"}:el:Slider:${element.index}`}
         />
       );
 
@@ -64,6 +73,7 @@ export const ElementParser: React.FC<{ element: UIElement }> = ({
           text={element.text}
           value={element.value}
           placeholder={element.properties.placeholder}
+          stateKey={`${stateKeyPrefix || "global"}:el:Input:${element.index}`}
         />
       );
 
@@ -105,13 +115,13 @@ export const TabParser: React.FC<{ tabData: TabData | null }> = ({
       <TabLeft>
         {tabboxes?.Left &&
           Object.values(tabboxes.Left).map((tabbox) => (
-            <Tabbox key={tabbox.name} tabs={tabbox.tabs} />
+            <Tabbox key={tabbox.name} tabs={tabbox.tabs} scope={`tab:${tabData.name}:left:tabbox:${tabbox.name}`} />
           ))}
         {groupboxes?.Left &&
           Object.values(groupboxes.Left).map((gb) => (
             <Groupbox key={gb.name} title={gb.name}>
               {gb.elements.map((el) => (
-                <ElementParser key={el.index} element={el} />
+                <ElementParser key={`left-gb-${gb.name}-${el.index}`} element={el} stateKeyPrefix={`tab:${tabData.name}:left:groupbox:${gb.name}`} />
               ))}
             </Groupbox>
           ))}
@@ -120,14 +130,14 @@ export const TabParser: React.FC<{ tabData: TabData | null }> = ({
       <TabRight>
         {tabboxes?.Right &&
           Object.values(tabboxes.Right).map((tabbox) => (
-            <Tabbox key={tabbox.name} tabs={tabbox.tabs} />
+            <Tabbox key={tabbox.name} tabs={tabbox.tabs} scope={`tab:${tabData.name}:right:tabbox:${tabbox.name}`} />
           ))}
 
         {groupboxes?.Right &&
           Object.values(groupboxes.Right).map((gb) => (
             <Groupbox key={gb.name} title={gb.name}>
               {gb.elements.map((el) => (
-                <ElementParser key={el.index} element={el} />
+                <ElementParser key={`right-gb-${gb.name}-${el.index}`} element={el} stateKeyPrefix={`tab:${tabData.name}:right:groupbox:${gb.name}`} />
               ))}
             </Groupbox>
           ))}

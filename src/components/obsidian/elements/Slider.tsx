@@ -4,6 +4,7 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 import { ButtonBase } from "./Button";
 import Label from "./Label";
+import { useUIState } from "../uiState";
 
 export default function Slider({
   text,
@@ -18,6 +19,7 @@ export default function Slider({
   suffix,
   className,
   onValueChange,
+  stateKey,
 }: {
   text: string;
   value?: number;
@@ -31,15 +33,27 @@ export default function Slider({
   suffix?: string;
   className?: string;
   onValueChange?: (value: number) => void;
+  stateKey?: string;
 }) {
   // If the component is controlled, value will be used.
   // If uncontrolled, we'll use internal state, initialized with defaultValue.
+  const { state, setState } = useUIState();
+  const stateValue: number | undefined = stateKey
+    ? (state[stateKey] as number | undefined)
+    : undefined;
+
   const [internalValue, setInternalValue] = React.useState(
-    value ?? defaultValue ?? min
+    stateValue ?? (value ?? defaultValue ?? min)
   );
 
   const isControlled = value !== undefined && onValueChange !== undefined;
   const currentValue = isControlled ? (value as number) : internalValue;
+
+  React.useEffect(() => {
+    if (!isControlled && stateValue !== undefined) {
+      setInternalValue(stateValue);
+    }
+  }, [stateValue, isControlled]);
 
   const roundValue = (num: number) => {
     if (rounding !== undefined && rounding >= 0) {
@@ -74,6 +88,7 @@ export default function Slider({
     const stepped = quantizeToStep(raw);
     const roundedValue = roundValue(stepped);
     if (!isControlled) setInternalValue(roundedValue);
+    if (stateKey) setState(stateKey, roundedValue);
     if (onValueChange) onValueChange(roundedValue);
   };
 
