@@ -19,7 +19,7 @@ import Iphone15Pro from "@/components/magicui/iphone-15-pro";
 import WordRotate from "@/components/ui/word-rotate";
 import WordFadeIn from "@/components/ui/word-fade-in";
 import GameCard from "@/components/game-card";
-import { Highlight } from "@/components/ui/hero-highlight";
+import { Highlighter } from "@/components/magicui/highlighter";
 import { Suspense } from "react";
 import { Input } from "@/components/ui/input";
 import CopyButton from "@/components/copy-button";
@@ -29,7 +29,27 @@ import { Features } from "@/components/features";
 import DynamicShopButton from "@/components/buy-mspaint";
 import { gamesList } from "@/data/games";
 import { auth } from "@/auth";
+import {
+  ScrollVelocityContainer,
+  ScrollVelocityRow,
+} from "@/components/magicui/scroll-based-velocity";
+import { UIStateProvider } from "@/components/obsidian/uiState";
 
+/**
+ * Server component that renders the homepage for the mspaint site.
+ *
+ * This async component loads the current session (to determine whether to
+ * show "Sign In" or "Dashboard") and fetches three external data sources:
+ * - Discord invite data (member counts)
+ * - Translations (languages)
+ * - Game status information
+ *
+ * Each external fetch has resilient fallbacks on failure (reasonable defaults)
+ * and the loaded data is passed into child components to render the hero,
+ * games list, language scroller, reviews, FAQ, and footer.
+ *
+ * @returns The fully rendered homepage JSX (React Server Component).
+ */
 export default async function Home() {
   const session = await auth();
   const noAccount = !session || !session.user || !session.user.id;
@@ -37,7 +57,10 @@ export default async function Home() {
   // discord
   let gamesStatusData, languageData, guildData;
   try {
-    const guildResponse = await fetch("https://discord.com/api/v9/invites/mspaint?with_counts=true&with_expiration=true", { cache: 'force-cache', next: { revalidate: 300 } }); // 5 minutes
+    const guildResponse = await fetch(
+      "https://discord.com/api/v9/invites/mspaint?with_counts=true&with_expiration=true",
+      { cache: "force-cache", next: { revalidate: 300 } }
+    ); // 5 minutes
     guildData = await guildResponse.json();
   } catch {
     guildData = { approximate_member_count: 20000 };
@@ -45,7 +68,10 @@ export default async function Home() {
 
   // languages
   try {
-    const response = await fetch("https://raw.githubusercontent.com/mspaint-cc/translations/refs/heads/main/Languages.json", { cache: 'force-cache', next: { revalidate: 300 } }); // 5 minutes
+    const response = await fetch(
+      "https://raw.githubusercontent.com/mspaint-cc/translations/refs/heads/main/Languages.json",
+      { cache: "force-cache", next: { revalidate: 300 } }
+    ); // 5 minutes
     languageData = await response.json();
   } catch {
     languageData = { ["en"]: {} };
@@ -53,9 +79,14 @@ export default async function Home() {
 
   // games data
   try {
-    const response = await fetch("https://raw.githubusercontent.com/mspaint-cc/assets/refs/heads/main/status.json", { cache: 'force-cache', next: { revalidate: 60 } }); // 1 minute
+    const response = await fetch(
+      "https://raw.githubusercontent.com/mspaint-cc/assets/refs/heads/main/status.json",
+      { cache: "force-cache", next: { revalidate: 60 } }
+    ); // 1 minute
     gamesStatusData = await response.json();
-  } catch { gamesStatusData = {}; }
+  } catch {
+    gamesStatusData = {};
+  }
 
   return (
     <>
@@ -92,7 +123,7 @@ export default async function Home() {
         </NavbarContent>
       </Navbar>
 
-      <main className="overflow-x-hidden">
+      <main className="overflow-x-hidden group">
         <DotPattern
           width={20}
           height={20}
@@ -100,7 +131,8 @@ export default async function Home() {
           cy={1}
           cr={1}
           className={cn(
-            "[mask-image:linear-gradient(to_bottom_right,white,transparent,transparent)] -z-50"
+            "[mask-image:linear-gradient(to_bottom_right,white,transparent,transparent)] -z-50",
+            "group-aria-hidden:hidden"
           )}
         />
 
@@ -165,7 +197,7 @@ export default async function Home() {
                           <path
                             d="M40.6606 3.08587C37.5127 1.62534 34.1825 0.587574 30.7579 0C30.3314 0.764729 29.833 1.79329 29.4893 2.61157C25.7971 2.06103 22.1387 2.06103 18.5144 2.61157C18.1709 1.79348 17.6612 0.764729 17.2307 0C13.8029 0.587845 10.4698 1.62826 7.32043 3.0935C1.05343 12.4846 -0.645507 21.6422 0.203868 30.6702C4.36056 33.7483 8.38881 35.6182 12.3492 36.8418C13.3334 35.4996 14.2035 34.0786 14.9504 32.5935C13.5284 32.0567 12.1576 31.3951 10.8542 30.6167C11.1972 30.3646 11.5322 30.1018 11.8585 29.8289C19.7564 33.4921 28.3379 33.4921 36.1416 29.8289C36.4694 30.1 36.8042 30.3627 37.1457 30.6167C35.8402 31.3971 34.4669 32.06 33.0421 32.5974C33.7932 34.0885 34.6617 35.5109 35.6432 36.8455C39.6074 35.6221 43.6394 33.7522 47.7961 30.6702C48.7928 20.2046 46.0936 11.1309 40.6606 3.08569V3.08587ZM16.0264 25.1182C13.6555 25.1182 11.7111 22.9233 11.7111 20.2505C11.7111 17.5778 13.6141 15.3792 16.0264 15.3792C18.439 15.3792 20.3832 17.5739 20.3417 20.2505C20.3455 22.9233 18.439 25.1182 16.0264 25.1182ZM31.9735 25.1182C29.6026 25.1182 27.6584 22.9233 27.6584 20.2505C27.6584 17.5778 29.5611 15.3792 31.9735 15.3792C34.3861 15.3792 36.3302 17.5739 36.2888 20.2505C36.2888 22.9233 34.3861 25.1182 31.9735 25.1182Z"
                             fill="#5865F2"
-                          ></path>
+                          />
                         </svg>
                       </ShinyButton>
                     </Link>
@@ -360,7 +392,9 @@ export default async function Home() {
           </BlurFade>
         </div>
 
-        <Features />
+        <UIStateProvider>
+          <Features />
+        </UIStateProvider>
 
         <div className="flex flex-col items-center text-center py-28">
           <WordFadeIn
@@ -380,8 +414,68 @@ export default async function Home() {
             />
           </BlurFade>
 
-          {/*<div className="w-full bottom-0 z-40 inset-x-0 h-40 bg-gradient-to-t from-[#0a0a0a] via-black to-transparent w-full pointer-events-none" />
-           */}
+          <div className="relative flex w-full flex-col items-center justify-center overflow-hidden mt-10 mb-10">
+            <ScrollVelocityContainer className="text-base">
+              {(() => {
+                const labels: string[] = [];
+                const data = languageData || {};
+                Object.keys(data).forEach((code) => {
+                  const entry = data[code];
+                  if (!entry) return;
+                  if (
+                    code === "zh" &&
+                    typeof entry === "object" &&
+                    !("NativeName" in entry)
+                  ) {
+                    Object.keys(entry).forEach((variant) => {
+                      if (variant.toLowerCase() === "default") return;
+                      const v = entry[variant as keyof typeof entry] as {
+                        NativeName: string;
+                        EnglishName: string;
+                      };
+
+                      if (v && (v.NativeName || v.EnglishName)) {
+                        labels.push(v.NativeName || v.EnglishName);
+                      }
+                    });
+                    return;
+                  }
+                  if (entry.NativeName || entry.EnglishName) {
+                    labels.push(entry.NativeName || entry.EnglishName);
+                  }
+                });
+                // ensure English appears if desired, currently excluded by design
+                // labels.unshift("English");
+
+                const mid = Math.ceil(labels.length / 2);
+                const first = labels.slice(0, mid);
+                const second = labels.slice(mid);
+                const Chip = ({ label }: { label: string }) => (
+                  <span className="mx-2 my-1 px-3 py-1 whitespace-nowrap">
+                    {label}
+                  </span>
+                );
+                return (
+                  <>
+                    <ScrollVelocityRow baseVelocity={5} direction={1}>
+                      {first.map((l) => (
+                        <Chip key={`lang-top-${l}`} label={l} />
+                      ))}
+                    </ScrollVelocityRow>
+                    {second.length > 0 && (
+                      <ScrollVelocityRow baseVelocity={5} direction={-1}>
+                        {second.map((l) => (
+                          <Chip key={`lang-bottom-${l}`} label={l} />
+                        ))}
+                      </ScrollVelocityRow>
+                    )}
+                  </>
+                );
+              })()}
+            </ScrollVelocityContainer>
+            <div className="pointer-events-none absolute inset-y-0 left-0 w-1/4 bg-gradient-to-r from-background"></div>
+            <div className="pointer-events-none absolute inset-y-0 right-0 w-1/4 bg-gradient-to-l from-background"></div>
+          </div>
 
           <Separator className="mt-[2.5rem] w-[55vw]" />
         </div>
@@ -429,7 +523,9 @@ export default async function Home() {
 
           <h1 id="reviews" className="text-2xl mt-[2.5rem] text-center">
             Here&apos;s what people say about{" "}
-            <Highlight className="font-bold">mspaint</Highlight>
+            <Highlighter action="underline" color="#FF9800" isView>
+              mspaint
+            </Highlighter>
           </h1>
 
           <Suspense fallback={<div>Loading...</div>}>
