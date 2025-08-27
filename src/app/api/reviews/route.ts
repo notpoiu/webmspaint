@@ -9,7 +9,7 @@ type Review = {
 };
 
 // Cache the aggregated reviews for 14 days
-export const revalidate = 60 * 60 * 24 * 14; // seconds (2 weeks)
+const revalidate = 60 * 60 * 24 * 14; // seconds (2 weeks)
 
 export async function GET() {
   const headers: HeadersInit = {
