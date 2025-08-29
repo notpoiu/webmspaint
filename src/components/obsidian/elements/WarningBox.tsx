@@ -34,10 +34,7 @@ export default function ObsidianWarningBox({
 }) {
   if (!visible) return null;
 
-  const scheme = useMemo(
-    () => (isnormal ? ColorScheme.Normal : ColorScheme.Warning),
-    [isnormal]
-  );
+  const scheme = isnormal ? ColorScheme.Normal : ColorScheme.Warning;
 
   return (
     <div
