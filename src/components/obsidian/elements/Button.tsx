@@ -46,7 +46,7 @@ export default function Button({
 	subButton,
 }: {
 	text: string;
-	subButton?: { text: string };
+	subButton?: { text: string; };
 }) {
 	if (subButton != undefined) {
 		return (

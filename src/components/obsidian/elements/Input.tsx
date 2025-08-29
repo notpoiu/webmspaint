@@ -2,17 +2,26 @@ import React from "react";
 import { ButtonBase } from "./Button";
 import Label from "./Label";
 import { useUIState } from "../uiState";
+import { cn } from "@/lib/utils";
 
 export default function Input({
 	text,
 	value,
 	placeholder,
 	stateKey,
+	className,
+	containerClassName,
+	inputClassName,
+	onChanged
 }: {
 	text: string;
 	value: string;
 	placeholder: string;
 	stateKey?: string;
+	className?: string;
+	containerClassName?: string;
+	inputClassName?: string;
+	onChanged?: React.ChangeEventHandler<HTMLInputElement>
 }) {
 	const { state, setState } = useUIState();
 	const [local, setLocal] = React.useState<string>(
@@ -25,6 +34,12 @@ export default function Input({
 		if (typeof v === "string") setLocal(v);
 	}, [state, stateKey]);
 
+	// sync with external value when uncontrolled //
+	React.useEffect(() => {
+		if (stateKey) return;
+		setLocal(value);
+	}, [value, stateKey]);
+
 	return (
 		<div className="flex flex-col gap-1">
 			<Label className="text-white opacity-100">{text}</Label>
@@ -34,18 +49,19 @@ export default function Input({
 					<input
 						name="input"
 						type="text"
-						className="w-full h-full text-white opacity-100 ml-1 text-xs select-none bg-transparent outline-none"
+						className={cn("w-full h-full text-white opacity-100 ml-1 text-xs select-none bg-transparent outline-none", inputClassName)}
 						value={local}
 						placeholder={placeholder}
 						onChange={(e) => {
 							const next = e.target.value;
 							setLocal(next);
 							if (stateKey) setState(stateKey, next);
+							if (onChanged) onChanged(e);
 						}}
 					/>
 				}
-				className="text-left text-white opacity-100 m-1 text-xs"
-				containerClassName="justify-start flex relative"
+				className={cn("text-left text-white opacity-100 m-1 text-xs", className)}
+				containerClassName={cn("justify-start flex relative", containerClassName)}
 				replacedText={true}
 			/>
 		</div>

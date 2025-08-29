@@ -143,6 +143,9 @@ importers:
       react-code-blocks:
         specifier: ^0.1.6
         version: 0.1.6(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+      react-colorful:
+        specifier: ^5.6.1
+        version: 5.6.1(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       react-dom:
         specifier: ^19.1.1
         version: 19.1.1(react@19.1.1)
@@ -3909,6 +3912,12 @@ packages:
     engines: {node: '>=16'}
     peerDependencies:
       react: '>=16'
+
+  react-colorful@5.6.1:
+    resolution: {integrity: sha512-1exovf0uGTGyq5mXQT0zgQ80uvj2PCwvF8zY1RN9/vbJVSjSo3fsB/4L3ObbF7u70NduSiK4xu4Y6q1MHoUGEw==}
+    peerDependencies:
+      react: '>=16.8.0'
+      react-dom: '>=16.8.0'
 
   react-dom@19.1.1:
     resolution: {integrity: sha512-Dlq/5LAZgF0Gaz6yiqZCf6VCcZs1ghAJyrsu84Q/GT0gV+mCxbfmKNoGRKBYMJ8IEdGPqu49YWXD02GCknEDkw==}
@@ -8643,6 +8652,11 @@ snapshots:
       tslib: 2.8.1
     transitivePeerDependencies:
       - react-dom
+
+  react-colorful@5.6.1(react-dom@19.1.1(react@19.1.1))(react@19.1.1):
+    dependencies:
+      react: 19.1.1
+      react-dom: 19.1.1(react@19.1.1)
 
   react-dom@19.1.1(react@19.1.1):
     dependencies:
