@@ -142,7 +142,7 @@ export interface TabboxTab {
 
 export interface TabboxData {
 	type: "Tabbox";
-	name: number;
+	name: string;
 	side: "Left" | "Right" | "Unknown";
 	tabs: {
 		[key: string]: TabboxTab;
