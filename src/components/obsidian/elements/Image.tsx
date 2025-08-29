@@ -19,10 +19,8 @@ export default function ObsidianImage({
 }) {
 	return (
 		<div
-			className={cn(
-				"w-full rounded-[1px] bg-[rgb(25,25,25)] border-[rgb(40,40,40)] border flex items-center justify-center",
-				`h-[${height}px]`
-			)}
+			className={"w-full rounded-[1px] bg-[rgb(25,25,25)] border-[rgb(40,40,40)] border flex items-center justify-center"}
+			style={{ height: `${height}px` }}
 		>
 			<p className="text-center text-muted-foreground text-sm select-none">
 				Image Unavailable
