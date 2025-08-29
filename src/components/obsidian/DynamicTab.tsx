@@ -15,6 +15,7 @@ import Slider from "./elements/Slider";
 import KeyPicker from "./elements/addons/KeyPicker";
 import AddonContainer from "./elements/addons/AddonContainer";
 import ColorPicker from "./elements/addons/ColorPicker";
+import ObsidianWarningBox from "./elements/WarningBox";
 
 // Parsers //
 const renderAddons = (addons?: AddonsArray[]) => {
@@ -167,57 +168,68 @@ export const TabParser: React.FC<{ tabData: TabData | null }> = ({
 }) => {
   if (!tabData) return null;
 
-  const { groupboxes, tabboxes } = tabData;
+  const { groupboxes, tabboxes, warningBox } = tabData;
   return (
-    <TabContainer>
-      <TabLeft>
-        {tabboxes?.Left &&
-          Object.values(tabboxes.Left).map((tabbox) => (
-            <Tabbox
-              key={tabbox.name}
-              tabs={tabbox.tabs}
-              scope={`tab:${tabData.name}:left:tabbox:${tabbox.name}`}
-            />
-          ))}
-        {groupboxes?.Left &&
-          Object.values(groupboxes.Left)
-            .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
-            .map((gb) => (
-              <Groupbox key={gb.name} title={gb.name}>
-                {gb.elements.map((el) => (
-                  <ElementParser
-                    key={`left-gb-${gb.name}-${el.index}`}
-                    element={el}
-                    stateKeyPrefix={`tab:${tabData.name}:left:groupbox:${gb.name}`}
-                  />
-                ))}
-              </Groupbox>
+    <>
+      {warningBox && (
+        <ObsidianWarningBox
+          text={warningBox.Text}
+          title={warningBox.Title}
+          visible={warningBox.Visible}
+          isnormal={warningBox.IsNormal}
+          locksize={warningBox.LockSize}
+        />
+      )}
+      <TabContainer>
+        <TabLeft>
+          {tabboxes?.Left &&
+            Object.values(tabboxes.Left).map((tabbox) => (
+              <Tabbox
+                key={tabbox.name}
+                tabs={tabbox.tabs}
+                scope={`tab:${tabData.name}:left:tabbox:${tabbox.name}`}
+              />
             ))}
-      </TabLeft>
-      <TabRight>
-        {tabboxes?.Right &&
-          Object.values(tabboxes.Right).map((tabbox) => (
-            <Tabbox
-              key={tabbox.name}
-              tabs={tabbox.tabs}
-              scope={`tab:${tabData.name}:right:tabbox:${tabbox.name}`}
-            />
-          ))}
-        {groupboxes?.Right &&
-          Object.values(groupboxes.Right)
-            .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
-            .map((gb) => (
-              <Groupbox key={gb.name} title={gb.name}>
-                {gb.elements.map((el) => (
-                  <ElementParser
-                    key={`right-gb-${gb.name}-${el.index}`}
-                    element={el}
-                    stateKeyPrefix={`tab:${tabData.name}:right:groupbox:${gb.name}`}
-                  />
-                ))}
-              </Groupbox>
+          {groupboxes?.Left &&
+            Object.values(groupboxes.Left)
+              .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+              .map((gb) => (
+                <Groupbox key={gb.name} title={gb.name}>
+                  {gb.elements.map((el) => (
+                    <ElementParser
+                      key={`left-gb-${gb.name}-${el.index}`}
+                      element={el}
+                      stateKeyPrefix={`tab:${tabData.name}:left:groupbox:${gb.name}`}
+                    />
+                  ))}
+                </Groupbox>
+              ))}
+        </TabLeft>
+        <TabRight>
+          {tabboxes?.Right &&
+            Object.values(tabboxes.Right).map((tabbox) => (
+              <Tabbox
+                key={tabbox.name}
+                tabs={tabbox.tabs}
+                scope={`tab:${tabData.name}:right:tabbox:${tabbox.name}`}
+              />
             ))}
-      </TabRight>
-    </TabContainer>
+          {groupboxes?.Right &&
+            Object.values(groupboxes.Right)
+              .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+              .map((gb) => (
+                <Groupbox key={gb.name} title={gb.name}>
+                  {gb.elements.map((el) => (
+                    <ElementParser
+                      key={`right-gb-${gb.name}-${el.index}`}
+                      element={el}
+                      stateKeyPrefix={`tab:${tabData.name}:right:groupbox:${gb.name}`}
+                    />
+                  ))}
+                </Groupbox>
+              ))}
+        </TabRight>
+      </TabContainer>
+    </>
   );
 };
