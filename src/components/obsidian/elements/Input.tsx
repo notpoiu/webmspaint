@@ -49,7 +49,10 @@ export default function Input({
 					<input
 						name="input"
 						type="text"
-						className={cn("w-full h-full text-white opacity-100 ml-1 text-xs select-none bg-transparent outline-none", inputClassName)}
+                        className={cn(
+                          "w-full h-full text-white opacity-100 ml-1 text-xs bg-transparent outline-none",
+                          inputClassName
+                        )}
 						value={local}
 						placeholder={placeholder}
 						onChange={(e) => {
